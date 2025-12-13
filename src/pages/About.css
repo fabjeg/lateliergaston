@@ -1,0 +1,32 @@
+.about {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.about-content section {
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.about-content h2 {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.about-content ul {
+  list-style-position: inside;
+  line-height: 2;
+}
