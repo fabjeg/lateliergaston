@@ -1,45 +1,92 @@
+.shop {
+  background-color: #faf8f5;
+  padding: 3rem 2rem;
+  min-height: calc(100vh - 200px);
+}
+
 .shop h1 {
   text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 3rem;
+  color: #2c2c2c;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.shop-subtitle {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7a7a7a;
+  font-style: italic;
+  margin-bottom: 3rem;
 }
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 3rem;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .product-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
   text-decoration: none;
   color: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 }
 
-.product-card img {
+.product-image-container {
+  margin-bottom: 15px;
+}
+
+.product-image-container img {
   width: 100%;
-  height: 250px;
+  height: 400px;
   object-fit: cover;
+  object-position: center;
+  display: block;
+  border: 1px solid #e8e8e8;
+}
+
+.product-info {
+  border-top: 1px solid #e0d5c7;
+  padding-top: 15px;
+  text-align: center;
 }
 
 .product-card h3 {
-  padding: 1rem;
-  margin: 0;
-  font-size: 1.2rem;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #2c2c2c;
 }
 
 .product-card .price {
-  padding: 0 1rem 1rem;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #667eea;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #c77a7a;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop h1 {
+    font-size: 2rem;
+  }
 }
