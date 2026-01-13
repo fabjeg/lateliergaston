@@ -1,6 +1,31 @@
 .product-detail {
   max-width: 1000px;
   margin: 0 auto;
+  position: relative;
+}
+
+.notification {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background-color: #27ae60;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .product-detail-grid {
@@ -10,10 +35,41 @@
   align-items: start;
 }
 
+.product-image-wrapper {
+  position: relative;
+}
+
 .product-image img {
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sold-message {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #e74c3c;
+}
+
+.sold-message p {
+  margin: 0.5rem 0;
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.sold-message .sold-note {
+  color: #666;
+  font-weight: normal;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 .product-info h1 {
@@ -45,8 +101,77 @@
   transition: background-color 0.3s;
 }
 
-.add-to-cart:hover {
+.add-to-cart:hover:not(:disabled) {
   background-color: #5568d3;
+}
+
+.add-to-cart.in-cart,
+.add-to-cart:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.quantity-selector {
+  margin-bottom: 1.5rem;
+}
+
+.quantity-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #667eea;
+  background-color: white;
+  color: #667eea;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+  background-color: #667eea;
+  color: white;
+}
+
+.quantity-input {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+
+.quantity-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Remove spinner arrows from number input */
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @media (max-width: 768px) {

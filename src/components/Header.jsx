@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import './Header.css'
 import logo from '../assets/logo.jpg'
+import CartIcon from './CartIcon'
 
 function Header() {
   return (
@@ -11,8 +12,10 @@ function Header() {
         </Link>
         <nav className="nav">
           <Link to="/">Galerie</Link>
+          <Link to="/shop">Boutique</Link>
           <Link to="/about">À propos</Link>
           <Link to="/contact">Contact</Link>
+          <CartIcon />
         </nav>
       </div>
     </header>

@@ -1,0 +1,25 @@
+.sold-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.sold-badge span {
+  background-color: #e74c3c;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  transform: rotate(-15deg);
+  border: 3px solid white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.2em;
+}
