@@ -1,7 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+:root {
+  /* Couleurs du logo */
+  --primary-color: #8b4049; /* Rouge bordeaux du logo */
+  --primary-light: #a64d54;
+  --primary-dark: #6d3339;
+  --background-cream: #f5ede4; /* Beige crème du logo */
+  --background-light: #faf8f5;
+  --text-dark: #2c2c2c;
+  --text-medium: #555;
+  --border-color: #e0d5c7;
+
+  /* Polices artistiques */
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'Lora', serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background-color: var(--background-light);
 }
 
 .app {
@@ -13,7 +37,12 @@
 main {
   flex: 1;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--primary-color);
 }

@@ -1,9 +1,32 @@
 import './About.css'
+import aboutImage from '../assets/553361972_17857391913524609_2349171684361362874_n.webp'
 
 function About() {
   return (
     <div className="about">
       <h1>À propos de L'Atelier de Gaston</h1>
+
+      <div className="about-hero">
+        <img
+          src={aboutImage}
+          alt="L'Atelier de Gaston - Broderie artisanale"
+          className="about-hero-image"
+        />
+        <div className="about-hero-text">
+          <h2>L'art de la broderie contemporaine</h2>
+          <p>
+            L'Atelier de Gaston est né de la passion pour l'artisanat et la création unique.
+            Chaque œuvre est une fusion entre photographie et broderie, créant des pièces
+            uniques qui racontent une histoire.
+          </p>
+          <p>
+            Nous croyons en la valeur du fait-main et en l'importance de préserver
+            les techniques artisanales traditionnelles tout en y apportant une touche
+            contemporaine et artistique.
+          </p>
+        </div>
+      </div>
+
       <div className="about-content">
         <section>
           <h2>Notre histoire</h2>

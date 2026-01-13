@@ -1,9 +1,9 @@
 .header {
-  background-color: #f5f0eb;
-  color: #2c2c2c;
+  background-color: var(--background-cream, #f5ede4);
+  color: var(--text-dark, #2c2c2c);
   padding: 1.5rem 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  border-bottom: 1px solid #e0d5c7;
+  box-shadow: 0 2px 8px rgba(139, 64, 73, 0.1);
+  border-bottom: 1px solid var(--border-color, #e0d5c7);
 }
 
 .header-container {
@@ -38,11 +38,12 @@
 }
 
 .nav a {
-  color: #2c2c2c;
+  color: var(--text-dark, #2c2c2c);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 400;
-  letter-spacing: 0.5px;
+  font-family: var(--font-heading, 'Cormorant Garamond', serif);
+  letter-spacing: 1px;
   text-transform: uppercase;
   transition: all 0.3s ease;
   position: relative;
@@ -56,12 +57,12 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #c77a7a;
+  background-color: var(--primary-color, #8b4049);
   transition: width 0.3s ease;
 }
 
 .nav a:hover {
-  color: #c77a7a;
+  color: var(--primary-color, #8b4049);
 }
 
 .nav a:hover::after {
