@@ -65,6 +65,13 @@
   object-position: center;
   display: block;
   border: 1px solid #e8e8e8;
+  background-color: #f5f5f5;
+  will-change: transform;
+}
+
+/* Loading placeholder */
+.product-image-container img[loading="lazy"] {
+  min-height: 400px;
 }
 
 .product-card.sold {

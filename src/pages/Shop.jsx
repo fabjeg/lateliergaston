@@ -66,7 +66,12 @@ function Shop() {
                 }}
                 viewport={{ once: true }}
               >
-                <img src={product.image} alt={product.name} />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  loading="lazy"
+                  decoding="async"
+                />
                 {isSold(product.id) && <SoldBadge />}
               </motion.div>
               <motion.div

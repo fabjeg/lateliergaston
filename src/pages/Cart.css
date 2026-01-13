@@ -271,6 +271,10 @@
 }
 
 @media (max-width: 600px) {
+  .cart h1 {
+    font-size: 1.8rem;
+  }
+
   .cart-item {
     grid-template-columns: 80px 1fr auto;
     gap: 1rem;
@@ -288,5 +292,13 @@
 
   .cart-item-price {
     font-size: 1.1rem;
+  }
+
+  .cart-summary {
+    padding: 1.5rem;
+  }
+
+  .cart-summary h2 {
+    font-size: 1.3rem;
   }
 }

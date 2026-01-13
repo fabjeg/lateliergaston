@@ -175,7 +175,49 @@
 }
 
 @media (max-width: 768px) {
+  .product-detail {
+    padding: 1rem;
+  }
+
   .product-detail-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .product-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .product-info .price {
+    font-size: 1.5rem;
+  }
+
+  .notification {
+    top: 80px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-detail {
+    padding: 0.5rem;
+  }
+
+  .product-detail-grid {
+    gap: 1rem;
+  }
+
+  .product-info h1 {
+    font-size: 1.3rem;
+  }
+
+  .product-info .price {
+    font-size: 1.3rem;
+  }
+
+  .quantity-controls {
+    justify-content: center;
   }
 }
