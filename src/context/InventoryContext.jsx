@@ -18,10 +18,18 @@ export function InventoryProvider({ children }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
+    // Timeout pour éviter d'attendre trop longtemps si Firebase n'est pas configuré
+    const timeoutId = setTimeout(() => {
+      console.warn('Firebase timeout - continuing without inventory management')
+      setLoading(false)
+      setError('Firebase non configuré - fonctionnement en mode local')
+    }, 5000) // 5 secondes max
+
     // Set up real-time listener for artworks collection
     const unsubscribe = onSnapshot(
       collection(db, 'artworks'),
       (snapshot) => {
+        clearTimeout(timeoutId) // Annuler le timeout si succès
         const sold = new Set()
         snapshot.forEach((doc) => {
           const data = doc.data()
@@ -35,14 +43,19 @@ export function InventoryProvider({ children }) {
         setError(null)
       },
       (err) => {
+        clearTimeout(timeoutId) // Annuler le timeout si erreur
         console.error('Error listening to inventory:', err)
         setError(err.message)
         setLoading(false)
+        // Continue sans Firebase - tous les produits sont disponibles
       }
     )
 
     // Cleanup listener on unmount
-    return () => unsubscribe()
+    return () => {
+      clearTimeout(timeoutId)
+      unsubscribe()
+    }
   }, [])
 
   // Check if a product is sold
