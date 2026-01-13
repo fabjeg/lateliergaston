@@ -22,25 +22,26 @@ function Cart() {
   const total = subtotal + shippingCost
 
   const handleCheckout = async () => {
-    setError(null)
-    setIsProcessing(true)
+    // Paiement désactivé pour le moment
+    // setError(null)
+    // setIsProcessing(true)
 
-    try {
-      // Validate cart before proceeding
-      const validation = validateCartForCheckout(cartItems)
-      if (!validation.isValid) {
-        setError(validation.errors.join(', '))
-        setIsProcessing(false)
-        return
-      }
+    // try {
+    //   // Validate cart before proceeding
+    //   const validation = validateCartForCheckout(cartItems)
+    //   if (!validation.isValid) {
+    //     setError(validation.errors.join(', '))
+    //     setIsProcessing(false)
+    //     return
+    //   }
 
-      // Create Stripe checkout session and redirect
-      await createCheckoutSession(cartItems, shippingZone)
-    } catch (err) {
-      console.error('Checkout error:', err)
-      setError('Une erreur est survenue lors de la création de la session de paiement. Veuillez réessayer.')
-      setIsProcessing(false)
-    }
+    //   // Create Stripe checkout session and redirect
+    //   await createCheckoutSession(cartItems, shippingZone)
+    // } catch (err) {
+    //   console.error('Checkout error:', err)
+    //   setError('Une erreur est survenue lors de la création de la session de paiement. Veuillez réessayer.')
+    //   setIsProcessing(false)
+    // }
   }
 
   if (cartItems.length === 0) {
@@ -143,12 +144,20 @@ function Cart() {
             </div>
           )}
 
+          <div className="checkout-disabled-notice">
+            <p>💳 Paiements temporairement désactivés</p>
+            <p className="checkout-disabled-message">
+              Le système de paiement en ligne sera bientôt disponible.
+              Pour toute commande, veuillez nous contacter directement.
+            </p>
+          </div>
+
           <button
             className="checkout-button"
             onClick={handleCheckout}
-            disabled={isProcessing}
+            disabled={true}
           >
-            {isProcessing ? 'Redirection vers Stripe...' : 'Procéder au paiement'}
+            Procéder au paiement
           </button>
 
           <Link to="/shop" className="continue-shopping-link">
