@@ -1,13 +1,13 @@
-import img1 from '../assets/561676007_17858710800524609_966159427435168161_n.jpg'
-import img2 from '../assets/566027323_17860076811524609_3890717275703473961_n.jpg'
-import img3 from '../assets/566943302_17860077999524609_139768563597202447_n.jpg'
-import img4 from '../assets/572235425_17861416944524609_3463920233784334214_n.jpg'
-import img5 from '../assets/572844840_17861111490524609_975655948130670703_n.jpg'
-import img6 from '../assets/573313877_17862175311524609_6903431562385700038_n.jpg'
-import img7 from '../assets/573523271_17861910591524609_5276602963239441975_n.jpg'
-import img8 from '../assets/576458278_17862690423524609_5149917018225823158_n.jpg'
-import img9 from '../assets/588832750_17865251334524609_3240054877398157525_n.jpg'
-import img10 from '../assets/597807467_17865995514524609_7025555680287479999_n.jpg'
+import img1 from '../assets/561676007_17858710800524609_966159427435168161_n.webp'
+import img2 from '../assets/566027323_17860076811524609_3890717275703473961_n.webp'
+import img3 from '../assets/566943302_17860077999524609_139768563597202447_n.webp'
+import img4 from '../assets/572235425_17861416944524609_3463920233784334214_n.webp'
+import img5 from '../assets/572844840_17861111490524609_975655948130670703_n.webp'
+import img6 from '../assets/573313877_17862175311524609_6903431562385700038_n.webp'
+import img7 from '../assets/573523271_17861910591524609_5276602963239441975_n.webp'
+import img8 from '../assets/576458278_17862690423524609_5149917018225823158_n.webp'
+import img9 from '../assets/588832750_17865251334524609_3240054877398157525_n.webp'
+import img10 from '../assets/597807467_17865995514524609_7025555680287479999_n.webp'
 
 export const products = [
   {
@@ -15,7 +15,7 @@ export const products = [
     name: 'Œuvre 1',
     price: 450.00,
     image: img1,
-    imageFilename: '561676007_17858710800524609_966159427435168161_n.jpg',
+    imageFilename: '561676007_17858710800524609_966159427435168161_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: '' // À ajouter après configuration Stripe
   },
@@ -24,7 +24,7 @@ export const products = [
     name: 'Œuvre 2',
     price: 450.00,
     image: img2,
-    imageFilename: '566027323_17860076811524609_3890717275703473961_n.jpg',
+    imageFilename: '566027323_17860076811524609_3890717275703473961_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -33,7 +33,7 @@ export const products = [
     name: 'Œuvre 3',
     price: 450.00,
     image: img3,
-    imageFilename: '566943302_17860077999524609_139768563597202447_n.jpg',
+    imageFilename: '566943302_17860077999524609_139768563597202447_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -42,7 +42,7 @@ export const products = [
     name: 'Œuvre 4',
     price: 450.00,
     image: img4,
-    imageFilename: '572235425_17861416944524609_3463920233784334214_n.jpg',
+    imageFilename: '572235425_17861416944524609_3463920233784334214_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -51,7 +51,7 @@ export const products = [
     name: 'Œuvre 5',
     price: 450.00,
     image: img5,
-    imageFilename: '572844840_17861111490524609_975655948130670703_n.jpg',
+    imageFilename: '572844840_17861111490524609_975655948130670703_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -60,7 +60,7 @@ export const products = [
     name: 'Œuvre 6',
     price: 450.00,
     image: img6,
-    imageFilename: '573313877_17862175311524609_6903431562385700038_n.jpg',
+    imageFilename: '573313877_17862175311524609_6903431562385700038_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -69,7 +69,7 @@ export const products = [
     name: 'Œuvre 7',
     price: 450.00,
     image: img7,
-    imageFilename: '573523271_17861910591524609_5276602963239441975_n.jpg',
+    imageFilename: '573523271_17861910591524609_5276602963239441975_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -78,7 +78,7 @@ export const products = [
     name: 'Œuvre 8',
     price: 450.00,
     image: img8,
-    imageFilename: '576458278_17862690423524609_5149917018225823158_n.jpg',
+    imageFilename: '576458278_17862690423524609_5149917018225823158_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -87,7 +87,7 @@ export const products = [
     name: 'Œuvre 9',
     price: 450.00,
     image: img9,
-    imageFilename: '588832750_17865251334524609_3240054877398157525_n.jpg',
+    imageFilename: '588832750_17865251334524609_3240054877398157525_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },
@@ -96,7 +96,7 @@ export const products = [
     name: 'Œuvre 10',
     price: 450.00,
     image: img10,
-    imageFilename: '597807467_17865995514524609_7025555680287479999_n.jpg',
+    imageFilename: '597807467_17865995514524609_7025555680287479999_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
     stripePriceId: ''
   },

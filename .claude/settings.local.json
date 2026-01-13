@@ -9,7 +9,12 @@
       "Bash(git commit:*)",
       "Bash(npm install framer-motion)",
       "Bash(npm install:*)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(git push:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npm run optimize-images:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
