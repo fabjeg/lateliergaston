@@ -22,13 +22,15 @@ export async function createCheckoutSession(cartItems, shippingZone) {
       quantity: item.quantity
     }))
 
-    // Add shipping as a line item
+    // Add shipping as a line item (only if configured in Stripe)
     const shippingPriceId = getShippingPriceId(shippingZone)
-    if (shippingPriceId) {
+    if (shippingPriceId && shippingPriceId !== '') {
       lineItems.push({
         price: shippingPriceId,
         quantity: 1
       })
+    } else {
+      console.warn('Frais de livraison non configurés dans Stripe - checkout sans livraison')
     }
 
     // Create metadata with product IDs for webhook

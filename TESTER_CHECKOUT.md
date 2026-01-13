@@ -9,6 +9,11 @@
 **Produits restants (3-10):**
 - ⏳ À configurer dans Stripe Dashboard
 
+**Frais de livraison:**
+- ⏳ Pas encore configurés dans Stripe
+- Le checkout fonctionne SANS frais de livraison pour l'instant
+- Total = Prix du produit uniquement (450€)
+
 ---
 
 ## 🧪 Tester le paiement (Mode Test)
