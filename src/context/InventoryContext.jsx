@@ -1,6 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { collection, onSnapshot } from 'firebase/firestore'
-import { db } from '../config/firebase'
+import { createContext, useContext, useState } from 'react'
 
 const InventoryContext = createContext()
 
@@ -13,59 +11,20 @@ export function useInventory() {
 }
 
 export function InventoryProvider({ children }) {
-  const [soldProducts, setSoldProducts] = useState(new Set())
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    // Timeout pour éviter d'attendre trop longtemps si Firebase n'est pas configuré
-    const timeoutId = setTimeout(() => {
-      console.warn('Firebase timeout - continuing without inventory management')
-      setLoading(false)
-      setError('Firebase non configuré - fonctionnement en mode local')
-    }, 5000) // 5 secondes max
-
-    // Set up real-time listener for artworks collection
-    const unsubscribe = onSnapshot(
-      collection(db, 'artworks'),
-      (snapshot) => {
-        clearTimeout(timeoutId) // Annuler le timeout si succès
-        const sold = new Set()
-        snapshot.forEach((doc) => {
-          const data = doc.data()
-          if (data.isSold) {
-            // Store as number for consistency with product IDs
-            sold.add(Number(doc.id))
-          }
-        })
-        setSoldProducts(sold)
-        setLoading(false)
-        setError(null)
-      },
-      (err) => {
-        clearTimeout(timeoutId) // Annuler le timeout si erreur
-        console.error('Error listening to inventory:', err)
-        setError(err.message)
-        setLoading(false)
-        // Continue sans Firebase - tous les produits sont disponibles
-      }
-    )
-
-    // Cleanup listener on unmount
-    return () => {
-      clearTimeout(timeoutId)
-      unsubscribe()
-    }
-  }, [])
+  // Pour l'instant, aucun produit n'est vendu
+  // Firebase sera ajouté plus tard pour gérer l'inventaire réel
+  const [soldProducts] = useState(new Set())
+  const loading = false
+  const error = null
 
   // Check if a product is sold
   const isSold = (productId) => {
     return soldProducts.has(Number(productId))
   }
 
-  // Get count of available products
+  // Get count of available products (tous disponibles pour l'instant)
   const getAvailableCount = () => {
-    return 10 - soldProducts.size
+    return 10
   }
 
   // Get count of sold products

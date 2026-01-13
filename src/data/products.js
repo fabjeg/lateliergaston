@@ -17,7 +17,7 @@ export const products = [
     image: img1,
     imageFilename: '561676007_17858710800524609_966159427435168161_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
-    stripePriceId: '' // À ajouter après configuration Stripe
+    stripePriceId: 'price_1SpCH8Fx9HGSvAHCsRuVYTIa'
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ export const products = [
     image: img2,
     imageFilename: '566027323_17860076811524609_3890717275703473961_n.webp',
     description: 'Broderie colorée sur photographie noir et blanc. Pièce unique réalisée avec soin.',
-    stripePriceId: ''
+    stripePriceId: 'price_1SpDziFx9HGSvAHCEeloW918'
   },
   {
     id: 3,
