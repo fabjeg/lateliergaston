@@ -30,6 +30,8 @@ dist-ssr
 .vercel
 .env*.local
 .env.build
+.env.example
+.env.local.example
 
 # Claude Code
 .claude/
