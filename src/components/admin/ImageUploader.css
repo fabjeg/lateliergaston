@@ -1,0 +1,126 @@
+.image-uploader {
+  margin-bottom: 1.5rem;
+}
+
+.image-uploader-label {
+  display: block;
+  font-family: var(--font-body, 'Lora', serif);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-dark, #2c2c2c);
+  margin-bottom: 0.5rem;
+}
+
+.image-upload-zone {
+  position: relative;
+  border: 2px dashed var(--border-color, #e0d5c7);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: var(--background-light, #faf8f5);
+}
+
+.image-upload-zone:hover {
+  border-color: var(--primary-color, #8b4049);
+  background-color: white;
+}
+
+.image-upload-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.image-upload-label {
+  cursor: pointer;
+  display: block;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.image-upload-label p {
+  font-family: var(--font-body, 'Lora', serif);
+  color: var(--text-dark, #2c2c2c);
+  margin: 0.5rem 0;
+}
+
+.upload-hint {
+  font-size: 0.85rem;
+  color: var(--text-medium, #555);
+}
+
+.image-preview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #e0d5c7);
+  background-color: white;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+}
+
+.image-preview-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.image-remove-btn,
+.image-change-btn {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body, 'Lora', serif);
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+
+.image-remove-btn {
+  background-color: rgba(255, 0, 0, 0.8);
+}
+
+.image-remove-btn:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.image-change-btn {
+  background-color: rgba(0, 123, 255, 0.8);
+}
+
+.image-change-btn:hover {
+  background-color: rgba(0, 123, 255, 1);
+}
+
+.image-uploader-error {
+  font-family: var(--font-body, 'Lora', serif);
+  color: #c33;
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+.image-uploader-note {
+  font-family: var(--font-body, 'Lora', serif);
+  font-size: 0.85rem;
+  color: var(--text-medium, #555);
+  margin: 0.5rem 0 0;
+  font-style: italic;
+}

@@ -1,29 +1,49 @@
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './ProductDetail.css'
-import { products } from '../data/products'
+import { getProduct } from '../services/productApi'
 import { useCart } from '../context/CartContext'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
+import Loader from '../components/Loader'
 
 function ProductDetail() {
   const { id } = useParams()
-  const product = products.find(p => p.id === parseInt(id))
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const { addToCart, isInCart } = useCart()
-  const { isSold, loading } = useInventory()
+  const { isSold } = useInventory()
   const [showNotification, setShowNotification] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
-  if (!product) {
-    return <div className="product-detail"><h2>Produit non trouvé</h2></div>
+  useEffect(() => {
+    loadProduct()
+  }, [id])
+
+  const loadProduct = async () => {
+    setLoading(true)
+    const result = await getProduct(id)
+
+    if (result.success) {
+      setProduct(result.product)
+    } else {
+      setError(result.error || 'Produit non trouvé')
+    }
+
+    setLoading(false)
   }
 
   if (loading) {
     return (
       <div className="product-detail">
-        <div className="loading">Chargement...</div>
+        <Loader />
       </div>
     )
+  }
+
+  if (error || !product) {
+    return <div className="product-detail"><h2>{error || 'Produit non trouvé'}</h2></div>
   }
 
   const inCart = isInCart(product.id)
@@ -55,6 +75,13 @@ function ProductDetail() {
         <div className="product-info">
           <h1>{product.name}</h1>
           <p className="price">{product.price.toFixed(2)} €</p>
+          {(product.height || product.width) && (
+            <p className="dimensions">
+              Dimensions : {product.height && `${product.height} cm`}
+              {product.height && product.width && ' × '}
+              {product.width && `${product.width} cm`}
+            </p>
+          )}
           <p className="description">{product.description}</p>
           {productIsSold ? (
             <div className="sold-message">

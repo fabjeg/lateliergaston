@@ -2,41 +2,36 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import './Home.css'
-
-import img1 from '../assets/561676007_17858710800524609_966159427435168161_n.webp'
-import img2 from '../assets/566027323_17860076811524609_3890717275703473961_n.webp'
-import img3 from '../assets/566943302_17860077999524609_139768563597202447_n.webp'
-import img4 from '../assets/572235425_17861416944524609_3463920233784334214_n.webp'
-import img5 from '../assets/572844840_17861111490524609_975655948130670703_n.webp'
-import img6 from '../assets/573313877_17862175311524609_6903431562385700038_n.webp'
-import img7 from '../assets/573523271_17861910591524609_5276602963239441975_n.webp'
-import img8 from '../assets/576458278_17862690423524609_5149917018225823158_n.webp'
-import img9 from '../assets/588832750_17865251334524609_3240054877398157525_n.webp'
-import img10 from '../assets/597807467_17865995514524609_7025555680287479999_n.webp'
-
-const artworks = [
-  { id: 1, image: img1, title: 'Œuvre 1' },
-  { id: 2, image: img2, title: 'Œuvre 2' },
-  { id: 3, image: img3, title: 'Œuvre 3' },
-  { id: 4, image: img4, title: 'Œuvre 4' },
-  { id: 5, image: img5, title: 'Œuvre 5' },
-  { id: 6, image: img6, title: 'Œuvre 6' },
-  { id: 7, image: img7, title: 'Œuvre 7' },
-  { id: 8, image: img8, title: 'Œuvre 8' },
-  { id: 9, image: img9, title: 'Œuvre 9' },
-  { id: 10, image: img10, title: 'Œuvre 10' },
-]
+import { getAllProducts } from '../services/productApi'
+import Loader from '../components/Loader'
 
 function Home() {
+  const [artworks, setArtworks] = useState([])
+  const [loading, setLoading] = useState(true)
   const [likes, setLikes] = useState({})
   const [showHeartAnimation, setShowHeartAnimation] = useState({})
 
   useEffect(() => {
+    loadArtworks()
     const savedLikes = localStorage.getItem('artworkLikes')
     if (savedLikes) {
       setLikes(JSON.parse(savedLikes))
     }
   }, [])
+
+  const loadArtworks = async () => {
+    const result = await getAllProducts()
+    if (result.success) {
+      // Transform products to artworks format
+      const artworksData = result.products.map(p => ({
+        id: p.id,
+        image: p.image,
+        title: p.name
+      }))
+      setArtworks(artworksData)
+    }
+    setLoading(false)
+  }
 
   const handleLike = (artworkId) => {
     const newLikes = {
@@ -53,6 +48,17 @@ function Home() {
       }, 1500)
     }
   }
+
+  if (loading) {
+    return (
+      <div className="home">
+        <section className="gallery-intro">
+          <Loader text="Chargement de la galerie" />
+        </section>
+      </div>
+    )
+  }
+
   return (
     <div className="home">
       <section className="gallery-intro">

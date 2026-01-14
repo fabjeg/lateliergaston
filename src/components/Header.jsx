@@ -39,6 +39,7 @@ function Header() {
           <Link to="/shop" onClick={closeMenu}>Boutique</Link>
           <Link to="/about" onClick={closeMenu}>À propos</Link>
           <Link to="/contact" onClick={closeMenu}>Contact</Link>
+          <Link to="/admin/login" onClick={closeMenu} className="admin-link">Admin</Link>
           <CartIcon />
         </nav>
       </div>

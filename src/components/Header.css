@@ -69,6 +69,15 @@
   width: 100%;
 }
 
+.nav .admin-link {
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.nav .admin-link:hover {
+  opacity: 1;
+}
+
 /* Hamburger menu button (hidden on desktop) */
 .hamburger {
   display: none;

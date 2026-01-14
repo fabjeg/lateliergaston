@@ -1,5 +1,5 @@
 import './About.css'
-import aboutImage from '../assets/553361972_17857391913524609_2349171684361362874_n.webp'
+import aboutImage from '../assets/581228718_17863103313524609_4932862236785945648_n.jpg'
 
 function About() {
   return (
@@ -7,11 +7,13 @@ function About() {
       <h1>À propos de L'Atelier de Gaston</h1>
 
       <div className="about-hero">
-        <img
-          src={aboutImage}
-          alt="L'Atelier de Gaston - Broderie artisanale"
-          className="about-hero-image"
-        />
+        <div className="about-hero-image-wrapper">
+          <img
+            src={aboutImage}
+            alt="L'Atelier de Gaston - Broderie artisanale"
+            className="about-hero-image"
+          />
+        </div>
         <div className="about-hero-text">
           <h2>L'art de la broderie contemporaine</h2>
           <p>

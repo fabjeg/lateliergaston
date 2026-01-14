@@ -1,17 +1,47 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import './Shop.css'
-import { products } from '../data/products'
+import { getAllProducts } from '../services/productApi'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
+import Loader from '../components/Loader'
 
 function Shop() {
-  const { isSold, loading } = useInventory()
+  const { isSold } = useInventory()
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () => {
+    setLoading(true)
+    const result = await getAllProducts()
+
+    if (result.success) {
+      setProducts(result.products)
+    } else {
+      setError(result.error || 'Erreur lors du chargement des œuvres')
+    }
+
+    setLoading(false)
+  }
 
   if (loading) {
     return (
       <div className="shop">
-        <div className="loading">Chargement des œuvres...</div>
+        <Loader text="Chargement des œuvres" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="shop">
+        <div className="loading" style={{ color: '#c33' }}>{error}</div>
       </div>
     )
   }
