@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import './Shop.css'
@@ -12,6 +12,12 @@ function Shop() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // Filtres
+  const [priceRange, setPriceRange] = useState('all')
+  const [sizeFilter, setSizeFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('default')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     loadProducts()
@@ -28,6 +34,66 @@ function Shop() {
     }
 
     setLoading(false)
+  }
+
+  // Filtrer et trier les produits
+  const filteredProducts = useMemo(() => {
+    let result = [...products]
+
+    // Filtre par prix
+    if (priceRange !== 'all') {
+      const [min, max] = priceRange.split('-').map(Number)
+      result = result.filter(p => {
+        if (max) {
+          return p.price >= min && p.price <= max
+        }
+        return p.price >= min
+      })
+    }
+
+    // Filtre par taille
+    if (sizeFilter !== 'all') {
+      result = result.filter(p => {
+        const maxDim = Math.max(p.height || 0, p.width || 0)
+        switch (sizeFilter) {
+          case 'small':
+            return maxDim > 0 && maxDim <= 30
+          case 'medium':
+            return maxDim > 30 && maxDim <= 60
+          case 'large':
+            return maxDim > 60
+          default:
+            return true
+        }
+      })
+    }
+
+    // Tri
+    switch (sortBy) {
+      case 'price-asc':
+        result.sort((a, b) => a.price - b.price)
+        break
+      case 'price-desc':
+        result.sort((a, b) => b.price - a.price)
+        break
+      case 'name':
+        result.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      default:
+        break
+    }
+
+    return result
+  }, [products, priceRange, sizeFilter, sortBy])
+
+  // Compter les filtres actifs
+  const activeFiltersCount = [priceRange, sizeFilter, sortBy].filter(f => f !== 'all' && f !== 'default').length
+
+  // Réinitialiser les filtres
+  const resetFilters = () => {
+    setPriceRange('all')
+    setSizeFilter('all')
+    setSortBy('default')
   }
 
   if (loading) {
@@ -57,73 +123,172 @@ function Shop() {
         <p className="shop-subtitle">Œuvres disponibles à l'achat</p>
       </motion.div>
 
-      <div className="products-grid">
-        {products.map(product => (
-          <motion.div
-            key={product.id}
-            initial={{
-              opacity: 0,
-              y: 80,
-              scale: 0.85
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              transition: {
-                duration: 0.8,
-                delay: 0.1,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }
-            }}
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <Link
-              to={`/product/${product.id}`}
-              className={`product-card ${isSold(product.id) ? 'sold' : ''}`}
-              onClick={(e) => isSold(product.id) && e.preventDefault()}
+      {/* Barre de filtres */}
+      <motion.div
+        className="shop-filters-bar"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <button
+          className={`filters-toggle ${showFilters ? 'active' : ''}`}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/>
+            <line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/>
+            <line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/>
+            <line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          Filtres
+          {activeFiltersCount > 0 && (
+            <span className="filters-count">{activeFiltersCount}</span>
+          )}
+        </button>
+
+        <div className="results-count">
+          {filteredProducts.length} œuvre{filteredProducts.length > 1 ? 's' : ''}
+        </div>
+      </motion.div>
+
+      {/* Panneau de filtres */}
+      {showFilters && (
+        <motion.div
+          className="shop-filters-panel"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="filter-group">
+            <label>Prix</label>
+            <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+              <option value="all">Tous les prix</option>
+              <option value="0-100">Moins de 100 €</option>
+              <option value="100-300">100 € - 300 €</option>
+              <option value="300-500">300 € - 500 €</option>
+              <option value="500-1000">500 € - 1000 €</option>
+              <option value="1000-">Plus de 1000 €</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Taille</label>
+            <select value={sizeFilter} onChange={(e) => setSizeFilter(e.target.value)}>
+              <option value="all">Toutes les tailles</option>
+              <option value="small">Petit (≤ 30 cm)</option>
+              <option value="medium">Moyen (30-60 cm)</option>
+              <option value="large">Grand (> 60 cm)</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Trier par</label>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="default">Par défaut</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="name">Nom A-Z</option>
+            </select>
+          </div>
+
+          {activeFiltersCount > 0 && (
+            <button className="reset-filters" onClick={resetFilters}>
+              Réinitialiser
+            </button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Grille des produits */}
+      {filteredProducts.length === 0 ? (
+        <div className="shop-empty">
+          <p>Aucune œuvre ne correspond à vos critères.</p>
+          <button onClick={resetFilters} className="btn-reset">
+            Voir toutes les œuvres
+          </button>
+        </div>
+      ) : (
+        <div className="products-grid">
+          {filteredProducts.map(product => (
+            <motion.div
+              key={product.id}
+              initial={{
+                opacity: 0,
+                y: 80,
+                scale: 0.85
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: {
+                  duration: 0.8,
+                  delay: 0.1,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }
+              }}
+              viewport={{ once: true, margin: "-50px" }}
             >
-              <motion.div
-                className="product-image-container"
-                initial={{ opacity: 0, scale: 1.1 }}
-                whileInView={{
-                  opacity: 1,
-                  scale: 1,
-                  transition: {
-                    duration: 1,
-                    delay: 0.2
-                  }
-                }}
-                viewport={{ once: true }}
+              <Link
+                to={`/product/${product.id}`}
+                className={`product-card ${isSold(product.id) ? 'sold' : ''}`}
+                onClick={(e) => isSold(product.id) && e.preventDefault()}
               >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  decoding="async"
-                />
-                {isSold(product.id) && <SoldBadge />}
-              </motion.div>
-              <motion.div
-                className="product-info"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                  transition: {
-                    duration: 0.5,
-                    delay: 0.4
-                  }
-                }}
-                viewport={{ once: true }}
-              >
-                <h3>{product.name}</h3>
-                <p className="price">{product.price.toFixed(2)} €</p>
-              </motion.div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+                <motion.div
+                  className="product-image-container"
+                  initial={{ opacity: 0, scale: 1.1 }}
+                  whileInView={{
+                    opacity: 1,
+                    scale: 1,
+                    transition: {
+                      duration: 1,
+                      delay: 0.2
+                    }
+                  }}
+                  viewport={{ once: true }}
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  {isSold(product.id) && <SoldBadge />}
+                </motion.div>
+                <motion.div
+                  className="product-info"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.5,
+                      delay: 0.4
+                    }
+                  }}
+                  viewport={{ once: true }}
+                >
+                  <h3>{product.name}</h3>
+                  <p className="product-price">{product.price.toFixed(2)} €</p>
+                  {(product.height || product.width) && (
+                    <p className="product-dimensions">
+                      {product.height && `${product.height} cm`}
+                      {product.height && product.width && ' × '}
+                      {product.width && `${product.width} cm`}
+                    </p>
+                  )}
+                </motion.div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

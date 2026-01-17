@@ -1,10 +1,18 @@
 .admin-login {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--background-light, #faf8f5) 0%, var(--background-cream, #f5ede4) 100%);
   padding: 2rem;
+  position: relative;
+}
+
+.admin-login-back {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
 }
 
 .admin-login-container {
@@ -23,7 +31,7 @@
 }
 
 .admin-login-header h1 {
-  font-family: var(--font-heading, 'Cormorant Garamond', serif);
+  font-family: var(--font-heading);
   font-size: 2.8rem;
   color: var(--primary-color, #8b4049);
   margin: 0 0 0.5rem 0;
@@ -33,7 +41,7 @@
 }
 
 .admin-login-header p {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   color: var(--text-medium, #555);
   margin: 0;
@@ -65,14 +73,14 @@
 }
 
 .form-group label {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-dark, #2c2c2c);
 }
 
 .form-group input {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   padding: 0.85rem 1rem;
   border: 2px solid var(--border-color, #e0d5c7);
   border-radius: 6px;
@@ -93,8 +101,37 @@
   cursor: not-allowed;
 }
 
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container input {
+  flex: 1;
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium, #555);
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary-color, #8b4049);
+}
+
 .admin-login-button {
-  font-family: var(--font-heading, 'Cormorant Garamond', serif);
+  font-family: var(--font-heading);
   padding: 1.1rem;
   background-color: var(--primary-color, #8b4049);
   color: white;

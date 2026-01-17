@@ -22,7 +22,7 @@
 }
 
 .logo-img {
-  height: 80px;
+  height: 120px;
   width: auto;
   transition: transform 0.3s ease;
 }
@@ -40,10 +40,10 @@
 .nav a {
   color: var(--text-dark, #2c2c2c);
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 400;
-  font-family: var(--font-heading, 'Cormorant Garamond', serif);
-  letter-spacing: 1px;
+  font-size: 1.15rem;
+  font-weight: 500;
+  font-family: var(--font-nav, 'Cormorant Garamond', serif);
+  letter-spacing: 2px;
   text-transform: uppercase;
   transition: all 0.3s ease;
   position: relative;
@@ -117,7 +117,7 @@
   }
 
   .logo-img {
-    height: 50px;
+    height: 80px;
   }
 
   .hamburger {
@@ -148,7 +148,7 @@
   .nav a {
     width: 100%;
     padding: 1rem 0;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     border-bottom: 1px solid #e0d5c7;
   }
 
@@ -174,7 +174,7 @@
   }
 
   .logo-img {
-    height: 40px;
+    height: 60px;
   }
 
   .nav {

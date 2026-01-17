@@ -1,0 +1,446 @@
+.gallery {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  min-height: calc(100vh - 200px);
+}
+
+.gallery h1 {
+  font-family: var(--font-heading);
+  text-align: center;
+  font-size: 3rem;
+  color: var(--primary-color, #8b4049);
+  margin-bottom: 3.5rem;
+  letter-spacing: 2px;
+}
+
+.gallery-subtitle {
+  font-family: var(--font-body);
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #444;
+  font-style: italic;
+  margin-bottom: 3rem;
+}
+
+/* Titre collection sélectionnée */
+.selected-collection-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.selected-collection-title h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--primary-color, #8b4049);
+  margin: 0;
+}
+
+.selected-collection-title .collection-count {
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  color: #444;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+/* État vide */
+.gallery-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #444;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+/* Grille des créations */
+.gallery .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 280px);
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gallery .gallery-item {
+  width: 280px;
+  height: 280px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.gallery .gallery-item:focus,
+.gallery .gallery-item:active {
+  outline: none;
+}
+
+.gallery .gallery-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(139, 64, 73, 0.2);
+}
+
+.gallery .gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.gallery .gallery-item img:focus,
+.gallery .gallery-item img:active {
+  outline: none;
+}
+
+.gallery .gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery .gallery-item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery .gallery-item:hover .gallery-item-overlay {
+  opacity: 1;
+}
+
+.gallery .gallery-item-overlay h3 {
+  font-family: var(--font-heading);
+  color: white;
+  margin: 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+/* Bouton voir plus */
+.gallery-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: transparent;
+  border: 2px solid var(--primary-color, #8b4049);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--primary-color, #8b4049);
+  transition: all 0.3s ease;
+  margin: 2rem auto;
+}
+
+.gallery-expand-btn:hover {
+  background: var(--primary-color, #8b4049);
+  color: white;
+}
+
+.expand-arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.expand-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+/* Collections - Filtres en haut */
+.collections-filter {
+  margin-bottom: 2rem;
+}
+
+/* Collections - Section en bas (si utilisée) */
+.collections-section {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 2px solid rgba(139, 64, 73, 0.1);
+}
+
+.collections-section h2 {
+  font-family: var(--font-heading);
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-color, #8b4049);
+  margin-bottom: 1.5rem;
+}
+
+.collections-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.collection-item {
+  font-family: var(--font-body);
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-dark, #2c2c2c);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.collection-item:hover {
+  border-color: var(--primary-color, #8b4049);
+  color: var(--primary-color, #8b4049);
+}
+
+.collection-item.active {
+  background: var(--primary-color, #8b4049);
+  border-color: var(--primary-color, #8b4049);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .gallery .gallery-grid {
+    grid-template-columns: repeat(3, 280px);
+  }
+}
+
+@media (max-width: 900px) {
+  .gallery .gallery-grid {
+    grid-template-columns: repeat(2, 280px);
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery {
+    padding: 2rem 1rem;
+  }
+
+  .gallery h1 {
+    font-size: 2rem;
+  }
+
+  .gallery .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .gallery .gallery-item {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .collections-filter h2 {
+    font-size: 1.5rem;
+  }
+
+  .collection-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery h1 {
+    font-size: 1.8rem;
+  }
+
+  .gallery .gallery-grid {
+    grid-template-columns: 1fr;
+    max-width: 300px;
+  }
+
+  .collections-list {
+    gap: 0.5rem;
+  }
+
+  .collection-btn {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* ===================================
+   LIGHTBOX
+   =================================== */
+
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+  backdrop-filter: blur(5px);
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 900px;
+  max-height: 90vh;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--text-dark, #2c2c2c);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.lightbox-close:hover {
+  background: var(--primary-color, #8b4049);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Navigation arrows */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 4rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+}
+
+.lightbox-nav:hover {
+  color: white;
+  transform: translateY(-50%) scale(1.15);
+}
+
+.lightbox-prev {
+  left: 1rem;
+}
+
+.lightbox-next {
+  right: 1rem;
+}
+
+.lightbox-image {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.lightbox-image img {
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.lightbox-info {
+  padding: 1.5rem 2rem;
+  background: white;
+  border-top: 1px solid rgba(139, 64, 73, 0.1);
+}
+
+.lightbox-info h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--primary-color, #8b4049);
+  margin: 0 0 0.75rem 0;
+}
+
+.lightbox-info p {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--text-medium, #555);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Lightbox Responsive */
+@media (max-width: 768px) {
+  .lightbox-overlay {
+    padding: 1rem;
+  }
+
+  .lightbox-content {
+    max-height: 85vh;
+  }
+
+  .lightbox-image img {
+    max-height: 50vh;
+  }
+
+  .lightbox-info {
+    padding: 1rem 1.5rem;
+  }
+
+  .lightbox-info h3 {
+    font-size: 1.3rem;
+  }
+
+  .lightbox-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 35px;
+    height: 35px;
+  }
+
+  .lightbox-nav {
+    font-size: 3rem;
+    padding: 0.5rem;
+  }
+
+  .lightbox-prev {
+    left: 0.25rem;
+  }
+
+  .lightbox-next {
+    right: 0.25rem;
+  }
+}

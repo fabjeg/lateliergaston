@@ -4,7 +4,7 @@
 
 .image-uploader-label {
   display: block;
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-dark, #2c2c2c);
@@ -46,7 +46,7 @@
 }
 
 .image-upload-label p {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   color: var(--text-dark, #2c2c2c);
   margin: 0.5rem 0;
 }
@@ -88,7 +88,7 @@
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   font-size: 0.9rem;
   transition: background-color 0.3s ease;
   display: inline-block;
@@ -103,22 +103,22 @@
 }
 
 .image-change-btn {
-  background-color: rgba(0, 123, 255, 0.8);
+  background-color: var(--primary-color, #8b4049);
 }
 
 .image-change-btn:hover {
-  background-color: rgba(0, 123, 255, 1);
+  background-color: var(--primary-dark, #6d3339);
 }
 
 .image-uploader-error {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   color: #c33;
   margin: 0.5rem 0 0;
   font-size: 0.9rem;
 }
 
 .image-uploader-note {
-  font-family: var(--font-body, 'Lora', serif);
+  font-family: var(--font-body);
   font-size: 0.85rem;
   color: var(--text-medium, #555);
   margin: 0.5rem 0 0;

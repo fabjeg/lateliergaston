@@ -5,7 +5,7 @@
 const API_BASE = '/api/products'
 
 /**
- * Get all products (public)
+ * Get all products (public - excludes hidden)
  */
 export async function getAllProducts() {
   try {
@@ -22,6 +22,55 @@ export async function getAllProducts() {
     }
   } catch (error) {
     console.error('Get products error:', error)
+    return { success: false, error: 'Erreur de connexion' }
+  }
+}
+
+/**
+ * Get all products including hidden (admin only)
+ */
+export async function getAllProductsAdmin() {
+  try {
+    const response = await fetch(`${API_BASE}?includeHidden=true`, {
+      credentials: 'include'
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      return { success: true, products: data.data.products }
+    } else {
+      return { success: false, error: data.error }
+    }
+  } catch (error) {
+    console.error('Get products admin error:', error)
+    return { success: false, error: 'Erreur de connexion' }
+  }
+}
+
+/**
+ * Update product status quickly (admin only)
+ */
+export async function updateProductStatus(id, status) {
+  try {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ status })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      return { success: true, product: data.data.product }
+    } else {
+      return { success: false, error: data.error }
+    }
+  } catch (error) {
+    console.error('Update status error:', error)
     return { success: false, error: 'Erreur de connexion' }
   }
 }

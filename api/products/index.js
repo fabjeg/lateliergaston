@@ -1,5 +1,7 @@
 import { getCollection } from '../_lib/mongodb.js'
 import { handleCorsOptions, apiResponse } from '../_lib/utils.js'
+import { verifySession } from '../_lib/auth.js'
+import cookie from 'cookie'
 
 export default async function handler(req, res) {
   // Handle CORS preflight
@@ -13,12 +15,26 @@ export default async function handler(req, res) {
   try {
     const productsCollection = await getCollection('products')
 
-    // Get all products that are available (not hidden)
-    // Sort by id ascending
+    // Check if admin wants to include hidden products
+    const includeHidden = req.query.includeHidden === 'true'
+    let isAdmin = false
+
+    if (includeHidden) {
+      // Verify admin session
+      const cookies = cookie.parse(req.headers.cookie || '')
+      const sessionId = cookies.admin_session
+      const admin = await verifySession(sessionId)
+      isAdmin = !!admin
+    }
+
+    // Build query - include hidden only if admin is authenticated
+    const query = (includeHidden && isAdmin)
+      ? {} // Admin can see all products
+      : { status: { $ne: 'hidden' } } // Public can't see hidden products
+
+    // Get products
     const products = await productsCollection
-      .find({
-        status: { $ne: 'hidden' } // Don't show hidden products to public
-      })
+      .find(query)
       .sort({ id: 1 })
       .toArray()
 
@@ -33,7 +49,11 @@ export default async function handler(req, res) {
       image: product.imageBase64,
       imageFilename: product.imageFilename,
       stripePriceId: product.stripePriceId,
-      status: product.status
+      status: product.status,
+      technique: product.technique,
+      year: product.year,
+      framed: product.framed,
+      collectionId: product.collectionId
     }))
 
     return res.status(200).json(

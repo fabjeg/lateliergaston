@@ -43,9 +43,14 @@ async function handler(req, res) {
             height: product.height,
             width: product.width,
             image: product.imageBase64,
+            imageBase64: product.imageBase64,
             imageFilename: product.imageFilename,
             stripePriceId: product.stripePriceId,
-            status: product.status
+            status: product.status,
+            collectionId: product.collectionId,
+            technique: product.technique,
+            year: product.year,
+            framed: product.framed
           }
         })
       )
@@ -60,7 +65,7 @@ async function handler(req, res) {
   // PUT - Update product
   if (req.method === 'PUT') {
     try {
-      const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status } = req.body
+      const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
       // Check if product exists
       const existingProduct = await productsCollection.findOne({ id: productId })
@@ -93,6 +98,10 @@ async function handler(req, res) {
         width: width ? parseFloat(width) : null,
         stripePriceId: sanitizeString(stripePriceId || ''),
         status: status || 'available',
+        collectionId: collectionId || null,
+        technique: technique || 'broderie-photo',
+        year: year ? parseInt(year) : null,
+        framed: framed || 'non',
         updatedAt: new Date()
       }
 

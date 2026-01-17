@@ -3,7 +3,11 @@ import './Loader.css'
 function Loader({ text }) {
   return (
     <div className="loader-container">
-      <span className="loader"></span>
+      <div className="loader-dots">
+        <span className="dot"></span>
+        <span className="dot"></span>
+        <span className="dot"></span>
+      </div>
       {text && <p className="loader-text">{text}</p>}
     </div>
   )

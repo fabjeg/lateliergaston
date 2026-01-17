@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { useNavigate, Link } from 'react-router-dom'
 import { getAllProducts } from '../../services/productApi'
+import BackButton from '../../components/BackButton'
 import './AdminDashboard.css'
 
 function AdminDashboard() {
@@ -61,6 +62,8 @@ function AdminDashboard() {
       </div>
 
       <div className="admin-content">
+        <BackButton to="/gallery" label="Retour au site" />
+
         <div className="dashboard-welcome">
           <h2>Bienvenue dans le panneau d'administration</h2>
           <p>Vous êtes maintenant connecté au système de gestion de L'Atelier de Gaston.</p>
@@ -105,6 +108,26 @@ function AdminDashboard() {
                 </Link>
                 <Link to="/admin/products/new" className="action-link">
                   ➕ Créer une nouvelle œuvre
+                </Link>
+              </div>
+            </div>
+
+            <div className="dashboard-actions">
+              <h3>Gestion des collections</h3>
+              <p>Organisez vos œuvres en collections thématiques pour la galerie.</p>
+              <div className="action-links">
+                <Link to="/admin/collections" className="action-link">
+                  🎨 Gérer les collections
+                </Link>
+              </div>
+            </div>
+
+            <div className="dashboard-actions">
+              <h3>Page À propos</h3>
+              <p>Modifiez les textes de la page À propos de votre site.</p>
+              <div className="action-links">
+                <Link to="/admin/about" className="action-link">
+                  📝 Modifier la page À propos
                 </Link>
               </div>
             </div>

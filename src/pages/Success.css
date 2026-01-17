@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color, #8b4049) 0%, var(--primary-dark, #6d3339) 100%);
 }
 
 .success-content {
@@ -162,20 +162,20 @@
 }
 
 .button-primary {
-  background-color: #667eea;
+  background-color: var(--primary-color, #8b4049);
   color: white;
 }
 
 .button-primary:hover {
-  background-color: #5568d3;
+  background-color: var(--primary-dark, #6d3339);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(139, 64, 73, 0.4);
 }
 
 .button-secondary {
   background-color: transparent;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: var(--primary-color, #8b4049);
+  border: 2px solid var(--primary-color, #8b4049);
 }
 
 .button-secondary:hover {

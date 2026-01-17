@@ -12,7 +12,7 @@ async function handler(req, res) {
   }
 
   try {
-    const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status } = req.body
+    const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
     // Validate product data
     const productValidation = validateProduct({ name, price, description, status })
@@ -55,6 +55,10 @@ async function handler(req, res) {
       imageFilename: sanitizeString(imageFilename || `product-${nextId}.webp`),
       stripePriceId: sanitizeString(stripePriceId || ''),
       status: status || 'available',
+      collectionId: collectionId || null,
+      technique: technique || 'broderie-photo',
+      year: year ? parseInt(year) : null,
+      framed: framed || 'non',
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -73,7 +77,11 @@ async function handler(req, res) {
           width: product.width,
           imageFilename: product.imageFilename,
           stripePriceId: product.stripePriceId,
-          status: product.status
+          status: product.status,
+          collectionId: product.collectionId,
+          technique: product.technique,
+          year: product.year,
+          framed: product.framed
         }
       }, 'Produit créé avec succès')
     )

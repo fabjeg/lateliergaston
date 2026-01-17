@@ -36,9 +36,9 @@ function Contact() {
 
         <div className="contact-info">
           <h2>Informations de contact</h2>
-          <p><strong>Email:</strong> contact@atelierdegaston.fr</p>
-          <p><strong>Téléphone:</strong> +33 1 23 45 67 89</p>
-          <p><strong>Adresse:</strong> 123 Rue de l'Artisanat, 75001 Paris</p>
+          <p><strong>Email:</strong> contact@latelierdegaston.fr</p>
+          <p><strong>Téléphone:</strong> +33 6 18 01 42 57</p>
+          <p><strong>Adresse:</strong> Crach 56950</p>
         </div>
       </div>
     </div>

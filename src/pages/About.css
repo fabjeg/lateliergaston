@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+/* Polices importées globalement dans App.css */
 
 .about {
   min-height: calc(100vh - 200px);
@@ -7,12 +7,12 @@
 }
 
 .about h1 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-heading);
   font-size: 3.5rem;
   font-weight: 600;
   color: #8b4049;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 4rem;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -48,12 +48,12 @@
 }
 
 .about-hero-text {
-  font-family: 'Lora', serif;
+  font-family: var(--font-body);
   flex: 1;
 }
 
 .about-hero-text h2 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-heading);
   font-size: 2.5rem;
   font-weight: 500;
   color: #8b4049;
@@ -62,10 +62,11 @@
 }
 
 .about-hero-text p {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   line-height: 1.8;
-  color: #4a4a4a;
+  color: #333;
   margin-bottom: 1.5rem;
+  margin-top: 3rem;
 }
 
 .about-content {
@@ -91,7 +92,7 @@
 }
 
 .about-content h2 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 600;
   color: #8b4049;
@@ -100,22 +101,24 @@
 }
 
 .about-content p {
-  font-family: 'Lora', serif;
-  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  font-weight: 500;
   line-height: 1.8;
-  color: #555;
+  color: #444;
 }
 
 .about-content ul {
-  font-family: 'Lora', serif;
+  font-family: var(--font-body);
   list-style: none;
   padding: 0;
 }
 
 .about-content ul li {
-  font-size: 1.1rem;
+  font-size: 1.6rem;
+  font-weight: 500;
   line-height: 2;
-  color: #555;
+  color: #444;
   padding-left: 2rem;
   position: relative;
 }

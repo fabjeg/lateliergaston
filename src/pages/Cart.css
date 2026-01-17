@@ -17,15 +17,16 @@
 }
 
 .cart-empty p {
-  font-size: 1.2rem;
-  color: #666;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #444;
   margin-bottom: 2rem;
 }
 
 .continue-shopping {
   display: inline-block;
   padding: 1rem 2rem;
-  background-color: #667eea;
+  background-color: var(--primary-color, #8b4049);
   color: white;
   text-decoration: none;
   border-radius: 5px;
@@ -33,7 +34,7 @@
 }
 
 .continue-shopping:hover {
-  background-color: #5568d3;
+  background-color: var(--primary-dark, #6d3339);
 }
 
 /* Cart with items */
@@ -76,13 +77,14 @@
 .cart-item-price {
   font-size: 1.3rem;
   font-weight: bold;
-  color: #667eea;
+  color: var(--text-dark, #2c2c2c);
   margin: 0.5rem 0;
 }
 
 .cart-item-note {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #444;
   font-style: italic;
   margin: 0;
 }
@@ -94,8 +96,9 @@
 .cart-quantity-controls label {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #444;
 }
 
 .quantity-controls {
@@ -107,9 +110,9 @@
 .quantity-btn {
   width: 35px;
   height: 35px;
-  border: 2px solid #667eea;
+  border: 2px solid var(--primary-color, #8b4049);
   background-color: white;
-  color: #667eea;
+  color: var(--primary-color, #8b4049);
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
@@ -121,7 +124,7 @@
 }
 
 .quantity-btn:hover {
-  background-color: #667eea;
+  background-color: var(--primary-color, #8b4049);
   color: white;
 }
 
@@ -135,7 +138,7 @@
 .cart-item-subtotal {
   margin-top: 0.5rem;
   font-weight: bold;
-  color: #667eea;
+  color: var(--text-dark, #2c2c2c);
   font-size: 1.1rem;
 }
 
@@ -178,7 +181,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .shipping-section {
@@ -267,7 +270,7 @@
 }
 
 .checkout-disabled-message {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-style: italic;
 }
 
@@ -275,7 +278,7 @@
   display: block;
   text-align: center;
   margin-top: 1rem;
-  color: #667eea;
+  color: var(--primary-color, #8b4049);
   text-decoration: none;
 }
 

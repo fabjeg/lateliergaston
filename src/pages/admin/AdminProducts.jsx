@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
-import { getAllProducts, deleteProduct } from '../../services/productApi'
+import { getAllProductsAdmin, deleteProduct, updateProduct } from '../../services/productApi'
+import BackButton from '../../components/BackButton'
 import './AdminProducts.css'
 
 function AdminProducts() {
@@ -10,6 +11,7 @@ function AdminProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     loadProducts()
@@ -17,7 +19,7 @@ function AdminProducts() {
 
   const loadProducts = async () => {
     setLoading(true)
-    const result = await getAllProducts()
+    const result = await getAllProductsAdmin()
 
     if (result.success) {
       setProducts(result.products)
@@ -36,10 +38,57 @@ function AdminProducts() {
     const result = await deleteProduct(id)
 
     if (result.success) {
-      // Remove from list
       setProducts(prev => prev.filter(p => p.id !== id))
     } else {
       alert(result.error || 'Erreur lors de la suppression')
+    }
+  }
+
+  const handleToggleVisibility = async (product) => {
+    const newStatus = product.status === 'hidden' ? 'available' : 'hidden'
+
+    // Envoyer toutes les données du produit avec le nouveau statut
+    const productData = {
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      height: product.height,
+      width: product.width,
+      status: newStatus
+    }
+
+    const result = await updateProduct(product.id, productData)
+
+    if (result.success) {
+      setProducts(prev => prev.map(p =>
+        p.id === product.id ? { ...p, status: newStatus } : p
+      ))
+    } else {
+      alert(result.error || 'Erreur lors de la mise à jour')
+    }
+  }
+
+  const handleToggleSold = async (product) => {
+    const newStatus = product.status === 'sold' ? 'available' : 'sold'
+
+    // Envoyer toutes les données du produit avec le nouveau statut
+    const productData = {
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      height: product.height,
+      width: product.width,
+      status: newStatus
+    }
+
+    const result = await updateProduct(product.id, productData)
+
+    if (result.success) {
+      setProducts(prev => prev.map(p =>
+        p.id === product.id ? { ...p, status: newStatus } : p
+      ))
+    } else {
+      alert(result.error || 'Erreur lors de la mise à jour')
     }
   }
 
@@ -52,9 +101,23 @@ function AdminProducts() {
     const badges = {
       available: { label: 'Disponible', class: 'status-available' },
       sold: { label: 'Vendu', class: 'status-sold' },
-      hidden: { label: 'Caché', class: 'status-hidden' }
+      hidden: { label: 'Masqué', class: 'status-hidden' }
     }
     return badges[status] || badges.available
+  }
+
+  // Filtrer les produits
+  const filteredProducts = products.filter(product => {
+    if (filter === 'all') return true
+    return product.status === filter
+  })
+
+  // Compter par statut
+  const counts = {
+    all: products.length,
+    available: products.filter(p => p.status === 'available').length,
+    sold: products.filter(p => p.status === 'sold').length,
+    hidden: products.filter(p => p.status === 'hidden').length
   }
 
   return (
@@ -79,23 +142,59 @@ function AdminProducts() {
       </div>
 
       <div className="admin-content">
+        <BackButton to="/admin/dashboard" label="Dashboard" />
+
         <div className="products-header">
-          <h2>Œuvres ({products.length})</h2>
+          <h2>Œuvres ({filteredProducts.length})</h2>
           <Link to="/admin/products/new" className="btn-create">
-            + Créer une œuvre
+            + Nouvelle œuvre
           </Link>
+        </div>
+
+        {/* Filtres par statut */}
+        <div className="status-filters">
+          <button
+            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            Toutes ({counts.all})
+          </button>
+          <button
+            className={`filter-btn ${filter === 'available' ? 'active' : ''}`}
+            onClick={() => setFilter('available')}
+          >
+            Disponibles ({counts.available})
+          </button>
+          <button
+            className={`filter-btn ${filter === 'sold' ? 'active' : ''}`}
+            onClick={() => setFilter('sold')}
+          >
+            Vendues ({counts.sold})
+          </button>
+          <button
+            className={`filter-btn ${filter === 'hidden' ? 'active' : ''}`}
+            onClick={() => setFilter('hidden')}
+          >
+            Masquées ({counts.hidden})
+          </button>
         </div>
 
         {error && <div className="error-message">{error}</div>}
 
         {loading ? (
           <p>Chargement des produits...</p>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="empty-state">
-            <p>Aucune œuvre pour le moment.</p>
-            <Link to="/admin/products/new" className="btn-create">
-              Créer la première œuvre
-            </Link>
+            {filter === 'all' ? (
+              <>
+                <p>Aucune œuvre pour le moment.</p>
+                <Link to="/admin/products/new" className="btn-create">
+                  Créer la première œuvre
+                </Link>
+              </>
+            ) : (
+              <p>Aucune œuvre avec ce statut.</p>
+            )}
           </div>
         ) : (
           <div className="products-table-container">
@@ -110,10 +209,10 @@ function AdminProducts() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => {
+                {filteredProducts.map((product) => {
                   const statusBadge = getStatusBadge(product.status)
                   return (
-                    <tr key={product.id}>
+                    <tr key={product.id} className={product.status === 'hidden' ? 'row-hidden' : ''}>
                       <td>
                         <div className="product-thumbnail">
                           <img src={product.image} alt={product.name} />
@@ -130,6 +229,22 @@ function AdminProducts() {
                       </td>
                       <td>
                         <div className="action-buttons">
+                          <button
+                            onClick={() => handleToggleVisibility(product)}
+                            className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
+                            title={product.status === 'hidden' ? 'Rendre visible' : 'Masquer'}
+                          >
+                            {product.status === 'hidden' ? '👁️' : '🙈'}
+                          </button>
+                          {product.status !== 'hidden' && (
+                            <button
+                              onClick={() => handleToggleSold(product)}
+                              className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
+                              title={product.status === 'sold' ? 'Marquer disponible' : 'Marquer vendu'}
+                            >
+                              {product.status === 'sold' ? '🔄' : '✓'}
+                            </button>
+                          )}
                           <Link
                             to={`/admin/products/edit/${product.id}`}
                             className="btn-edit"

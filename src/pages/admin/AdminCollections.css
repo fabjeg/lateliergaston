@@ -1,0 +1,195 @@
+/* Collections Header */
+.collections-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color, #e0d5c7);
+}
+
+.collections-header h2 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--primary-color, #8b4049);
+  margin: 0;
+}
+
+/* Formulaire collection */
+.collection-form-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.08);
+  margin-bottom: 2rem;
+  border-left: 4px solid var(--primary-color, #8b4049);
+}
+
+.collection-form h3 {
+  font-family: var(--font-heading);
+  color: var(--primary-color, #8b4049);
+  margin: 0 0 1.5rem 0;
+}
+
+.collection-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.collection-form .form-group label {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark, #2c2c2c);
+}
+
+.collection-form .form-group input,
+.collection-form .form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  transition: border-color 0.3s ease;
+}
+
+.collection-form .form-group input:focus,
+.collection-form .form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #8b4049);
+}
+
+.collection-form .form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  border-color: var(--text-dark, #2c2c2c);
+}
+
+.btn-save {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color, #8b4049);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+  background: var(--primary-dark, #6d3339);
+}
+
+/* Grille des collections */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.collection-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.08);
+  border: 1px solid rgba(139, 64, 73, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.collection-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(139, 64, 73, 0.12);
+}
+
+.collection-info h3 {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--primary-color, #8b4049);
+  margin: 0 0 0.5rem 0;
+}
+
+.collection-info p {
+  font-family: var(--font-body);
+  color: #444;
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.collection-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e0d5c7);
+}
+
+.collection-actions .btn-edit,
+.collection-actions .btn-delete {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+}
+
+.collection-actions .btn-edit {
+  background: var(--primary-color, #8b4049);
+  color: white;
+}
+
+.collection-actions .btn-edit:hover {
+  background: var(--primary-dark, #6d3339);
+}
+
+.collection-actions .btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.collection-actions .btn-delete:hover {
+  background: #c0392b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .collections-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .collections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-form .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    width: 100%;
+  }
+}

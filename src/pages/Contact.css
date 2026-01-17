@@ -45,12 +45,12 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color, #8b4049);
 }
 
 .contact-form button {
   padding: 1rem 2rem;
-  background-color: #667eea;
+  background-color: var(--primary-color, #8b4049);
   color: white;
   border: none;
   border-radius: 5px;
@@ -60,7 +60,7 @@
 }
 
 .contact-form button:hover {
-  background-color: #5568d3;
+  background-color: var(--primary-dark, #6d3339);
 }
 
 .contact-info {
@@ -72,12 +72,13 @@
 
 .contact-info h2 {
   margin-bottom: 1.5rem;
-  color: #667eea;
+  color: var(--primary-color, #8b4049);
 }
 
 .contact-info p {
   margin-bottom: 1rem;
   line-height: 1.6;
+  font-size: 1.15rem;
 }
 
 @media (max-width: 768px) {

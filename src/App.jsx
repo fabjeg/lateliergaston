@@ -3,15 +3,19 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import HeroPage from './pages/HeroPage'
 import Home from './pages/Home'
+import Gallery from './pages/Gallery'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Shop from './pages/Shop'
 import Cart from './pages/Cart'
 import ProductDetail from './pages/ProductDetail'
 import Success from './pages/Success'
+import SurMesure from './pages/SurMesure'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminProducts from './pages/admin/AdminProducts'
+import AdminCollections from './pages/admin/AdminCollections'
+import AdminAbout from './pages/admin/AdminAbout'
 import ProductForm from './pages/admin/ProductForm'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import { CartProvider } from './context/CartContext'
@@ -32,13 +36,14 @@ function Layout() {
           <Route path="/" element={<HeroPage />} />
 
           {/* Public routes */}
-          <Route path="/gallery" element={<Home />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/sur-mesure" element={<SurMesure />} />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -71,6 +76,22 @@ function Layout() {
             element={
               <ProtectedRoute>
                 <ProductForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/collections"
+            element={
+              <ProtectedRoute>
+                <AdminCollections />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/about"
+            element={
+              <ProtectedRoute>
+                <AdminAbout />
               </ProtectedRoute>
             }
           />
