@@ -21,7 +21,134 @@
   font-weight: 500;
   color: #444;
   font-style: italic;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* Barre de filtres */
+.gallery-filters-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gallery .filters-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  color: var(--text-dark, #2c2c2c);
+  transition: all 0.3s ease;
+}
+
+.gallery .filters-toggle:hover,
+.gallery .filters-toggle.active {
+  border-color: var(--primary-color, #8b4049);
+  color: var(--primary-color, #8b4049);
+}
+
+.gallery .filters-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.gallery .filters-count {
+  background: var(--primary-color, #8b4049);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.25rem;
+}
+
+.gallery .results-count {
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #444;
+}
+
+/* Panneau des filtres */
+.gallery-filters-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.1);
+  margin-bottom: 2rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gallery .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gallery .filter-group label {
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-dark, #2c2c2c);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gallery .filter-group select {
+  padding: 0.7rem 2rem 0.7rem 1rem;
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+  font-weight: 500;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-dark, #2c2c2c);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b4049' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+
+.gallery .filter-group select:hover,
+.gallery .filter-group select:focus {
+  border-color: var(--primary-color, #8b4049);
+  outline: none;
+}
+
+.gallery .reset-filters {
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  border: 2px solid var(--primary-color, #8b4049);
+  border-radius: 8px;
+  color: var(--primary-color, #8b4049);
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gallery .reset-filters:hover {
+  background: var(--primary-color, #8b4049);
+  color: white;
 }
 
 /* Titre collection sélectionnée */

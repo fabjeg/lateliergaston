@@ -14,7 +14,7 @@ function Footer() {
             <Link to="/" className="footer-logo">
               L'Atelier de Gaston
             </Link>
-            <p className="footer-tagline">Broderie d'art contemporaine</p>
+            <p className="footer-tagline">Implantation de cheveux sur photo</p>
           </div>
 
           {/* Navigation */}

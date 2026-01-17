@@ -12,6 +12,9 @@ function Gallery() {
   const [expanded, setExpanded] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedCollection, setSelectedCollection] = useState(null)
+  const [priceRange, setPriceRange] = useState('all')
+  const [sizeFilter, setSizeFilter] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -28,10 +31,39 @@ function Gallery() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [selectedProduct, products])
 
-  // Filtrer les produits par collection
-  const filteredProducts = selectedCollection
-    ? products.filter(p => p.collectionId === selectedCollection)
-    : products
+  // Filtrer les produits
+  const filteredProducts = products.filter(p => {
+    // Filtre par collection
+    if (selectedCollection && p.collectionId !== selectedCollection) return false
+
+    // Filtre par prix
+    if (priceRange !== 'all') {
+      const [min, max] = priceRange.split('-').map(Number)
+      if (max) {
+        if (p.price < min || p.price > max) return false
+      } else {
+        if (p.price < min) return false
+      }
+    }
+
+    // Filtre par taille
+    if (sizeFilter !== 'all') {
+      const maxDim = Math.max(p.height || 0, p.width || 0)
+      switch (sizeFilter) {
+        case 'small':
+          if (maxDim <= 0 || maxDim > 30) return false
+          break
+        case 'medium':
+          if (maxDim <= 30 || maxDim > 60) return false
+          break
+        case 'large':
+          if (maxDim <= 60) return false
+          break
+      }
+    }
+
+    return true
+  })
 
   // Navigation entre les photos (dans les produits filtrés)
   const navigateNext = () => {
@@ -52,6 +84,17 @@ function Gallery() {
   const handleCollectionClick = (collectionId) => {
     setSelectedCollection(collectionId === selectedCollection ? null : collectionId)
     setExpanded(true) // Afficher tous les produits quand on filtre
+  }
+
+  // Compter les filtres actifs
+  const activeFiltersCount = [selectedCollection, priceRange, sizeFilter].filter(f => f !== null && f !== 'all').length
+
+  // Réinitialiser les filtres
+  const resetFilters = () => {
+    setSelectedCollection(null)
+    setPriceRange('all')
+    setSizeFilter('all')
+    setExpanded(false)
   }
 
   const loadData = async () => {
@@ -95,12 +138,99 @@ function Gallery() {
         <p className="gallery-subtitle">Découvrez toutes nos créations</p>
       </motion.div>
 
-      {/* Collections - Filtres */}
+      {/* Barre de filtres */}
+      <motion.div
+        className="gallery-filters-bar"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <button
+          className={`filters-toggle ${showFilters ? 'active' : ''}`}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/>
+            <line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/>
+            <line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/>
+            <line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          Filtres
+          {activeFiltersCount > 0 && (
+            <span className="filters-count">{activeFiltersCount}</span>
+          )}
+        </button>
+
+        <div className="results-count">
+          {filteredProducts.length} œuvre{filteredProducts.length > 1 ? 's' : ''}
+        </div>
+      </motion.div>
+
+      {/* Panneau de filtres */}
+      {showFilters && (
+        <motion.div
+          className="gallery-filters-panel"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="filter-group">
+            <label>Catégorie</label>
+            <select value={selectedCollection || 'all'} onChange={(e) => {
+              const val = e.target.value
+              setSelectedCollection(val === 'all' ? null : val)
+              if (val !== 'all') setExpanded(true)
+            }}>
+              <option value="all">Toutes les catégories</option>
+              {collections.map(collection => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Prix</label>
+            <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+              <option value="all">Tous les prix</option>
+              <option value="0-50">Moins de 50 €</option>
+              <option value="50-100">50 € - 100 €</option>
+              <option value="100-200">100 € - 200 €</option>
+              <option value="200-">Plus de 200 €</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Taille</label>
+            <select value={sizeFilter} onChange={(e) => setSizeFilter(e.target.value)}>
+              <option value="all">Toutes les tailles</option>
+              <option value="small">Petit (≤ 30 cm)</option>
+              <option value="medium">Moyen (30-60 cm)</option>
+              <option value="large">Grand (&gt; 60 cm)</option>
+            </select>
+          </div>
+
+          {activeFiltersCount > 0 && (
+            <button className="reset-filters" onClick={resetFilters}>
+              Réinitialiser
+            </button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Boutons de collections */}
       <motion.div
         className="collections-filter"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
       >
         <div className="collections-list">
           <button

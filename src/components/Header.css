@@ -11,18 +11,20 @@
   margin: 0 auto;
   padding: 0 40px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
 }
 
 .logo {
   text-decoration: none;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .logo-img {
-  height: 120px;
+  height: 200px;
   width: auto;
   transition: transform 0.3s ease;
 }
@@ -114,10 +116,13 @@
 @media (max-width: 768px) {
   .header-container {
     padding: 0 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .logo-img {
-    height: 80px;
+    height: 120px;
   }
 
   .hamburger {
@@ -174,7 +179,7 @@
   }
 
   .logo-img {
-    height: 60px;
+    height: 120px;
   }
 
   .nav {

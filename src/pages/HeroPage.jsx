@@ -13,6 +13,7 @@ function HeroPage() {
       {/* Contenu central */}
       <div className="hero-content">
         <h2>L'Atelier Gaston</h2>
+        <p className="hero-tagline">Implantation de cheveux sur photo</p>
         <div className="hero-buttons">
           <button className="hero-button" onClick={handleDiscover}>
             Découvrir

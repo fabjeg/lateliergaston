@@ -78,7 +78,9 @@
 .contact-info p {
   margin-bottom: 1rem;
   line-height: 1.6;
-  font-size: 1.15rem;
+  font-size: 1.6rem;
+  color: #444;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {

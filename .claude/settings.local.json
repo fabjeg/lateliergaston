@@ -14,7 +14,22 @@
       "Bash(npm audit fix:*)",
       "Bash(npm run optimize-images:*)",
       "Bash(ls:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git reset:*)",
+      "Bash(node:*)",
+      "Bash(npm run create-admin:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill /F /PID 21316)",
+      "Bash(vercel --prod:*)",
+      "Bash(find:*)",
+      "Bash(taskkill:*)",
+      "Bash(git pull:*)",
+      "Bash(git rm:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm run build:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

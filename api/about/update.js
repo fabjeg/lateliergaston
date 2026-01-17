@@ -1,19 +1,14 @@
 import { getCollection } from '../_lib/mongodb.js'
-import { handleCorsOptions, apiResponse, verifyAdminSession } from '../_lib/utils.js'
+import { requireAuth } from '../_lib/auth.js'
+import { handleCorsOptions, apiResponse } from '../_lib/utils.js'
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   // Handle CORS preflight
   if (handleCorsOptions(req, res)) return
 
   // Only allow PUT
   if (req.method !== 'PUT') {
     return res.status(405).json(apiResponse(false, null, 'Méthode non autorisée'))
-  }
-
-  // Verify admin session
-  const admin = await verifyAdminSession(req)
-  if (!admin) {
-    return res.status(401).json(apiResponse(false, null, 'Non autorisé'))
   }
 
   try {
@@ -43,7 +38,7 @@ export default async function handler(req, res) {
       section3Title,
       values,
       updatedAt: new Date(),
-      updatedBy: admin.username
+      updatedBy: req.admin?.username || 'admin'
     }
 
     await aboutCollection.replaceOne(
@@ -58,3 +53,5 @@ export default async function handler(req, res) {
     return res.status(500).json(apiResponse(false, null, 'Erreur serveur'))
   }
 }
+
+export default requireAuth(handler)

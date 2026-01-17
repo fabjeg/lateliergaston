@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import './Header.css'
-import logo from '../assets/logo.webp'
+import logo from '../assets/Logo_coffee_shop_illustratif_minimaliste_bleu_et_marron_clair__2_-removebg-preview.png'
 import CartIcon from './CartIcon'
 
 function Header() {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import './Shop.css'
 import { getAllProducts } from '../services/productApi'
+import { getAllCollections } from '../services/collectionApi'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
@@ -10,13 +11,14 @@ import Loader from '../components/Loader'
 function Shop() {
   const { isSold } = useInventory()
   const [products, setProducts] = useState([])
+  const [collections, setCollections] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   // Filtres
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [priceRange, setPriceRange] = useState('all')
   const [sizeFilter, setSizeFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('default')
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -33,12 +35,23 @@ function Shop() {
       setError(result.error || 'Erreur lors du chargement des œuvres')
     }
 
+    // Charger les collections
+    const collectionsResult = getAllCollections()
+    if (collectionsResult.success) {
+      setCollections(collectionsResult.collections)
+    }
+
     setLoading(false)
   }
 
-  // Filtrer et trier les produits
+  // Filtrer les produits
   const filteredProducts = useMemo(() => {
     let result = [...products]
+
+    // Filtre par catégorie
+    if (categoryFilter !== 'all') {
+      result = result.filter(p => p.collectionId === categoryFilter)
+    }
 
     // Filtre par prix
     if (priceRange !== 'all') {
@@ -68,32 +81,17 @@ function Shop() {
       })
     }
 
-    // Tri
-    switch (sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price)
-        break
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price)
-        break
-      case 'name':
-        result.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      default:
-        break
-    }
-
     return result
-  }, [products, priceRange, sizeFilter, sortBy])
+  }, [products, categoryFilter, priceRange, sizeFilter])
 
   // Compter les filtres actifs
-  const activeFiltersCount = [priceRange, sizeFilter, sortBy].filter(f => f !== 'all' && f !== 'default').length
+  const activeFiltersCount = [categoryFilter, priceRange, sizeFilter].filter(f => f !== 'all').length
 
   // Réinitialiser les filtres
   const resetFilters = () => {
+    setCategoryFilter('all')
     setPriceRange('all')
     setSizeFilter('all')
-    setSortBy('default')
   }
 
   if (loading) {
@@ -166,14 +164,25 @@ function Shop() {
           transition={{ duration: 0.3 }}
         >
           <div className="filter-group">
+            <label>Catégorie</label>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              <option value="all">Toutes les catégories</option>
+              {collections.map(collection => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
             <label>Prix</label>
             <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
               <option value="all">Tous les prix</option>
-              <option value="0-100">Moins de 100 €</option>
-              <option value="100-300">100 € - 300 €</option>
-              <option value="300-500">300 € - 500 €</option>
-              <option value="500-1000">500 € - 1000 €</option>
-              <option value="1000-">Plus de 1000 €</option>
+              <option value="0-50">Moins de 50 €</option>
+              <option value="50-100">50 € - 100 €</option>
+              <option value="100-200">100 € - 200 €</option>
+              <option value="200-">Plus de 200 €</option>
             </select>
           </div>
 
@@ -184,16 +193,6 @@ function Shop() {
               <option value="small">Petit (≤ 30 cm)</option>
               <option value="medium">Moyen (30-60 cm)</option>
               <option value="large">Grand (&gt; 60 cm)</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Trier par</label>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-              <option value="default">Par défaut</option>
-              <option value="price-asc">Prix croissant</option>
-              <option value="price-desc">Prix décroissant</option>
-              <option value="name">Nom A-Z</option>
             </select>
           </div>
 
