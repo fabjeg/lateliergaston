@@ -183,7 +183,7 @@ function Shop() {
               <option value="all">Toutes les tailles</option>
               <option value="small">Petit (≤ 30 cm)</option>
               <option value="medium">Moyen (30-60 cm)</option>
-              <option value="large">Grand (> 60 cm)</option>
+              <option value="large">Grand (&gt; 60 cm)</option>
             </select>
           </div>
 
