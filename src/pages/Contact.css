@@ -1,6 +1,7 @@
 .contact {
   max-width: 900px;
   margin: 0 auto;
+  padding-top: 3rem;
 }
 
 .contact h1 {
@@ -76,10 +77,15 @@
 }
 
 .contact-info p {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   line-height: 1.6;
-  font-size: 1.6rem;
-  color: #444;
+  font-size: 1rem;
+  color: #555;
+  font-weight: 400;
+}
+
+.contact-label {
+  color: #333;
   font-weight: 500;
 }
 
