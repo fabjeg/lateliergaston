@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import './ProductDetail.css'
 import { getProduct } from '../services/productApi'
@@ -6,9 +6,11 @@ import { useCart } from '../context/CartContext'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
+import SEO from '../components/SEO'
 
 function ProductDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -16,6 +18,10 @@ function ProductDetail() {
   const { isSold } = useInventory()
   const [showNotification, setShowNotification] = useState(false)
   const [quantity, setQuantity] = useState(1)
+
+  const handleBack = () => {
+    navigate(-1)
+  }
 
   useEffect(() => {
     loadProduct()
@@ -60,6 +66,24 @@ function ProductDetail() {
 
   return (
     <div className="product-detail">
+      <SEO
+        title={product.name}
+        description={product.description || `Découvrez ${product.name} - Œuvre unique brodée par L'Atelier Gaston. Prix : ${product.price.toFixed(2)} €`}
+        url={`/product/${product.id}`}
+        image={product.image}
+        type="product"
+        product={{
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          image: product.image,
+        }}
+      />
+      <button className="back-to-shop" onClick={handleBack}>
+        <span className="back-arrow">&#8249;</span>
+        <span>Retour</span>
+      </button>
+
       {showNotification && (
         <div className="notification">
           Produit ajouté au panier!
@@ -68,7 +92,7 @@ function ProductDetail() {
       <div className="product-detail-grid">
         <div className="product-image">
           <div className="product-image-wrapper">
-            <img src={product.image} alt={product.name} />
+            <img src={product.image} alt="" />
             {productIsSold && <SoldBadge />}
           </div>
         </div>

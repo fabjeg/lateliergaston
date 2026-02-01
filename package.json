@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "optimize-images": "node optimize-images.js",
     "create-admin": "node scripts/create-admin.js",
-    "migrate-products": "node scripts/migrate-to-mongodb.js"
+    "migrate-products": "node scripts/migrate-to-mongodb.js",
+    "migrate-images": "node scripts/migrate-images-to-cloudinary.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -18,13 +19,14 @@
     "bcrypt": "^6.0.0",
     "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",
+    "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "firebase": "^12.7.0",
     "framer-motion": "^12.23.26",
     "mongodb": "^7.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
     "react-router-dom": "^6.22.0",
     "uuid": "^13.0.0"
   },
@@ -34,10 +36,11 @@
     "@vitejs/plugin-react": "^4.3.4",
     "dotenv": "^17.2.3",
     "sharp": "^0.34.5",
+    "terser": "^5.46.0",
     "vite": "^7.3.1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Site de présentation et boutique pour L'Atelier de Gaston"
+  "description": "Site de présentation et boutique pour L'Atelier Gaston"
 }

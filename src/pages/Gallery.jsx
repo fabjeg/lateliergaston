@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllProducts } from '../services/productApi'
 import { getAllCollections } from '../services/collectionApi'
 import Loader from '../components/Loader'
+import SEO from '../components/SEO'
 import './Gallery.css'
 
 function Gallery() {
+  const [searchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [collections, setCollections] = useState([])
   const [loading, setLoading] = useState(true)
@@ -15,6 +18,15 @@ function Gallery() {
   const [priceRange, setPriceRange] = useState('all')
   const [sizeFilter, setSizeFilter] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+
+  // Read collection from URL query param
+  useEffect(() => {
+    const collectionParam = searchParams.get('collection')
+    if (collectionParam) {
+      setSelectedCollection(collectionParam)
+      setExpanded(true)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     loadData()
@@ -129,6 +141,11 @@ function Gallery() {
 
   return (
     <div className="gallery">
+      <SEO
+        title="Galerie"
+        description="Explorez notre galerie de créations uniques : portraits brodés, implantation de cheveux sur photo. Chaque œuvre est une pièce unique réalisée à la main."
+        url="/gallery"
+      />
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -166,9 +183,6 @@ function Gallery() {
           )}
         </button>
 
-        <div className="results-count">
-          {filteredProducts.length} œuvre{filteredProducts.length > 1 ? 's' : ''}
-        </div>
       </motion.div>
 
       {/* Panneau de filtres */}
@@ -261,7 +275,6 @@ function Gallery() {
         >
           <h3>
             {collections.find(c => c.id === selectedCollection)?.name}
-            <span className="collection-count">({filteredProducts.length} œuvre{filteredProducts.length > 1 ? 's' : ''})</span>
           </h3>
         </motion.div>
       )}
@@ -288,7 +301,7 @@ function Gallery() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               onClick={() => setSelectedProduct(product)}
             >
-              <img src={product.image} alt={product.name} />
+              <img src={product.image} alt="" />
               <div className="gallery-item-overlay">
                 <h3>{product.name}</h3>
               </div>
@@ -326,14 +339,13 @@ function Gallery() {
               <button
                 className="lightbox-close"
                 onClick={() => setSelectedProduct(null)}
-              >
-                ✕
-              </button>
+                aria-label="Fermer"
+              />
               <div className="lightbox-image">
                 <motion.img
                   key={selectedProduct.id}
                   src={selectedProduct.image}
-                  alt={selectedProduct.name}
+                  alt=""
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}

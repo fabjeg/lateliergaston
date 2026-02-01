@@ -1,0 +1,130 @@
+.animal-hair-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.animal-hair-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 550px;
+  width: 100%;
+  padding: 2.5rem;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(139, 64, 73, 0.25);
+}
+
+.animal-hair-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--text-medium, #555);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.animal-hair-close:hover {
+  color: var(--primary-color, #8b4049);
+  background: rgba(139, 64, 73, 0.08);
+}
+
+.animal-hair-title {
+  font-family: var(--font-heading);
+  color: var(--primary-color, #8b4049);
+  font-size: 1.8rem;
+  margin: 0 0 1.25rem 0;
+  padding-right: 2rem;
+}
+
+.animal-hair-intro {
+  font-family: var(--font-body);
+  color: var(--text-dark, #2c2c2c);
+  font-size: 1.3rem;
+  line-height: 1.7;
+  margin: 0 0 1.25rem 0;
+}
+
+.animal-hair-address {
+  background: var(--background-light, #faf8f5);
+  border-left: 4px solid var(--primary-color, #8b4049);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: var(--text-dark, #2c2c2c);
+  margin-bottom: 1.5rem;
+}
+
+.animal-hair-subtitle {
+  font-family: var(--font-heading);
+  color: var(--primary-color, #8b4049);
+  font-size: 1.5rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.animal-hair-instructions {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  color: var(--text-dark, #2c2c2c);
+  line-height: 1.7;
+  padding-left: 1.25rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.animal-hair-instructions li {
+  margin-bottom: 0.5rem;
+}
+
+.animal-hair-instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.animal-hair-confirm {
+  display: block;
+  width: 100%;
+  font-family: var(--font-heading);
+  padding: 1rem 2rem;
+  background: var(--button-bg, var(--primary-color, #8b4049));
+  color: var(--button-text, white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.3);
+}
+
+.animal-hair-confirm:hover {
+  background: var(--primary-dark, #6d3339);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 64, 73, 0.4);
+}
+
+@media (max-width: 480px) {
+  .animal-hair-modal {
+    padding: 1.5rem;
+  }
+
+  .animal-hair-title {
+    font-size: 1.2rem;
+  }
+}

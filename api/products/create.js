@@ -1,6 +1,6 @@
 import { getCollection } from '../_lib/mongodb.js'
 import { requireAuth } from '../_lib/auth.js'
-import { handleCorsOptions, apiResponse, validateProduct, validateImageBase64, sanitizeString } from '../_lib/utils.js'
+import { handleCorsOptions, apiResponse, validateProduct, sanitizeString } from '../_lib/utils.js'
 
 async function handler(req, res) {
   // Handle CORS preflight
@@ -12,7 +12,7 @@ async function handler(req, res) {
   }
 
   try {
-    const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
+    const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
     // Validate product data
     const productValidation = validateProduct({ name, price, description, status })
@@ -22,14 +22,14 @@ async function handler(req, res) {
       )
     }
 
-    // Validate image if provided
-    if (imageBase64) {
-      const imageValidation = validateImageBase64(imageBase64)
-      if (!imageValidation.valid) {
-        return res.status(400).json(apiResponse(false, null, imageValidation.error))
-      }
-    } else {
-      return res.status(400).json(apiResponse(false, null, 'Image requise'))
+    // Validate image URL is provided (from Cloudinary upload)
+    if (!imageUrl) {
+      return res.status(400).json(apiResponse(false, null, 'URL de l\'image requise (uploadez d\'abord via /api/upload)'))
+    }
+
+    // Basic URL validation
+    if (!imageUrl.startsWith('https://')) {
+      return res.status(400).json(apiResponse(false, null, 'URL de l\'image invalide'))
     }
 
     const productsCollection = await getCollection('products')
@@ -43,7 +43,7 @@ async function handler(req, res) {
 
     const nextId = lastProduct.length > 0 ? lastProduct[0].id + 1 : 1
 
-    // Create product document
+    // Create product document with Cloudinary URL
     const product = {
       id: nextId,
       name: sanitizeString(name),
@@ -51,7 +51,8 @@ async function handler(req, res) {
       description: sanitizeString(description),
       height: height ? parseFloat(height) : null,
       width: width ? parseFloat(width) : null,
-      imageBase64,
+      imageUrl, // Cloudinary URL
+      imagePublicId: imagePublicId || null, // Cloudinary public ID for deletion
       imageFilename: sanitizeString(imageFilename || `product-${nextId}.webp`),
       stripePriceId: sanitizeString(stripePriceId || ''),
       status: status || 'available',
@@ -75,6 +76,9 @@ async function handler(req, res) {
           description: product.description,
           height: product.height,
           width: product.width,
+          image: product.imageUrl,
+          imageUrl: product.imageUrl,
+          imagePublicId: product.imagePublicId,
           imageFilename: product.imageFilename,
           stripePriceId: product.stripePriceId,
           status: product.status,

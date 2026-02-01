@@ -1,0 +1,16 @@
+# Robots.txt for L'Atelier Gaston
+# https://www.lateliergaston.fr
+
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin/*
+
+# Disallow cart and success pages
+Disallow: /cart
+Disallow: /success
+
+# Sitemap location
+Sitemap: https://www.lateliergaston.fr/sitemap.xml

@@ -5,6 +5,46 @@
 const API_BASE = '/api/products'
 
 /**
+ * Upload image to Cloudinary via API (admin only)
+ * @param {string} base64Image - Base64 encoded image with data URI prefix
+ * @param {string} filename - Original filename
+ * @returns {Promise<{success: boolean, url?: string, publicId?: string, error?: string}>}
+ */
+export async function uploadImage(base64Image, filename) {
+  try {
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        image: base64Image,
+        filename,
+        folder: 'lateliergaston/products'
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      return {
+        success: true,
+        url: data.data.url,
+        publicId: data.data.publicId,
+        width: data.data.width,
+        height: data.data.height
+      }
+    } else {
+      return { success: false, error: data.error }
+    }
+  } catch (error) {
+    console.error('Upload image error:', error)
+    return { success: false, error: 'Erreur lors de l\'upload de l\'image' }
+  }
+}
+
+/**
  * Get all products (public - excludes hidden)
  */
 export async function getAllProducts() {
@@ -147,6 +187,34 @@ export async function updateProduct(id, productData) {
     }
   } catch (error) {
     console.error('Update product error:', error)
+    return { success: false, error: 'Erreur de connexion' }
+  }
+}
+
+/**
+ * Reorder products (admin only)
+ * @param {number[]} orderedIds - Array of product IDs in the desired order
+ */
+export async function reorderProducts(orderedIds) {
+  try {
+    const response = await fetch(`${API_BASE}/reorder`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ orderedIds })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      return { success: true }
+    } else {
+      return { success: false, error: data.error }
+    }
+  } catch (error) {
+    console.error('Reorder products error:', error)
     return { success: false, error: 'Erreur de connexion' }
   }
 }

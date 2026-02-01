@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Petit+Formal+Script&family=Zen+Loop:ital@0;1&display=swap');
-
 * {
   margin: 0;
   padding: 0;
@@ -8,24 +6,27 @@
 
 :root {
   /* Couleurs du logo */
-  --primary-color: #8b4049; /* Rouge bordeaux du logo */
+  --primary-color: #7a3540;
+  /* Rouge bordeaux du logo - plus contrasté */
   --primary-light: #a64d54;
-  --primary-dark: #6d3339;
-  --background-cream: #f5ede4; /* Beige crème du logo */
+  --primary-dark: #5a2a30;
+  --background-cream: #f5ede4;
+  /* Beige crème du logo */
   --background-light: #faf8f5;
-  --text-dark: #2c2c2c;
-  --text-medium: #555;
-  --border-color: #e0d5c7;
+  --text-dark: #1a1a1a;
+  --text-medium: #3d3d3d;
+  --text-secondary: #4a4a4a;
+  --border-color: #d4c9bb;
 
-  /* Polices artistiques */
-  --font-heading: 'Petit Formal Script', cursive;
-  --font-body: 'Zen Loop', cursive;
-  --font-nav: 'Cormorant Garamond', serif;
+  /* Polices artistiques avec fallbacks */
+  --font-heading: Georgia, serif;
+  --font-body: 'Zen Loop', Arial, sans-serif;
+  --font-nav: 'Cormorant Garamond', Georgia, serif;
 }
 
 body {
   font-family: var(--font-body);
-  color: var(--text-dark);
+  color: var(--body-text-color, var(--text-dark));
   background-color: var(--background-light);
 }
 
@@ -36,14 +37,53 @@ body {
 }
 
 main {
-  flex: 1;
+  flex: 1 0 auto;
   padding: 20px;
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+  min-height: calc(100vh - 400px);
+  padding-top: 140px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+main.no-header {
+  padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding-top: 160px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  main.no-header {
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding-top: 190px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  main.no-header {
+    padding-top: 20px;
+  }
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
-  color: var(--primary-color);
+  color: var(--heading-color, var(--primary-color));
 }

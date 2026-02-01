@@ -66,7 +66,13 @@ function ProductForm() {
         status: product.status,
         collectionId: product.collectionId || ''
       })
-      setImage({ base64: product.imageBase64, filename: product.imageFilename })
+      // Support both Cloudinary URLs and legacy base64
+      setImage({
+        url: product.imageUrl || null,
+        publicId: product.imagePublicId || null,
+        filename: product.imageFilename,
+        preview: product.image // URL or base64 for display
+      })
     } else {
       setError(result.error || 'Erreur lors du chargement du produit')
     }
@@ -114,9 +120,10 @@ function ProductForm() {
       year: formData.year ? parseInt(formData.year) : null
     }
 
-    // Only include image if it was changed
-    if (image && image.base64) {
-      productData.imageBase64 = image.base64
+    // Only include image if it was changed (new Cloudinary URL)
+    if (image && image.url) {
+      productData.imageUrl = image.url
+      productData.imagePublicId = image.publicId
       productData.imageFilename = image.filename
     }
 
@@ -176,7 +183,7 @@ function ProductForm() {
               <h3 className="section-title">Photo de l'œuvre</h3>
               <ImageUploader
                 onImageSelect={handleImageSelect}
-                currentImage={image?.base64}
+                currentImage={image?.preview || image?.url}
                 disabled={loading}
               />
             </div>

@@ -1,3 +1,4 @@
+import SEO from '../components/SEO'
 import './Contact.css'
 
 function Contact() {
@@ -8,6 +9,11 @@ function Contact() {
 
   return (
     <div className="contact">
+      <SEO
+        title="Contact"
+        description="Contactez L'Atelier Gaston pour vos projets de broderie sur-mesure. Email, téléphone et adresse à Crach, Bretagne."
+        url="/contact"
+      />
       <h1>Contactez-nous</h1>
       <div className="contact-content">
         <form onSubmit={handleSubmit} className="contact-form">
@@ -36,9 +42,9 @@ function Contact() {
 
         <div className="contact-info">
           <h2>Informations de contact</h2>
-          <p><strong>Email:</strong> contact@lateliergaston.fr</p>
-          <p><strong>Téléphone:</strong> +33 6 18 01 42 57</p>
-          <p><strong>Adresse:</strong> Crach 56950</p>
+          <p><span className="contact-label">Email:</span> contact@lateliergaston.fr</p>
+          <p><span className="contact-label">Téléphone:</span> +33 6 18 01 42 57</p>
+          <p><span className="contact-label">Adresse:</span> Crach 56950</p>
         </div>
       </div>
     </div>

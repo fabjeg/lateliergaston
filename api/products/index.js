@@ -32,13 +32,14 @@ export default async function handler(req, res) {
       ? {} // Admin can see all products
       : { status: { $ne: 'hidden' } } // Public can't see hidden products
 
-    // Get products
+    // Get products - sorted by displayOrder (or id as fallback)
     const products = await productsCollection
       .find(query)
-      .sort({ id: 1 })
+      .sort({ displayOrder: 1, id: 1 })
       .toArray()
 
     // Transform products for frontend
+    // Support both Cloudinary URLs (imageUrl) and legacy base64 (imageBase64)
     const transformedProducts = products.map(product => ({
       id: product.id,
       name: product.name,
@@ -46,14 +47,17 @@ export default async function handler(req, res) {
       description: product.description,
       height: product.height,
       width: product.width,
-      image: product.imageBase64,
+      image: product.imageUrl || product.imageBase64, // Cloudinary URL or legacy base64
+      imageUrl: product.imageUrl || null,
+      imagePublicId: product.imagePublicId || null,
       imageFilename: product.imageFilename,
       stripePriceId: product.stripePriceId,
       status: product.status,
       technique: product.technique,
       year: product.year,
       framed: product.framed,
-      collectionId: product.collectionId
+      collectionId: product.collectionId,
+      displayOrder: product.displayOrder ?? product.id
     }))
 
     return res.status(200).json(

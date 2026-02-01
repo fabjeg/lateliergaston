@@ -1,0 +1,112 @@
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal-title {
+  font-family: var(--font-heading, 'Petit Formal Script', serif);
+  font-size: 1.5rem;
+  color: var(--text-dark, #2c2c2c);
+  margin: 0 0 0.75rem 0;
+}
+
+.confirm-modal-message {
+  font-family: var(--font-body, 'Zen Loop', sans-serif);
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.confirm-modal-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.confirm-modal-btn.cancel {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.confirm-modal-btn.cancel:hover {
+  background-color: #d0d0d0;
+}
+
+.confirm-modal-btn.confirm {
+  color: white;
+}
+
+.confirm-modal-btn.confirm.danger {
+  background-color: #dc3545;
+}
+
+.confirm-modal-btn.confirm.danger:hover {
+  background-color: #c82333;
+}
+
+.confirm-modal-btn.confirm.warning {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.confirm-modal-btn.confirm.warning:hover {
+  background-color: #e0a800;
+}
+
+.confirm-modal-btn.confirm.info {
+  background-color: var(--primary-color, #8b4049);
+}
+
+.confirm-modal-btn.confirm.info:hover {
+  background-color: var(--primary-dark, #6d3339);
+}
+
+@media (max-width: 480px) {
+  .confirm-modal {
+    padding: 1.5rem;
+  }
+
+  .confirm-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-modal-btn {
+    width: 100%;
+  }
+}

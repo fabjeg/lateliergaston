@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import './Header.css'
-import logo from '../assets/Logo_coffee_shop_illustratif_minimaliste_bleu_et_marron_clair__2_-removebg-preview.png'
+import logo from '../assets/logo.png'
 import CartIcon from './CartIcon'
 
 function Header() {
@@ -49,7 +49,7 @@ function Header() {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo" onClick={handleLogoClick}>
-          <img src={logo} alt="L'Atelier de Gaston" className="logo-img" />
+          <img src={logo} alt="L'Atelier Gaston" className="logo-img" />
         </Link>
 
         {/* Hamburger button */}
@@ -65,6 +65,7 @@ function Header() {
 
         {/* Navigation */}
         <nav className={`nav ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+          <Link to="/accueil" onClick={closeMenu}>Accueil</Link>
           <Link to="/gallery" onClick={closeMenu}>Galerie</Link>
           <Link to="/shop" onClick={closeMenu}>Boutique</Link>
           <Link to="/sur-mesure" onClick={closeMenu}>Sur-Mesure</Link>

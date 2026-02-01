@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { getAboutContent } from '../services/aboutApi'
 import Loader from '../components/Loader'
+import SEO from '../components/SEO'
 import './About.css'
-import aboutImage from '../assets/581228718_17863103313524609_4932862236785945648_n.jpg'
+import aboutImage from '../assets/581228718_17863103313524609_4932862236785945648_n.webp'
 
 function About() {
   const [content, setContent] = useState(null)
@@ -20,10 +21,10 @@ function About() {
       // Contenu par défaut si erreur
       setContent({
         heroTitle: "L'art de la broderie contemporaine",
-        heroText1: "L'Atelier de Gaston est né de la passion pour l'artisanat et la création unique. Chaque œuvre est une fusion entre photographie et broderie, créant des pièces uniques qui racontent une histoire.",
+        heroText1: "L'Atelier Gaston est né de la passion pour l'artisanat et la création unique. Chaque œuvre est une fusion entre photographie et broderie, créant des pièces uniques qui racontent une histoire.",
         heroText2: "Nous croyons en la valeur du fait-main et en l'importance de préserver les techniques artisanales traditionnelles tout en y apportant une touche contemporaine et artistique.",
         section1Title: "Notre histoire",
-        section1Text: "L'Atelier de Gaston est né de la passion pour l'artisanat et la création unique. Depuis ses débuts, notre atelier s'engage à produire des pièces de qualité, fabriquées avec soin et attention aux détails.",
+        section1Text: "L'Atelier Gaston est né de la passion pour l'artisanat et la création unique. Depuis ses débuts, notre atelier s'engage à produire des pièces de qualité, fabriquées avec soin et attention aux détails.",
         section2Title: "Notre mission",
         section2Text: "Nous croyons en la valeur du fait-main et en l'importance de préserver les techniques artisanales traditionnelles. Chaque produit est une œuvre d'art en soi, conçue pour durer et apporter de la joie à son propriétaire.",
         section3Title: "Nos valeurs",
@@ -48,13 +49,18 @@ function About() {
 
   return (
     <div className="about">
+      <SEO
+        title="À Propos"
+        description="Découvrez l'histoire de L'Atelier Gaston, artisan brodeur passionné. Notre mission : créer des œuvres uniques alliant photographie et broderie artisanale."
+        url="/about"
+      />
       <h1>L'Atelier Gaston</h1>
 
       <div className="about-hero">
         <div className="about-hero-image-wrapper">
           <img
             src={aboutImage}
-            alt="L'Atelier de Gaston - Broderie artisanale"
+            alt="L'Atelier Gaston - Broderie artisanale"
             className="about-hero-image"
           />
         </div>

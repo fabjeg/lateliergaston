@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { uploadImage } from '../../services/productApi'
 import './ImageUploader.css'
 
 function ImageUploader({ onImageSelect, currentImage, disabled }) {
   const [preview, setPreview] = useState(currentImage || null)
   const [error, setError] = useState('')
+  const [uploading, setUploading] = useState(false)
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0]
     setError('')
 
@@ -17,22 +19,36 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
       return
     }
 
-    // Validate file size (max 500KB)
-    if (file.size > 500 * 1024) {
-      setError('L\'image doit faire moins de 500KB')
+    // Validate file size (max 5MB for Cloudinary)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('L\'image doit faire moins de 5MB')
       return
     }
 
-    // Read file and convert to base64
+    // Read file and convert to base64 for preview and upload
     const reader = new FileReader()
 
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       const base64 = reader.result
       setPreview(base64)
-      onImageSelect({
-        base64,
-        filename: file.name
-      })
+      setUploading(true)
+
+      // Upload to Cloudinary
+      const result = await uploadImage(base64, file.name)
+
+      setUploading(false)
+
+      if (result.success) {
+        onImageSelect({
+          url: result.url,
+          publicId: result.publicId,
+          filename: file.name
+        })
+      } else {
+        setError(result.error || 'Erreur lors de l\'upload')
+        setPreview(null)
+        onImageSelect(null)
+      }
     }
 
     reader.onerror = () => {
@@ -50,28 +66,34 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
 
   return (
     <div className="image-uploader">
-      <label className="image-uploader-label">Image de l'œuvre *</label>
+      <label className="image-uploader-label">Image de l'oeuvre *</label>
 
       {preview ? (
         <div className="image-preview">
           <img src={preview} alt="Preview" />
-          {!disabled && (
+          {uploading && (
+            <div className="image-uploading-overlay">
+              <div className="uploading-spinner"></div>
+              <span>Upload en cours...</span>
+            </div>
+          )}
+          {!disabled && !uploading && (
             <div className="image-preview-actions">
               <button
                 type="button"
                 onClick={handleRemove}
                 className="image-remove-btn"
               >
-                ✕ Retirer
+                Retirer
               </button>
               <label htmlFor="image-upload-input-change" className="image-change-btn">
-                🔄 Changer
+                Changer
               </label>
               <input
                 type="file"
                 accept="image/webp,image/jpeg,image/jpg,image/png"
                 onChange={handleFileChange}
-                disabled={disabled}
+                disabled={disabled || uploading}
                 id="image-upload-input-change"
                 className="image-upload-input"
               />
@@ -84,14 +106,14 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
             type="file"
             accept="image/webp,image/jpeg,image/jpg,image/png"
             onChange={handleFileChange}
-            disabled={disabled}
+            disabled={disabled || uploading}
             id="image-upload-input"
             className="image-upload-input"
           />
           <label htmlFor="image-upload-input" className="image-upload-label">
             <div className="upload-icon">📷</div>
             <p>Cliquez pour sélectionner une image</p>
-            <p className="upload-hint">WebP, JPEG ou PNG - Max 500KB</p>
+            <p className="upload-hint">WebP, JPEG ou PNG - Max 5MB</p>
           </label>
         </div>
       )}
@@ -99,7 +121,7 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
       {error && <p className="image-uploader-error">{error}</p>}
 
       <p className="image-uploader-note">
-        Pour de meilleures performances, utilisez des images WebP optimisées.
+        Les images sont optimisées automatiquement pour le web.
       </p>
     </div>
   )

@@ -1,5 +1,5 @@
 .shop {
-  background: linear-gradient(135deg, var(--background-light, #faf8f5) 0%, var(--background-cream, #f5ede4) 100%);
+  background: transparent;
   padding: 2rem;
   padding-top: 3rem;
   min-height: calc(100vh - 200px);
@@ -21,7 +21,7 @@
   text-align: center;
   font-size: 2.5rem;
   font-weight: 500;
-  color: #444;
+  color: var(--subtitle-color, #444);
   font-style: italic;
   margin-bottom: 3rem;
 }
@@ -57,6 +57,7 @@
   max-width: 400px;
   -webkit-tap-highlight-color: transparent;
   outline: none;
+  cursor: pointer;
 }
 
 .product-card:focus,
@@ -125,7 +126,7 @@
   font-family: var(--font-body);
   font-size: 1.6rem;
   font-weight: 500;
-  color: #444;
+  color: var(--body-text-color, #444);
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -354,6 +355,7 @@
 @media (max-width: 480px) {
   .shop {
     padding: 2rem 1rem;
+    padding-top: 3rem;
   }
 
   .shop h1 {

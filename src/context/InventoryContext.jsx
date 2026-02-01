@@ -11,8 +11,8 @@ export function useInventory() {
 }
 
 export function InventoryProvider({ children }) {
-  // Pour l'instant, aucun produit n'est vendu
-  // Firebase sera ajouté plus tard pour gérer l'inventaire réel
+  // L'inventaire est géré via le statut des produits en base de données
+  // Le statut "sold" indique qu'un produit est vendu
   const [soldProducts] = useState(new Set())
   const loading = false
   const error = null

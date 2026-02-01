@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useMemo, useLayoutEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import './Shop.css'
 import { getAllProducts } from '../services/productApi'
@@ -7,9 +7,11 @@ import { getAllCollections } from '../services/collectionApi'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
+import SEO from '../components/SEO'
 
 function Shop() {
   const { isSold } = useInventory()
+  const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [collections, setCollections] = useState([])
   const [loading, setLoading] = useState(true)
@@ -20,6 +22,26 @@ function Shop() {
   const [priceRange, setPriceRange] = useState('all')
   const [sizeFilter, setSizeFilter] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+
+  // Restaurer la position de scroll au retour
+  useLayoutEffect(() => {
+    const savedScrollY = sessionStorage.getItem('shopScrollY')
+    if (savedScrollY) {
+      // Attendre que les produits soient chargés
+      const timeout = setTimeout(() => {
+        window.scrollTo(0, parseInt(savedScrollY))
+        sessionStorage.removeItem('shopScrollY')
+      }, 100)
+      return () => clearTimeout(timeout)
+    }
+  }, [loading])
+
+  // Sauvegarder la position de scroll avant de naviguer
+  const handleProductClick = (productId, isSoldProduct) => {
+    if (isSoldProduct) return
+    sessionStorage.setItem('shopScrollY', window.scrollY.toString())
+    navigate(`/product/${productId}`)
+  }
 
   useEffect(() => {
     loadProducts()
@@ -112,6 +134,11 @@ function Shop() {
 
   return (
     <div className="shop">
+      <SEO
+        title="Boutique"
+        description="Achetez des œuvres d'art uniques : portraits brodés avec implantation de cheveux sur photo. Pièces originales faites main, disponibles à l'achat."
+        url="/shop"
+      />
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -234,10 +261,9 @@ function Shop() {
               }}
               viewport={{ once: true, margin: "-50px" }}
             >
-              <Link
-                to={`/product/${product.id}`}
+              <div
                 className={`product-card ${isSold(product.id) ? 'sold' : ''}`}
-                onClick={(e) => isSold(product.id) && e.preventDefault()}
+                onClick={() => handleProductClick(product.id, isSold(product.id))}
               >
                 <motion.div
                   className="product-image-container"
@@ -254,7 +280,7 @@ function Shop() {
                 >
                   <img
                     src={product.image}
-                    alt={product.name}
+                    alt=""
                     loading="lazy"
                     decoding="async"
                   />
@@ -283,7 +309,7 @@ function Shop() {
                     </p>
                   )}
                 </motion.div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

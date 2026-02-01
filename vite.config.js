@@ -10,5 +10,23 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          animations: ['framer-motion']
+        }
+      }
+    }
   }
 })

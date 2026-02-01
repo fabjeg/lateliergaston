@@ -7,7 +7,7 @@ function CartIcon() {
   const itemCount = getItemCount()
 
   return (
-    <Link to="/cart" className="cart-icon-link">
+    <Link to="/cart" className="cart-icon-link" aria-label={`Panier${itemCount > 0 ? ` (${itemCount} article${itemCount > 1 ? 's' : ''})` : ''}`}>
       <div className="cart-icon">
         <svg
           width="24"

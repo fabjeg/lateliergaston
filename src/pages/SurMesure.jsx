@@ -1,21 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import emailjs from '@emailjs/browser'
+import { getAllProducts } from '../services/productApi'
+import { createCustomOrder, fileToBase64 } from '../services/customOrderApi'
+import SEO from '../components/SEO'
+import AnimalHairModal from '../components/AnimalHairModal'
 import './SurMesure.css'
 
-// Images de la galerie
-import gallery1 from '../assets/561676007_17858710800524609_966159427435168161_n.webp'
-import gallery2 from '../assets/566027323_17860076811524609_3890717275703473961_n.webp'
-import gallery3 from '../assets/566943302_17860077999524609_139768563597202447_n.webp'
-import gallery4 from '../assets/572235425_17861416944524609_3463920233784334214_n.webp'
-import gallery5 from '../assets/572844840_17861111490524609_975655948130670703_n.webp'
-import gallery6 from '../assets/573313877_17862175311524609_6903431562385700038_n.webp'
-import gallery7 from '../assets/573523271_17861910591524609_5276602963239441975_n.webp'
-import gallery8 from '../assets/576458278_17862690423524609_5149917018225823158_n.webp'
+// Configuration EmailJS - à définir dans .env
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_TEMPLATE_CLIENT_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_CLIENT_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 function SurMesure() {
+  const [galleryPhotos, setGalleryPhotos] = useState([])
   const [formData, setFormData] = useState({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
     photoOption: 'gallery', // 'gallery' ou 'upload'
     selectedPhoto: null,
+    selectedPhotoUrl: null,
     uploadedPhoto: null,
     uploadedPhotoPreview: null,
     materiau: '',
@@ -27,18 +33,31 @@ function SurMesure() {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [galleryExpanded, setGalleryExpanded] = useState(false)
+  const [showAnimalHairModal, setShowAnimalHairModal] = useState(false)
+  const [animalHairConfirmed, setAnimalHairConfirmed] = useState(false)
 
-  // Photos de la galerie (exemples)
-  const galleryPhotos = [
-    { id: 1, src: gallery1, alt: 'Exemple 1' },
-    { id: 2, src: gallery2, alt: 'Exemple 2' },
-    { id: 3, src: gallery3, alt: 'Exemple 3' },
-    { id: 4, src: gallery4, alt: 'Exemple 4' },
-    { id: 5, src: gallery5, alt: 'Exemple 5' },
-    { id: 6, src: gallery6, alt: 'Exemple 6' },
-    { id: 7, src: gallery7, alt: 'Exemple 7' },
-    { id: 8, src: gallery8, alt: 'Exemple 8' },
-  ]
+  // Auto-dismiss error after 5s
+  useEffect(() => {
+    if (!error) return
+    const timer = setTimeout(() => setError(''), 5000)
+    return () => clearTimeout(timer)
+  }, [error])
+
+  // Charger les photos depuis l'API
+  useEffect(() => {
+    const loadGalleryPhotos = async () => {
+      const result = await getAllProducts()
+      if (result.success) {
+        const photos = result.products.slice(0, 8).map((product, index) => ({
+          id: product.id,
+          src: product.image,
+          alt: product.name || `Exemple ${index + 1}`
+        }))
+        setGalleryPhotos(photos)
+      }
+    }
+    loadGalleryPhotos()
+  }, [])
 
   const visiblePhotos = galleryExpanded ? galleryPhotos : galleryPhotos.slice(0, 4)
   const hasMorePhotos = galleryPhotos.length > 4
@@ -46,8 +65,8 @@ function SurMesure() {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        setError('La photo ne doit pas dépasser 10 Mo')
+      if (file.size > 4 * 1024 * 1024) {
+        setError('La photo ne doit pas dépasser 4 Mo')
         return
       }
       setFormData({
@@ -60,20 +79,43 @@ function SurMesure() {
     }
   }
 
-  const handleGallerySelect = (photoId) => {
+  const handleGallerySelect = (photoId, photoUrl) => {
     setFormData({
       ...formData,
       selectedPhoto: photoId,
+      selectedPhotoUrl: photoUrl,
       uploadedPhoto: null,
       uploadedPhotoPreview: null
     })
+  }
+
+  const handleMateriauChange = (value) => {
+    if (value === 'poils-animaux' && !animalHairConfirmed) {
+      setShowAnimalHairModal(true)
+      return
+    }
+    if (value !== 'poils-animaux') {
+      setAnimalHairConfirmed(false)
+    }
+    setFormData({ ...formData, materiau: value })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    // Validation
+    // Validation des informations client
+    if (!formData.customerName.trim() || formData.customerName.trim().length < 2) {
+      setError('Veuillez entrer votre nom (minimum 2 caractères)')
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!formData.customerEmail || !emailRegex.test(formData.customerEmail)) {
+      setError('Veuillez entrer une adresse email valide')
+      return
+    }
+
+    // Validation photo
     if (formData.photoOption === 'gallery' && !formData.selectedPhoto) {
       setError('Veuillez sélectionner une photo de la galerie')
       return
@@ -90,19 +132,96 @@ function SurMesure() {
       setError('Veuillez choisir un type de papier')
       return
     }
-    if (!formData.description.trim()) {
-      setError('Veuillez décrire votre projet')
+    if (!formData.description.trim() || formData.description.trim().length < 10) {
+      setError('Veuillez décrire votre projet (minimum 10 caractères)')
       return
     }
 
     setSending(true)
 
-    // Simuler l'envoi (à remplacer par une vraie API)
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Convertir la photo uploadée en base64 si nécessaire
+      let uploadedPhotoBase64 = null
+      if (formData.photoOption === 'upload' && formData.uploadedPhoto) {
+        uploadedPhotoBase64 = await fileToBase64(formData.uploadedPhoto)
+      }
+
+      // Préparer les données pour l'API
+      const orderData = {
+        customerName: formData.customerName.trim(),
+        customerEmail: formData.customerEmail.trim(),
+        customerPhone: formData.customerPhone.trim() || null,
+        photoOption: formData.photoOption,
+        selectedPhotoId: formData.selectedPhoto,
+        selectedPhotoUrl: formData.selectedPhotoUrl,
+        uploadedPhotoBase64,
+        materiau: formData.materiau,
+        papier: formData.papier,
+        cadre: formData.cadre,
+        description: formData.description.trim()
+      }
+
+      // Sauvegarder la demande dans MongoDB
+      const apiResult = await createCustomOrder(orderData)
+      if (!apiResult.success) {
+        throw new Error(apiResult.error || 'Erreur lors de l\'enregistrement')
+      }
+
+      // Envoyer l'email via EmailJS
+      const materiauLabels = {
+        'cheveux-artificiels': 'Cheveux Artificiels',
+        'poils-animaux': 'Poils d\'Animaux',
+        'cheveux-bebe': 'Cheveux de Bébé'
+      }
+      const papierLabels = {
+        'papier-photo': 'Papier Photo',
+        'papier-art': 'Papier d\'Art'
+      }
+
+      // Determine photo URL for email
+      let photoUrl = ''
+      if (apiResult.uploadedPhotoUrl) {
+        photoUrl = apiResult.uploadedPhotoUrl
+      } else if (formData.photoOption === 'gallery' && formData.selectedPhotoUrl) {
+        photoUrl = formData.selectedPhotoUrl
+      }
+
+      const emailParams = {
+        customer_name: formData.customerName,
+        customer_email: formData.customerEmail,
+        customer_phone: formData.customerPhone || 'Non renseigné',
+        photo_option: formData.photoOption === 'gallery' ? 'Photo de la galerie' : 'Photo personnelle',
+        materiau: materiauLabels[formData.materiau] || formData.materiau,
+        papier: papierLabels[formData.papier] || formData.papier,
+        cadre: formData.cadre ? 'Oui' : 'Non',
+        description: formData.description,
+        order_id: apiResult.orderId,
+        photo_url: photoUrl
+      }
+
+      // Envoyer l'email à l'admin
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        emailParams,
+        EMAILJS_PUBLIC_KEY
+      )
+
+      // Envoyer l'email de confirmation au client
+      if (EMAILJS_TEMPLATE_CLIENT_ID) {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_CLIENT_ID,
+          emailParams,
+          EMAILJS_PUBLIC_KEY
+        )
+      }
+
       setSent(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.')
+      console.error('Erreur lors de l\'envoi:', err)
+      setError(err.message || 'Une erreur est survenue. Veuillez réessayer.')
     } finally {
       setSending(false)
     }
@@ -125,9 +244,14 @@ function SurMesure() {
             className="btn-new-request"
             onClick={() => {
               setSent(false)
+              setAnimalHairConfirmed(false)
               setFormData({
+                customerName: '',
+                customerEmail: '',
+                customerPhone: '',
                 photoOption: 'gallery',
                 selectedPhoto: null,
+                selectedPhotoUrl: null,
                 uploadedPhoto: null,
                 uploadedPhotoPreview: null,
                 materiau: '',
@@ -146,6 +270,11 @@ function SurMesure() {
 
   return (
     <div className="sur-mesure">
+      <SEO
+        title="Création Sur-Mesure"
+        description="Créez votre œuvre personnalisée : portrait brodé avec cheveux, poils d'animaux ou cheveux de bébé. Commandez votre création unique sur-mesure."
+        url="/sur-mesure"
+      />
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -166,9 +295,48 @@ function SurMesure() {
       >
         {error && <div className="form-error">{error}</div>}
 
+        {/* Section Informations Client */}
+        <section className="form-section">
+          <h2>1. Vos Coordonnées</h2>
+          <div className="customer-fields">
+            <div className="form-field">
+              <label htmlFor="customerName">Nom complet *</label>
+              <input
+                type="text"
+                id="customerName"
+                value={formData.customerName}
+                onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                placeholder="Votre nom"
+                required
+              />
+            </div>
+            <div className="form-field">
+              <label htmlFor="customerEmail">Email *</label>
+              <input
+                type="email"
+                id="customerEmail"
+                value={formData.customerEmail}
+                onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+                placeholder="votre@email.com"
+                required
+              />
+            </div>
+            <div className="form-field">
+              <label htmlFor="customerPhone">Téléphone (optionnel)</label>
+              <input
+                type="tel"
+                id="customerPhone"
+                value={formData.customerPhone}
+                onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                placeholder="06 12 34 56 78"
+              />
+            </div>
+          </div>
+        </section>
+
         {/* Section Photo */}
         <section className="form-section">
-          <h2>1. Votre Photo</h2>
+          <h2>2. Votre Photo</h2>
 
           <div className="photo-options">
             <label className={`photo-option ${formData.photoOption === 'gallery' ? 'active' : ''}`}>
@@ -200,7 +368,7 @@ function SurMesure() {
                   <div
                     key={photo.id}
                     className={`gallery-item ${formData.selectedPhoto === photo.id ? 'selected' : ''}`}
-                    onClick={() => handleGallerySelect(photo.id)}
+                    onClick={() => handleGallerySelect(photo.id, photo.src)}
                   >
                     <img src={photo.src} alt={photo.alt} />
                     {formData.selectedPhoto === photo.id && (
@@ -256,7 +424,7 @@ function SurMesure() {
                       </svg>
                     </span>
                     <span className="upload-text">Cliquez pour télécharger votre photo</span>
-                    <span className="upload-hint">JPG, PNG - Max 10 Mo</span>
+                    <span className="upload-hint">JPG, PNG - Max 4 Mo</span>
                   </div>
                 </label>
               )}
@@ -266,7 +434,7 @@ function SurMesure() {
 
         {/* Section Matériau */}
         <section className="form-section">
-          <h2>2. Matériau</h2>
+          <h2>3. Matériau</h2>
           <div className="options-grid">
             <label className={`option-card ${formData.materiau === 'cheveux-artificiels' ? 'selected' : ''}`}>
               <input
@@ -274,7 +442,7 @@ function SurMesure() {
                 name="materiau"
                 value="cheveux-artificiels"
                 checked={formData.materiau === 'cheveux-artificiels'}
-                onChange={(e) => setFormData({ ...formData, materiau: e.target.value })}
+                onChange={(e) => handleMateriauChange(e.target.value)}
               />
               <span className="option-icon">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -293,7 +461,7 @@ function SurMesure() {
                 name="materiau"
                 value="poils-animaux"
                 checked={formData.materiau === 'poils-animaux'}
-                onChange={(e) => setFormData({ ...formData, materiau: e.target.value })}
+                onChange={(e) => handleMateriauChange(e.target.value)}
               />
               <span className="option-icon">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -318,7 +486,7 @@ function SurMesure() {
                 name="materiau"
                 value="cheveux-bebe"
                 checked={formData.materiau === 'cheveux-bebe'}
-                onChange={(e) => setFormData({ ...formData, materiau: e.target.value })}
+                onChange={(e) => handleMateriauChange(e.target.value)}
               />
               <span className="option-icon">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -336,7 +504,7 @@ function SurMesure() {
 
         {/* Section Papier */}
         <section className="form-section">
-          <h2>3. Type de Papier</h2>
+          <h2>4. Type de Papier</h2>
           <div className="options-grid options-grid-2">
             <label className={`option-card ${formData.papier === 'papier-photo' ? 'selected' : ''}`}>
               <input
@@ -381,7 +549,7 @@ function SurMesure() {
 
         {/* Section Cadre */}
         <section className="form-section">
-          <h2>4. Cadre</h2>
+          <h2>5. Cadre</h2>
           <label className="cadre-toggle">
             <input
               type="checkbox"
@@ -402,13 +570,14 @@ function SurMesure() {
 
         {/* Section Description */}
         <section className="form-section">
-          <h2>5. Décrivez votre projet</h2>
+          <h2 id="description-label">6. Décrivez votre projet</h2>
           <textarea
             className="description-textarea"
             placeholder="Décrivez votre vision, vos souhaits particuliers, les dimensions souhaitées, les couleurs préférées..."
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={6}
+            aria-labelledby="description-label"
           />
         </section>
 
@@ -421,6 +590,18 @@ function SurMesure() {
           {sending ? 'Envoi en cours...' : 'Envoyer ma demande'}
         </button>
       </motion.form>
+
+      <AnimalHairModal
+        isOpen={showAnimalHairModal}
+        onConfirm={() => {
+          setAnimalHairConfirmed(true)
+          setShowAnimalHairModal(false)
+          setFormData(prev => ({ ...prev, materiau: 'poils-animaux' }))
+        }}
+        onDismiss={() => {
+          setShowAnimalHairModal(false)
+        }}
+      />
     </div>
   )
 }

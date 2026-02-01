@@ -51,9 +51,8 @@
 }
 
 /* Titres des sections */
-.footer-nav h4,
-.footer-contact h4,
-.footer-social h4 {
+.footer-title {
+  display: block;
   font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 600;

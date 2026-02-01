@@ -23,7 +23,7 @@ export async function getAboutContent() {
  */
 export async function updateAboutContent(content) {
   try {
-    const response = await fetch(`${API_URL}/api/about/update`, {
+    const response = await fetch(`${API_URL}/api/about`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

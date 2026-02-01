@@ -29,7 +29,21 @@
       "Bash(gh api:*)",
       "WebFetch(domain:github.com)",
       "Bash(npm run build:*)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(lighthouse:*)",
+      "Bash(dir:*)",
+      "Bash(del \"C:\\\\Users\\\\fabie\\\\Documents\\\\lateliergaston\\\\txt\")",
+      "Bash(where:*)",
+      "Bash(where npx:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(npx sharp-cli:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(npm run migrate-images:*)",
+      "Bash(npm i:*)",
+      "Bash(git status:*)"
     ],
     "deny": [],
     "ask": []

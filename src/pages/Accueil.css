@@ -14,7 +14,7 @@
 
 .accueil-hero h1 {
   font-size: 2.5rem;
-  color: #AD1A31;
+  color: var(--heading-color, #AD1A31);
   margin-bottom: 1rem;
   font-weight: 300;
   letter-spacing: 0.05em;
@@ -22,7 +22,7 @@
 
 .accueil-subtitle {
   font-size: 2rem;
-  color: var(--text-secondary, #666);
+  color: var(--subtitle-color, var(--text-secondary, #666));
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
@@ -31,7 +31,7 @@
 
 /* Announcement Banner */
 .accueil-announcement {
-  background: linear-gradient(135deg, #f8f4f0 0%, #efe9e3 100%);
+  background: var(--announcement-bg, #f8f4f0);
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 3rem;
@@ -59,7 +59,7 @@
 
 .accueil-announcement h2 {
   font-size: 1.5rem;
-  color: #AD1A31;
+  color: var(--heading-color, #AD1A31);
   margin-bottom: 0.5rem;
   font-weight: 400;
 }
@@ -94,7 +94,7 @@
 .accueil-featured h2 {
   text-align: center;
   font-size: 1.8rem;
-  color: #AD1A31;
+  color: var(--heading-color, #AD1A31);
   margin-bottom: 2rem;
   font-weight: 300;
   letter-spacing: 0.05em;
@@ -220,8 +220,8 @@
 }
 
 .accueil-btn-primary {
-  background: var(--accent-color, #8b6d4c);
-  color: white;
+  background: var(--button-bg, var(--accent-color, #8b6d4c));
+  color: var(--button-text, white);
 }
 
 .accueil-btn-primary:hover {
@@ -252,7 +252,7 @@
 .accueil-art-section h2 {
   text-align: center;
   font-size: 2rem;
-  color: #AD1A31;
+  color: var(--heading-color, #AD1A31);
   margin-bottom: 2rem;
   font-weight: 300;
   letter-spacing: 0.05em;
@@ -311,7 +311,7 @@
 
 /* Call to Action */
 .accueil-cta {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  background: var(--cta-bg, #2c3e50);
   color: white;
   text-align: center;
   padding: 3rem 2rem;

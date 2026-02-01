@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { getAllProductsAdmin, deleteProduct, updateProduct } from '../../services/productApi'
 import BackButton from '../../components/BackButton'
+import ConfirmModal from '../../components/admin/ConfirmModal'
 import './AdminProducts.css'
 
 function AdminProducts() {
@@ -12,6 +13,12 @@ function AdminProducts() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('all')
+  const [notification, setNotification] = useState(null)
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    productId: null,
+    productName: ''
+  })
 
   useEffect(() => {
     loadProducts()
@@ -30,18 +37,35 @@ function AdminProducts() {
     setLoading(false)
   }
 
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer "${name}" ?\n\nCette action est irréversible.`)) {
-      return
-    }
+  const showNotification = (message, type = 'error') => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification(null), 3000)
+  }
 
-    const result = await deleteProduct(id)
+  const handleDeleteClick = (id, name) => {
+    setConfirmModal({
+      isOpen: true,
+      productId: id,
+      productName: name
+    })
+  }
+
+  const handleDeleteConfirm = async () => {
+    const { productId } = confirmModal
+    setConfirmModal({ isOpen: false, productId: null, productName: '' })
+
+    const result = await deleteProduct(productId)
 
     if (result.success) {
-      setProducts(prev => prev.filter(p => p.id !== id))
+      setProducts(prev => prev.filter(p => p.id !== productId))
+      showNotification('Produit supprimé avec succès', 'success')
     } else {
-      alert(result.error || 'Erreur lors de la suppression')
+      showNotification(result.error || 'Erreur lors de la suppression')
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setConfirmModal({ isOpen: false, productId: null, productName: '' })
   }
 
   const handleToggleVisibility = async (product) => {
@@ -64,7 +88,7 @@ function AdminProducts() {
         p.id === product.id ? { ...p, status: newStatus } : p
       ))
     } else {
-      alert(result.error || 'Erreur lors de la mise à jour')
+      showNotification(result.error || 'Erreur lors de la mise à jour')
     }
   }
 
@@ -88,7 +112,7 @@ function AdminProducts() {
         p.id === product.id ? { ...p, status: newStatus } : p
       ))
     } else {
-      alert(result.error || 'Erreur lors de la mise à jour')
+      showNotification(result.error || 'Erreur lors de la mise à jour')
     }
   }
 
@@ -146,9 +170,14 @@ function AdminProducts() {
 
         <div className="products-header">
           <h2>Œuvres ({filteredProducts.length})</h2>
-          <Link to="/admin/products/new" className="btn-create">
-            + Nouvelle œuvre
-          </Link>
+          <div className="products-header-actions">
+            <Link to="/admin/reorder" className="btn-reorder">
+              Réorganiser
+            </Link>
+            <Link to="/admin/products/new" className="btn-create">
+              + Nouvelle œuvre
+            </Link>
+          </div>
         </div>
 
         {/* Filtres par statut */}
@@ -197,76 +226,156 @@ function AdminProducts() {
             )}
           </div>
         ) : (
-          <div className="products-table-container">
-            <table className="products-table">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Nom</th>
-                  <th>Prix</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => {
-                  const statusBadge = getStatusBadge(product.status)
-                  return (
-                    <tr key={product.id} className={product.status === 'hidden' ? 'row-hidden' : ''}>
-                      <td>
-                        <div className="product-thumbnail">
-                          <img src={product.image} alt={product.name} />
-                        </div>
-                      </td>
-                      <td>
-                        <strong>{product.name}</strong>
-                      </td>
-                      <td>{product.price.toFixed(2)} €</td>
-                      <td>
-                        <span className={`status-badge ${statusBadge.class}`}>
-                          {statusBadge.label}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button
-                            onClick={() => handleToggleVisibility(product)}
-                            className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
-                            title={product.status === 'hidden' ? 'Rendre visible' : 'Masquer'}
-                          >
-                            {product.status === 'hidden' ? '👁️' : '🙈'}
-                          </button>
-                          {product.status !== 'hidden' && (
+          <>
+            {/* Table pour desktop */}
+            <div className="products-table-container">
+              <table className="products-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => {
+                    const statusBadge = getStatusBadge(product.status)
+                    return (
+                      <tr key={product.id} className={product.status === 'hidden' ? 'row-hidden' : ''}>
+                        <td>
+                          <div className="product-thumbnail">
+                            <img src={product.image} alt={product.name} />
+                          </div>
+                        </td>
+                        <td>
+                          <strong>{product.name}</strong>
+                        </td>
+                        <td>{product.price.toFixed(2)} €</td>
+                        <td>
+                          <span className={`status-badge ${statusBadge.class}`}>
+                            {statusBadge.label}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
                             <button
-                              onClick={() => handleToggleSold(product)}
-                              className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
-                              title={product.status === 'sold' ? 'Marquer disponible' : 'Marquer vendu'}
+                              onClick={() => handleToggleVisibility(product)}
+                              className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
+                              title={product.status === 'hidden' ? 'Rendre visible' : 'Masquer'}
                             >
-                              {product.status === 'sold' ? '🔄' : '✓'}
+                              {product.status === 'hidden' ? '👁️' : '🙈'}
                             </button>
-                          )}
-                          <Link
-                            to={`/admin/products/edit/${product.id}`}
-                            className="btn-edit"
-                          >
-                            Modifier
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(product.id, product.name)}
-                            className="btn-delete"
-                          >
-                            Supprimer
-                          </button>
+                            {product.status !== 'hidden' && (
+                              <button
+                                onClick={() => handleToggleSold(product)}
+                                className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
+                                title={product.status === 'sold' ? 'Marquer disponible' : 'Marquer vendu'}
+                              >
+                                {product.status === 'sold' ? '🔄' : '✓'}
+                              </button>
+                            )}
+                            <Link
+                              to={`/admin/products/edit/${product.id}`}
+                              className="btn-edit"
+                            >
+                              Modifier
+                            </Link>
+                            <button
+                              onClick={() => handleDeleteClick(product.id, product.name)}
+                              className="btn-delete"
+                            >
+                              Supprimer
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Cartes pour mobile */}
+            <div className="products-cards">
+              {filteredProducts.map((product) => {
+                const statusBadge = getStatusBadge(product.status)
+                return (
+                  <div
+                    key={product.id}
+                    className={`product-card-admin ${product.status === 'hidden' ? 'card-hidden' : ''}`}
+                  >
+                    <div className="card-content">
+                      <div className="card-image">
+                        <img src={product.image} alt={product.name} />
+                      </div>
+                      <div className="card-info">
+                        <h3>{product.name}</h3>
+                        <p className="card-price">{product.price.toFixed(2)} €</p>
+                        <div className="card-status">
+                          <span className={`status-badge ${statusBadge.class}`}>
+                            {statusBadge.label}
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                    <div className="card-actions">
+                      <button
+                        onClick={() => handleToggleVisibility(product)}
+                        className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
+                      >
+                        {product.status === 'hidden' ? '👁️' : '🙈'}
+                      </button>
+                      {product.status !== 'hidden' ? (
+                        <button
+                          onClick={() => handleToggleSold(product)}
+                          className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
+                        >
+                          {product.status === 'sold' ? '🔄' : '✓'}
+                        </button>
+                      ) : (
+                        <div></div>
+                      )}
+                      <Link
+                        to={`/admin/products/edit/${product.id}`}
+                        className="btn-edit"
+                      >
+                        Modifier
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteClick(product.id, product.name)}
+                        className="btn-delete"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
         )}
       </div>
+
+      {/* Modal de confirmation de suppression */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        title="Supprimer cette oeuvre ?"
+        message={`Êtes-vous sûr de vouloir supprimer "${confirmModal.productName}" ? Cette action est irréversible.`}
+        confirmText="Oui, supprimer"
+        cancelText="Non, annuler"
+        type="danger"
+      />
+
+      {/* Notification */}
+      {notification && (
+        <div className={`admin-notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
     </div>
   )
 }

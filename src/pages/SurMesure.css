@@ -32,12 +32,33 @@
 }
 
 .form-error {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
   background-color: #fee;
   color: #c33;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   border-radius: 8px;
   border-left: 4px solid #c33;
   font-family: var(--font-body);
+  font-size: 1.1rem;
+  max-width: 600px;
+  width: calc(100% - 2rem);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUpError 0.3s ease;
+}
+
+@keyframes slideUpError {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* Sections */
@@ -469,8 +490,8 @@
 .btn-submit {
   font-family: var(--font-heading);
   padding: 1.2rem 2.5rem;
-  background: var(--primary-color, #8b4049);
-  color: white;
+  background: var(--button-bg, var(--primary-color, #8b4049));
+  color: var(--button-text, white);
   border: none;
   border-radius: 8px;
   font-size: 1.2rem;
@@ -552,6 +573,7 @@
 @media (max-width: 768px) {
   .sur-mesure {
     padding: 2rem 1rem;
+    padding-top: 3rem;
   }
 
   .sur-mesure h1 {

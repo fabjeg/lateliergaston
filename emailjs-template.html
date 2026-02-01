@@ -1,0 +1,192 @@
+<!--
+  TEMPLATE EMAILJS POUR L'ATELIER GASTON
+  ======================================
+
+  Instructions:
+  1. Connectez-vous à https://dashboard.emailjs.com/
+  2. Allez dans "Email Templates"
+  3. Cliquez sur votre template (template_1qlc01m)
+  4. Copiez le contenu ci-dessous dans l'éditeur
+
+  Variables disponibles:
+  - {{customer_name}} : Nom du client
+  - {{customer_email}} : Email du client
+  - {{customer_phone}} : Téléphone du client
+  - {{photo_option}} : "Photo de la galerie" ou "Photo personnelle"
+  - {{photo_url}} : URL de la photo (Cloudinary ou galerie)
+  - {{materiau}} : Cheveux Artificiels / Poils d'Animaux / Cheveux de Bébé
+  - {{papier}} : Papier Photo / Papier d'Art
+  - {{cadre}} : Oui / Non
+  - {{description}} : Description du projet
+  - {{order_id}} : Identifiant unique de la commande
+-->
+
+<!-- ============ SUJET DE L'EMAIL ============ -->
+<!-- Dans le champ "Subject" d'EmailJS, mettez: -->
+<!-- Nouvelle demande sur-mesure de {{customer_name}} - #{{order_id}} -->
+
+
+<!-- ============ CONTENU DE L'EMAIL ============ -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', serif; background-color: #faf8f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf8f5; padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(139, 64, 73, 0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #8b4049; padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 2px;">L'Atelier Gaston</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-style: italic;">Nouvelle demande sur-mesure</p>
+            </td>
+          </tr>
+
+          <!-- Référence commande -->
+          <tr>
+            <td style="padding: 25px 30px 15px 30px; text-align: center; border-bottom: 1px solid #f0e6dc;">
+              <p style="margin: 0; color: #666; font-size: 14px;">Référence commande</p>
+              <p style="margin: 5px 0 0 0; color: #8b4049; font-size: 18px; font-weight: bold;">#{{order_id}}</p>
+            </td>
+          </tr>
+
+          <!-- Informations client -->
+          <tr>
+            <td style="padding: 25px 30px;">
+              <h2 style="color: #8b4049; font-size: 20px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #f0e6dc;">Informations client</h2>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="40%" style="padding: 8px 0; color: #888; font-size: 14px;">Nom</td>
+                  <td style="padding: 8px 0; color: #333; font-size: 15px; font-weight: 600;">{{customer_name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #888; font-size: 14px;">Email</td>
+                  <td style="padding: 8px 0; color: #333; font-size: 15px;">
+                    <a href="mailto:{{customer_email}}" style="color: #8b4049; text-decoration: none;">{{customer_email}}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #888; font-size: 14px;">Téléphone</td>
+                  <td style="padding: 8px 0; color: #333; font-size: 15px;">{{customer_phone}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Détails de la commande -->
+          <tr>
+            <td style="padding: 0 30px 25px 30px;">
+              <h2 style="color: #8b4049; font-size: 20px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #f0e6dc;">Détails de la création</h2>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="40%" style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Photo</td>
+                  <td style="padding: 10px 0; color: #333; font-size: 15px;">{{photo_option}}</td>
+                </tr>
+                <tr>
+                  <td width="40%" style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Aperçu</td>
+                  <td style="padding: 10px 0;">
+                    <a href="{{photo_url}}" target="_blank" style="text-decoration: none; color: #8b4049;">
+                      <img src="{{photo_url}}" alt="Photo du client" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid #f0e6dc;" />
+                      <br>
+                      <span style="font-size: 13px;">Voir la photo en taille reelle</span>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Matériau</td>
+                  <td style="padding: 10px 0;">
+                    <span style="background-color: #fdf2f3; color: #8b4049; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">{{materiau}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Type de papier</td>
+                  <td style="padding: 10px 0;">
+                    <span style="background-color: #f5f0eb; color: #6d5344; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">{{papier}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Cadre</td>
+                  <td style="padding: 10px 0; color: #333; font-size: 15px; font-weight: 600;">{{cadre}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Description du projet -->
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <h2 style="color: #8b4049; font-size: 20px; margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #f0e6dc;">Description du projet</h2>
+              <div style="background-color: #faf8f5; padding: 20px; border-radius: 8px; border-left: 4px solid #8b4049;">
+                <p style="margin: 0; color: #444; font-size: 15px; line-height: 1.7; white-space: pre-wrap;">{{description}}</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Call to action -->
+          <tr>
+            <td style="padding: 0 30px 30px 30px; text-align: center;">
+              <a href="mailto:{{customer_email}}?subject=Votre demande sur-mesure %23{{order_id}} - L'Atelier Gaston"
+                 style="display: inline-block; background-color: #8b4049; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                Répondre au client
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f5f0eb; padding: 25px 30px; text-align: center;">
+              <p style="margin: 0; color: #8b4049; font-size: 16px; font-weight: 600;">L'Atelier Gaston</p>
+              <p style="margin: 8px 0 0 0; color: #888; font-size: 13px;">Crach 56950 - Bretagne</p>
+              <p style="margin: 5px 0 0 0; color: #888; font-size: 13px;">contact@lateliergaston.fr | +33 6 18 01 42 57</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!--
+  ============ VERSION TEXTE SIMPLE ============
+  (À mettre dans l'onglet "Plain text" d'EmailJS si disponible)
+
+NOUVELLE DEMANDE SUR-MESURE - L'ATELIER GASTON
+==============================================
+
+Référence: #{{order_id}}
+
+INFORMATIONS CLIENT
+-------------------
+Nom: {{customer_name}}
+Email: {{customer_email}}
+Téléphone: {{customer_phone}}
+
+DÉTAILS DE LA CRÉATION
+----------------------
+Photo: {{photo_option}}
+Photo URL: {{photo_url}}
+Matériau: {{materiau}}
+Type de papier: {{papier}}
+Cadre: {{cadre}}
+
+DESCRIPTION DU PROJET
+---------------------
+{{description}}
+
+---
+L'Atelier Gaston
+Crach 56950 - Bretagne
+contact@lateliergaston.fr | +33 6 18 01 42 57
+
+-->

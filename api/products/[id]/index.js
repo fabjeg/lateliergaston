@@ -1,6 +1,7 @@
 import { getCollection } from '../../_lib/mongodb.js'
 import { requireAuth } from '../../_lib/auth.js'
-import { handleCorsOptions, apiResponse, validateProduct, validateImageBase64, sanitizeString } from '../../_lib/utils.js'
+import { handleCorsOptions, apiResponse, validateProduct, sanitizeString } from '../../_lib/utils.js'
+import { deleteImage } from '../../_lib/cloudinary.js'
 
 async function handler(req, res) {
   // Handle CORS preflight
@@ -33,6 +34,7 @@ async function handler(req, res) {
         return res.status(404).json(apiResponse(false, null, 'Produit non trouvé'))
       }
 
+      // Support both Cloudinary URLs (imageUrl) and legacy base64 (imageBase64)
       return res.status(200).json(
         apiResponse(true, {
           product: {
@@ -42,8 +44,9 @@ async function handler(req, res) {
             description: product.description,
             height: product.height,
             width: product.width,
-            image: product.imageBase64,
-            imageBase64: product.imageBase64,
+            image: product.imageUrl || product.imageBase64,
+            imageUrl: product.imageUrl || null,
+            imagePublicId: product.imagePublicId || null,
             imageFilename: product.imageFilename,
             stripePriceId: product.stripePriceId,
             status: product.status,
@@ -65,7 +68,7 @@ async function handler(req, res) {
   // PUT - Update product
   if (req.method === 'PUT') {
     try {
-      const { name, price, description, height, width, imageBase64, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
+      const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
       // Check if product exists
       const existingProduct = await productsCollection.findOne({ id: productId })
@@ -79,14 +82,6 @@ async function handler(req, res) {
         return res.status(400).json(
           apiResponse(false, null, productValidation.errors.join(', '))
         )
-      }
-
-      // Validate image if provided
-      if (imageBase64) {
-        const imageValidation = validateImageBase64(imageBase64)
-        if (!imageValidation.valid) {
-          return res.status(400).json(apiResponse(false, null, imageValidation.error))
-        }
       }
 
       // Build update object
@@ -105,10 +100,17 @@ async function handler(req, res) {
         updatedAt: new Date()
       }
 
-      // Only update image if provided
-      if (imageBase64) {
-        updateData.imageBase64 = imageBase64
+      // Only update image if new URL provided
+      if (imageUrl) {
+        // Delete old image from Cloudinary if it exists
+        if (existingProduct.imagePublicId) {
+          await deleteImage(existingProduct.imagePublicId)
+        }
+        updateData.imageUrl = imageUrl
+        updateData.imagePublicId = imagePublicId || null
         updateData.imageFilename = sanitizeString(imageFilename || existingProduct.imageFilename)
+        // Remove old base64 if migrating to Cloudinary
+        updateData.imageBase64 = null
       }
 
       // Update in MongoDB
@@ -117,11 +119,28 @@ async function handler(req, res) {
         { $set: updateData }
       )
 
+      // Fetch updated product for response
+      const updatedProduct = await productsCollection.findOne({ id: productId })
+
       return res.status(200).json(
         apiResponse(true, {
           product: {
             id: productId,
-            ...updateData
+            name: updatedProduct.name,
+            price: updatedProduct.price,
+            description: updatedProduct.description,
+            height: updatedProduct.height,
+            width: updatedProduct.width,
+            image: updatedProduct.imageUrl || updatedProduct.imageBase64,
+            imageUrl: updatedProduct.imageUrl || null,
+            imagePublicId: updatedProduct.imagePublicId || null,
+            imageFilename: updatedProduct.imageFilename,
+            stripePriceId: updatedProduct.stripePriceId,
+            status: updatedProduct.status,
+            collectionId: updatedProduct.collectionId,
+            technique: updatedProduct.technique,
+            year: updatedProduct.year,
+            framed: updatedProduct.framed
           }
         }, 'Produit modifié avec succès')
       )
@@ -136,11 +155,20 @@ async function handler(req, res) {
   // DELETE - Delete product
   if (req.method === 'DELETE') {
     try {
-      const result = await productsCollection.deleteOne({ id: productId })
+      // Find product first to get image public ID
+      const product = await productsCollection.findOne({ id: productId })
 
-      if (result.deletedCount === 0) {
+      if (!product) {
         return res.status(404).json(apiResponse(false, null, 'Produit non trouvé'))
       }
+
+      // Delete image from Cloudinary if it exists
+      if (product.imagePublicId) {
+        await deleteImage(product.imagePublicId)
+      }
+
+      // Delete from MongoDB
+      await productsCollection.deleteOne({ id: productId })
 
       return res.status(200).json(
         apiResponse(true, { id: productId }, 'Produit supprimé avec succès')

@@ -1,0 +1,241 @@
+<!--
+  TEMPLATE EMAILJS - CONFIRMATION CLIENT
+  ======================================
+
+  Instructions:
+  1. Connectez-vous à https://dashboard.emailjs.com/
+  2. Allez dans "Email Templates"
+  3. Cliquez sur "Create New Template"
+  4. Nommez-le "template_confirmation_client" (ou notez l'ID généré)
+  5. Copiez le contenu ci-dessous dans l'éditeur
+  6. IMPORTANT: Ajoutez l'ID du nouveau template dans votre fichier .env:
+     VITE_EMAILJS_TEMPLATE_CLIENT_ID=template_xxxxxx
+
+  Variables disponibles:
+  - {{customer_name}} : Nom du client
+  - {{customer_email}} : Email du client (utilisé comme destinataire)
+  - {{photo_option}} : "Photo de la galerie" ou "Photo personnelle"
+  - {{photo_url}} : URL de la photo (Cloudinary ou galerie)
+  - {{materiau}} : Cheveux Artificiels / Poils d'Animaux / Cheveux de Bébé
+  - {{papier}} : Papier Photo / Papier d'Art
+  - {{cadre}} : Oui / Non
+  - {{description}} : Description du projet
+  - {{order_id}} : Identifiant unique de la commande
+
+  CONFIGURATION IMPORTANTE DANS EMAILJS:
+  - Dans "To Email", mettez: {{customer_email}}
+  - Dans "From Name", mettez: L'Atelier Gaston
+  - Dans "Reply To", mettez: contact@lateliergaston.fr
+-->
+
+<!-- ============ SUJET DE L'EMAIL ============ -->
+<!-- Dans le champ "Subject" d'EmailJS, mettez: -->
+<!-- Merci pour votre demande ! - L'Atelier Gaston #{{order_id}} -->
+
+
+<!-- ============ CONTENU DE L'EMAIL ============ -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', serif; background-color: #faf8f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf8f5; padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(139, 64, 73, 0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #8b4049; padding: 40px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 2px;">L'Atelier Gaston</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 15px 0 0 0; font-size: 16px;">Créations artisanales sur-mesure</p>
+            </td>
+          </tr>
+
+          <!-- Message de remerciement -->
+          <tr>
+            <td style="padding: 40px 30px 20px 30px; text-align: center;">
+              <h2 style="color: #8b4049; font-size: 26px; margin: 0 0 20px 0;">Merci {{customer_name}} !</h2>
+              <p style="color: #555; font-size: 16px; line-height: 1.8; margin: 0;">
+                Nous avons bien reçu votre demande de création sur-mesure.<br>
+                Votre projet nous tient à cœur et nous y apporterons toute notre attention.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Référence commande -->
+          <tr>
+            <td style="padding: 10px 30px 25px 30px; text-align: center;">
+              <div style="display: inline-block; background-color: #fdf2f3; padding: 15px 30px; border-radius: 30px;">
+                <p style="margin: 0; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Votre référence</p>
+                <p style="margin: 5px 0 0 0; color: #8b4049; font-size: 20px; font-weight: bold;">#{{order_id}}</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Séparateur -->
+          <tr>
+            <td style="padding: 0 30px;">
+              <hr style="border: none; border-top: 1px solid #f0e6dc; margin: 0;">
+            </td>
+          </tr>
+
+          <!-- Récapitulatif de la commande -->
+          <tr>
+            <td style="padding: 30px;">
+              <h3 style="color: #8b4049; font-size: 18px; margin: 0 0 20px 0; text-align: center;">Récapitulatif de votre demande</h3>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf8f5; border-radius: 10px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 15px 20px; border-bottom: 1px solid #f0e6dc;">
+                    <table width="100%">
+                      <tr>
+                        <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Photo</td>
+                        <td style="color: #333; font-size: 15px; text-align: right; font-weight: 500;">{{photo_option}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px 20px; border-bottom: 1px solid #f0e6dc;">
+                    <table width="100%">
+                      <tr>
+                        <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Matériau</td>
+                        <td style="color: #8b4049; font-size: 15px; text-align: right; font-weight: 600;">{{materiau}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px 20px; border-bottom: 1px solid #f0e6dc;">
+                    <table width="100%">
+                      <tr>
+                        <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Type de papier</td>
+                        <td style="color: #333; font-size: 15px; text-align: right; font-weight: 500;">{{papier}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px 20px;">
+                    <table width="100%">
+                      <tr>
+                        <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Cadre</td>
+                        <td style="color: #333; font-size: 15px; text-align: right; font-weight: 500;">{{cadre}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Description -->
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <p style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0;">Votre projet</p>
+              <div style="background-color: #faf8f5; padding: 20px; border-radius: 10px; border-left: 4px solid #8b4049;">
+                <p style="margin: 0; color: #444; font-size: 14px; line-height: 1.7; font-style: italic; white-space: pre-wrap;">{{description}}</p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Prochaines étapes -->
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <div style="background-color: #f9f5f0; padding: 25px; border-radius: 10px; text-align: center;">
+                <h4 style="color: #8b4049; font-size: 16px; margin: 0 0 15px 0;">Et maintenant ?</h4>
+                <p style="color: #555; font-size: 14px; line-height: 1.7; margin: 0;">
+                  Nous étudions votre demande avec attention.<br>
+                  Nous vous contacterons dans les <strong>48 heures</strong> pour discuter<br>
+                  des détails et vous proposer un devis personnalisé.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Contact -->
+          <tr>
+            <td style="padding: 0 30px 30px 30px; text-align: center;">
+              <p style="color: #888; font-size: 14px; margin: 0 0 15px 0;">Une question ? Contactez-nous :</p>
+              <a href="mailto:contact@lateliergaston.fr" style="display: inline-block; background-color: #8b4049; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-size: 14px; margin: 0 5px;">
+                contact@lateliergaston.fr
+              </a>
+              <a href="tel:+33618014257" style="display: inline-block; background-color: #f5f0eb; color: #8b4049; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-size: 14px; margin: 0 5px;">
+                06 18 01 42 57
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #8b4049; padding: 30px; text-align: center;">
+              <p style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: 1px;">L'Atelier Gaston</p>
+              <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.8); font-size: 13px;">Créations artisanales uniques</p>
+              <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">Crach 56950 - Bretagne</p>
+
+              <!-- Réseaux sociaux (optionnel - ajoutez vos liens) -->
+              <!--
+              <p style="margin: 20px 0 0 0;">
+                <a href="#" style="color: #ffffff; text-decoration: none; margin: 0 10px;">Instagram</a>
+                <a href="#" style="color: #ffffff; text-decoration: none; margin: 0 10px;">Facebook</a>
+              </p>
+              -->
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Mention légale -->
+        <p style="color: #999; font-size: 11px; margin: 20px 0 0 0; text-align: center;">
+          Cet email a été envoyé suite à votre demande sur lateliergaston.fr
+        </p>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!--
+  ============ VERSION TEXTE SIMPLE ============
+  (À mettre dans l'onglet "Plain text" d'EmailJS si disponible)
+
+MERCI {{customer_name}} !
+=========================
+
+Nous avons bien reçu votre demande de création sur-mesure.
+Votre projet nous tient à cœur et nous y apporterons toute notre attention.
+
+Votre référence : #{{order_id}}
+
+RÉCAPITULATIF DE VOTRE DEMANDE
+------------------------------
+Photo: {{photo_option}}
+Matériau: {{materiau}}
+Type de papier: {{papier}}
+Cadre: {{cadre}}
+
+Votre projet:
+{{description}}
+
+ET MAINTENANT ?
+---------------
+Nous étudions votre demande avec attention.
+Nous vous contacterons dans les 48 heures pour discuter
+des détails et vous proposer un devis personnalisé.
+
+Une question ? Contactez-nous :
+- Email: contact@lateliergaston.fr
+- Téléphone: 06 18 01 42 57
+
+---
+L'Atelier Gaston
+Créations artisanales uniques
+Crach 56950 - Bretagne
+
+-->
