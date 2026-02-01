@@ -6,7 +6,7 @@ import './AdminHelpBot.css'
 // ─── Contenu d'aide enrichi par page ─────────────────────────────────────
 const helpContent = {
   '/admin/login': {
-    greeting: 'Bienvenue ! Connectez-vous pour acceder a votre espace d\'administration.',
+    greeting: 'Bonjour Laure ! Connectez-vous pour acceder a votre espace d\'administration.',
     icon: '🔐',
     topics: [
       {
@@ -25,7 +25,7 @@ const helpContent = {
     ]
   },
   '/admin/dashboard': {
-    greeting: 'Bienvenue sur le tableau de bord ! Voici votre centre de commande pour gerer tout votre site.',
+    greeting: 'Bonjour Laure ! Voici votre tableau de bord, le centre de commande pour gerer tout votre site.',
     icon: '📊',
     topics: [
       {
@@ -54,7 +54,7 @@ const helpContent = {
     ]
   },
   '/admin/products': {
-    greeting: 'Gerez toutes vos oeuvres ici. Ajoutez, modifiez, masquez ou supprimez vos creations.',
+    greeting: 'Bonjour Laure ! Gerez toutes vos oeuvres ici : ajoutez, modifiez, masquez ou supprimez vos creations.',
     icon: '🎨',
     topics: [
       {
@@ -94,7 +94,7 @@ const helpContent = {
     ]
   },
   '/admin/products/new': {
-    greeting: 'Creez une nouvelle oeuvre. Remplissez les champs et ajoutez de belles images !',
+    greeting: 'Bonjour Laure ! Creez une nouvelle oeuvre en remplissant les champs et en ajoutant de belles images.',
     icon: '✨',
     topics: [
       {
@@ -120,7 +120,7 @@ const helpContent = {
     ]
   },
   '/admin/products/edit': {
-    greeting: 'Modifiez les details de cette oeuvre. Tous les changements seront enregistres au clic sur "Enregistrer".',
+    greeting: 'Bonjour Laure ! Modifiez les details de cette oeuvre. Tous les changements seront enregistres au clic sur "Enregistrer".',
     icon: '✏️',
     topics: [
       {
@@ -145,7 +145,7 @@ const helpContent = {
     ]
   },
   '/admin/collections': {
-    greeting: 'Gerez vos collections pour organiser vos oeuvres par themes ou categories.',
+    greeting: 'Bonjour Laure ! Gerez vos collections pour organiser vos oeuvres par themes ou categories.',
     icon: '📁',
     topics: [
       {
@@ -169,7 +169,7 @@ const helpContent = {
     ]
   },
   '/admin/accueil': {
-    greeting: 'Personnalisez votre page d\'accueil : annonces, blocs, sections et oeuvres a la une !',
+    greeting: 'Bonjour Laure ! Personnalisez votre page d\'accueil : annonces, blocs, sections et oeuvres a la une.',
     icon: '🏠',
     topics: [
       {
@@ -220,7 +220,7 @@ const helpContent = {
     ]
   },
   '/admin/about': {
-    greeting: 'Editez la page "A propos" pour presenter votre atelier et votre demarche artistique.',
+    greeting: 'Bonjour Laure ! Editez la page "A propos" pour presenter votre atelier et votre demarche artistique.',
     icon: '📝',
     topics: [
       {
@@ -240,7 +240,7 @@ const helpContent = {
     ]
   },
   '/admin/colors': {
-    greeting: 'Personnalisez les couleurs de votre site pour qu\'il reflette parfaitement votre identite.',
+    greeting: 'Bonjour Laure ! Personnalisez les couleurs de votre site pour qu\'il reflette parfaitement votre identite.',
     icon: '🎨',
     topics: [
       {
@@ -263,7 +263,7 @@ const helpContent = {
     ]
   },
   '/admin/reorder': {
-    greeting: 'Reorganisez l\'ordre de vos oeuvres par glisser-deposer. Simple et intuitif !',
+    greeting: 'Bonjour Laure ! Reorganisez l\'ordre de vos oeuvres par glisser-deposer, c\'est simple et intuitif.',
     icon: '↕️',
     topics: [
       {
@@ -283,7 +283,7 @@ const helpContent = {
     ]
   },
   '/admin/announcements': {
-    greeting: 'Gerez vos annonces et la page d\'accueil depuis cette section.',
+    greeting: 'Bonjour Laure ! Gerez vos annonces et la page d\'accueil depuis cette section.',
     icon: '📢',
     topics: [
       {
@@ -352,7 +352,7 @@ function getHelpForPath(pathname) {
   }
 
   return {
-    greeting: 'Bienvenue dans l\'espace d\'administration. Posez une question ou explorez les sujets ci-dessous.',
+    greeting: 'Bonjour Laure ! Posez une question ou explorez les sujets ci-dessous.',
     icon: '💡',
     topics: [
       {
