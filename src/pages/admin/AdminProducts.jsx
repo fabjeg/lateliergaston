@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { getAllProductsAdmin, deleteProduct, updateProduct } from '../../services/productApi'
@@ -13,6 +13,7 @@ function AdminProducts() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('all')
+  const [search, setSearch] = useState('')
   const [notification, setNotification] = useState(null)
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -71,7 +72,6 @@ function AdminProducts() {
   const handleToggleVisibility = async (product) => {
     const newStatus = product.status === 'hidden' ? 'available' : 'hidden'
 
-    // Envoyer toutes les données du produit avec le nouveau statut
     const productData = {
       name: product.name,
       price: product.price,
@@ -95,7 +95,6 @@ function AdminProducts() {
   const handleToggleSold = async (product) => {
     const newStatus = product.status === 'sold' ? 'available' : 'sold'
 
-    // Envoyer toutes les données du produit avec le nouveau statut
     const productData = {
       name: product.name,
       price: product.price,
@@ -130,12 +129,6 @@ function AdminProducts() {
     return badges[status] || badges.available
   }
 
-  // Filtrer les produits
-  const filteredProducts = products.filter(product => {
-    if (filter === 'all') return true
-    return product.status === filter
-  })
-
   // Compter par statut
   const counts = {
     all: products.length,
@@ -143,6 +136,22 @@ function AdminProducts() {
     sold: products.filter(p => p.status === 'sold').length,
     hidden: products.filter(p => p.status === 'hidden').length
   }
+
+  // Filtrer + rechercher
+  const filteredProducts = useMemo(() => {
+    let result = products
+    if (filter !== 'all') {
+      result = result.filter(p => p.status === filter)
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      result = result.filter(p => {
+        const name = (p.name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        return name.includes(q)
+      })
+    }
+    return result
+  }, [products, filter, search])
 
   return (
     <div className="admin-dashboard">
@@ -168,71 +177,112 @@ function AdminProducts() {
       <div className="admin-content">
         <BackButton to="/admin/dashboard" label="Dashboard" />
 
-        <div className="products-header">
-          <h2>Œuvres ({filteredProducts.length})</h2>
-          <div className="products-header-actions">
-            <Link to="/admin/reorder" className="btn-reorder">
+        {/* Stats rapides */}
+        <div className="ap-stats-row">
+          <div className="ap-stat">
+            <span className="ap-stat-number">{counts.all}</span>
+            <span className="ap-stat-label">Total</span>
+          </div>
+          <div className="ap-stat ap-stat-green">
+            <span className="ap-stat-number">{counts.available}</span>
+            <span className="ap-stat-label">Disponibles</span>
+          </div>
+          <div className="ap-stat ap-stat-red">
+            <span className="ap-stat-number">{counts.sold}</span>
+            <span className="ap-stat-label">Vendues</span>
+          </div>
+          <div className="ap-stat ap-stat-gray">
+            <span className="ap-stat-number">{counts.hidden}</span>
+            <span className="ap-stat-label">Masquées</span>
+          </div>
+        </div>
+
+        {/* Barre d'actions */}
+        <div className="ap-toolbar">
+          <div className="ap-search-wrapper">
+            <span className="ap-search-icon">&#x1F50D;</span>
+            <input
+              type="text"
+              className="ap-search-input"
+              placeholder="Rechercher une oeuvre..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button className="ap-search-clear" onClick={() => setSearch('')}>&#x2715;</button>
+            )}
+          </div>
+          <div className="ap-toolbar-actions">
+            <Link to="/admin/reorder" className="ap-btn ap-btn-outline">
               Réorganiser
             </Link>
-            <Link to="/admin/products/new" className="btn-create">
+            <Link to="/admin/products/new" className="ap-btn ap-btn-primary">
               + Nouvelle œuvre
             </Link>
           </div>
         </div>
 
         {/* Filtres par statut */}
-        <div className="status-filters">
-          <button
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            Toutes ({counts.all})
-          </button>
-          <button
-            className={`filter-btn ${filter === 'available' ? 'active' : ''}`}
-            onClick={() => setFilter('available')}
-          >
-            Disponibles ({counts.available})
-          </button>
-          <button
-            className={`filter-btn ${filter === 'sold' ? 'active' : ''}`}
-            onClick={() => setFilter('sold')}
-          >
-            Vendues ({counts.sold})
-          </button>
-          <button
-            className={`filter-btn ${filter === 'hidden' ? 'active' : ''}`}
-            onClick={() => setFilter('hidden')}
-          >
-            Masquées ({counts.hidden})
-          </button>
+        <div className="ap-filters">
+          {[
+            { key: 'all', label: 'Toutes', count: counts.all },
+            { key: 'available', label: 'Disponibles', count: counts.available },
+            { key: 'sold', label: 'Vendues', count: counts.sold },
+            { key: 'hidden', label: 'Masquées', count: counts.hidden }
+          ].map(f => (
+            <button
+              key={f.key}
+              className={`ap-filter-btn ${filter === f.key ? 'active' : ''}`}
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label}
+              <span className="ap-filter-count">{f.count}</span>
+            </button>
+          ))}
         </div>
 
         {error && <div className="error-message">{error}</div>}
 
         {loading ? (
-          <p>Chargement des produits...</p>
+          <div className="ap-loading">
+            <div className="ap-loading-spinner" />
+            <p>Chargement des oeuvres...</p>
+          </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="empty-state">
-            {filter === 'all' ? (
+          <div className="ap-empty">
+            {filter === 'all' && !search ? (
               <>
-                <p>Aucune œuvre pour le moment.</p>
-                <Link to="/admin/products/new" className="btn-create">
-                  Créer la première œuvre
+                <div className="ap-empty-icon">&#x1F3A8;</div>
+                <p>Aucune oeuvre pour le moment</p>
+                <Link to="/admin/products/new" className="ap-btn ap-btn-primary">
+                  Créer la première oeuvre
                 </Link>
               </>
             ) : (
-              <p>Aucune œuvre avec ce statut.</p>
+              <>
+                <div className="ap-empty-icon">&#x1F50D;</div>
+                <p>Aucune oeuvre trouvée{search ? ` pour "${search}"` : ' avec ce statut'}</p>
+                {search && (
+                  <button className="ap-btn ap-btn-outline" onClick={() => setSearch('')}>
+                    Effacer la recherche
+                  </button>
+                )}
+              </>
             )}
           </div>
         ) : (
           <>
+            <p className="ap-result-count">
+              {filteredProducts.length} oeuvre{filteredProducts.length !== 1 ? 's' : ''}
+              {search && <> pour "<strong>{search}</strong>"</>}
+            </p>
+
             {/* Table pour desktop */}
-            <div className="products-table-container">
-              <table className="products-table">
+            <div className="ap-table-wrap">
+              <table className="ap-table">
                 <thead>
                   <tr>
-                    <th>Image</th>
+                    <th></th>
                     <th>Nom</th>
                     <th>Prix</th>
                     <th>Statut</th>
@@ -243,48 +293,50 @@ function AdminProducts() {
                   {filteredProducts.map((product) => {
                     const statusBadge = getStatusBadge(product.status)
                     return (
-                      <tr key={product.id} className={product.status === 'hidden' ? 'row-hidden' : ''}>
+                      <tr key={product.id} className={product.status === 'hidden' ? 'ap-row-hidden' : ''}>
                         <td>
-                          <div className="product-thumbnail">
+                          <div className="ap-thumb">
                             <img src={product.image} alt={product.name} />
                           </div>
                         </td>
                         <td>
-                          <strong>{product.name}</strong>
+                          <span className="ap-product-name">{product.name}</span>
                         </td>
-                        <td>{product.price.toFixed(2)} €</td>
                         <td>
-                          <span className={`status-badge ${statusBadge.class}`}>
+                          <span className="ap-price">{product.price.toFixed(2)} €</span>
+                        </td>
+                        <td>
+                          <span className={`ap-badge ${statusBadge.class}`}>
                             {statusBadge.label}
                           </span>
                         </td>
                         <td>
-                          <div className="action-buttons">
+                          <div className="ap-actions">
                             <button
                               onClick={() => handleToggleVisibility(product)}
-                              className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
+                              className={`ap-action-btn ${product.status === 'hidden' ? 'ap-act-show' : 'ap-act-hide'}`}
                               title={product.status === 'hidden' ? 'Rendre visible' : 'Masquer'}
                             >
-                              {product.status === 'hidden' ? '👁️' : '🙈'}
+                              {product.status === 'hidden' ? 'Afficher' : 'Masquer'}
                             </button>
                             {product.status !== 'hidden' && (
                               <button
                                 onClick={() => handleToggleSold(product)}
-                                className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
+                                className={`ap-action-btn ${product.status === 'sold' ? 'ap-act-unsold' : 'ap-act-sold'}`}
                                 title={product.status === 'sold' ? 'Marquer disponible' : 'Marquer vendu'}
                               >
-                                {product.status === 'sold' ? '🔄' : '✓'}
+                                {product.status === 'sold' ? 'Disponible' : 'Vendu'}
                               </button>
                             )}
                             <Link
                               to={`/admin/products/edit/${product.id}`}
-                              className="btn-edit"
+                              className="ap-action-btn ap-act-edit"
                             >
                               Modifier
                             </Link>
                             <button
                               onClick={() => handleDeleteClick(product.id, product.name)}
-                              className="btn-delete"
+                              className="ap-action-btn ap-act-delete"
                             >
                               Supprimer
                             </button>
@@ -298,54 +350,50 @@ function AdminProducts() {
             </div>
 
             {/* Cartes pour mobile */}
-            <div className="products-cards">
+            <div className="ap-cards">
               {filteredProducts.map((product) => {
                 const statusBadge = getStatusBadge(product.status)
                 return (
                   <div
                     key={product.id}
-                    className={`product-card-admin ${product.status === 'hidden' ? 'card-hidden' : ''}`}
+                    className={`ap-card ${product.status === 'hidden' ? 'ap-card-hidden' : ''}`}
                   >
-                    <div className="card-content">
-                      <div className="card-image">
+                    <div className="ap-card-top">
+                      <div className="ap-card-img">
                         <img src={product.image} alt={product.name} />
+                        <span className={`ap-badge ap-badge-float ${statusBadge.class}`}>
+                          {statusBadge.label}
+                        </span>
                       </div>
-                      <div className="card-info">
+                      <div className="ap-card-info">
                         <h3>{product.name}</h3>
-                        <p className="card-price">{product.price.toFixed(2)} €</p>
-                        <div className="card-status">
-                          <span className={`status-badge ${statusBadge.class}`}>
-                            {statusBadge.label}
-                          </span>
-                        </div>
+                        <p className="ap-card-price">{product.price.toFixed(2)} €</p>
                       </div>
                     </div>
-                    <div className="card-actions">
+                    <div className="ap-card-actions">
                       <button
                         onClick={() => handleToggleVisibility(product)}
-                        className={`btn-toggle ${product.status === 'hidden' ? 'btn-show' : 'btn-hide'}`}
+                        className={`ap-card-act ${product.status === 'hidden' ? 'ap-act-show' : 'ap-act-hide'}`}
                       >
-                        {product.status === 'hidden' ? '👁️' : '🙈'}
+                        {product.status === 'hidden' ? 'Afficher' : 'Masquer'}
                       </button>
-                      {product.status !== 'hidden' ? (
+                      {product.status !== 'hidden' && (
                         <button
                           onClick={() => handleToggleSold(product)}
-                          className={`btn-toggle ${product.status === 'sold' ? 'btn-unsold' : 'btn-sold'}`}
+                          className={`ap-card-act ${product.status === 'sold' ? 'ap-act-unsold' : 'ap-act-sold'}`}
                         >
-                          {product.status === 'sold' ? '🔄' : '✓'}
+                          {product.status === 'sold' ? 'Disponible' : 'Vendu'}
                         </button>
-                      ) : (
-                        <div></div>
                       )}
                       <Link
                         to={`/admin/products/edit/${product.id}`}
-                        className="btn-edit"
+                        className="ap-card-act ap-act-edit"
                       >
                         Modifier
                       </Link>
                       <button
                         onClick={() => handleDeleteClick(product.id, product.name)}
-                        className="btn-delete"
+                        className="ap-card-act ap-act-delete"
                       >
                         Supprimer
                       </button>

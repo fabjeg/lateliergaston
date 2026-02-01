@@ -148,7 +148,7 @@
 .help-bot-message {
   max-width: 88%;
   border-radius: 14px;
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   line-height: 1.6;
   word-wrap: break-word;
   animation: helpMsgIn 0.2s ease;
@@ -227,7 +227,7 @@
   border: 1px solid rgba(122, 53, 64, 0.2);
   border-radius: 20px;
   padding: 5px 14px;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: var(--primary-color, #7a3540);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -255,7 +255,7 @@
   border: 1px dashed rgba(139, 109, 76, 0.4);
   border-radius: 8px;
   padding: 5px 12px;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: var(--accent-color, #8b6d4c);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -294,7 +294,7 @@
   padding: 10px 36px 10px 14px;
   border: 1.5px solid #e0dbd5;
   border-radius: 24px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-family: inherit;
   color: var(--text-dark, #1a1a1a);
   background: #f9f7f4;
@@ -352,7 +352,7 @@
   border: 1px solid transparent;
   border-radius: 10px;
   padding: 8px 12px;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--text-dark, #1a1a1a);
   cursor: pointer;
   text-align: left;
@@ -438,7 +438,7 @@
   border: 1px solid #ebe5dd;
   border-radius: 10px;
   padding: 8px 14px;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--text-dark, #1a1a1a);
   cursor: pointer;
   text-align: left;
@@ -483,7 +483,7 @@
 
   .help-bot-message {
     max-width: 92%;
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
 
   .help-bot-footer {
