@@ -353,9 +353,32 @@ function Gallery() {
               </div>
               <div className="lightbox-info">
                 <h3>{selectedProduct.name}</h3>
+                <div className="lightbox-ornament">✦</div>
                 {selectedProduct.description && (
                   <p>{selectedProduct.description}</p>
                 )}
+                <div className="lightbox-details">
+                  {(selectedProduct.height || selectedProduct.width) && (
+                    <span className="lightbox-detail">
+                      {selectedProduct.height && `${selectedProduct.height} cm`}
+                      {selectedProduct.height && selectedProduct.width && ' × '}
+                      {selectedProduct.width && `${selectedProduct.width} cm`}
+                    </span>
+                  )}
+                  {selectedProduct.technique && (
+                    <span className="lightbox-detail">
+                      {{'broderie-photo': 'Broderie sur photographie', 'broderie-toile': 'Broderie sur toile', 'broderie-papier': 'Broderie sur papier'}[selectedProduct.technique] || selectedProduct.technique}
+                    </span>
+                  )}
+                  {selectedProduct.year && (
+                    <span className="lightbox-detail">{selectedProduct.year}</span>
+                  )}
+                  {selectedProduct.framed && selectedProduct.framed !== 'non' && (
+                    <span className="lightbox-detail">
+                      {selectedProduct.framed === 'oui' ? 'Avec cadre' : 'Cadre en option'}
+                    </span>
+                  )}
+                </div>
               </div>
             </motion.div>
 

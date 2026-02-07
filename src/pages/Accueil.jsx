@@ -272,22 +272,27 @@ function Accueil() {
             transition={{ duration: 0.6, delay }}
           >
             <h2>{content.artSection.title || 'Mon Art'}</h2>
-            <div className="art-section-content">
+            <div className={`art-section-content${content.artSection.mainImage ? ' with-image' : ''}`}>
               <div className="art-section-text">
                 {content.artSection.text?.split('\n').filter(p => p.trim()).map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 ))}
               </div>
-              {content.artSection.images && content.artSection.images.length > 0 && (
-                <div className="art-section-images">
-                  {content.artSection.images.map((image, idx) => (
-                    <div key={idx} className="art-section-image">
-                      <img src={image} alt={`Création ${idx + 1}`} />
-                    </div>
-                  ))}
+              {content.artSection.mainImage && (
+                <div className="art-section-main-image">
+                  <img src={content.artSection.mainImage} alt={content.artSection.title || 'Mon Art'} />
                 </div>
               )}
             </div>
+            {content.artSection.images && content.artSection.images.length > 0 && (
+              <div className="art-section-images">
+                {content.artSection.images.map((image, idx) => (
+                  <div key={idx} className="art-section-image">
+                    <img src={image} alt={`Création ${idx + 1}`} />
+                  </div>
+                ))}
+              </div>
+            )}
           </motion.section>
         )
 

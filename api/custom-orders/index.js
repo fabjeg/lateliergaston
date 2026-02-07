@@ -1,14 +1,24 @@
 import { getCollection } from '../_lib/mongodb.js'
+import { verifySession } from '../_lib/auth.js'
 import { handleCorsOptions, apiResponse, sanitizeString, isValidEmail } from '../_lib/utils.js'
 import { uploadImage } from '../_lib/cloudinary.js'
 import { v4 as uuidv4 } from 'uuid'
+import cookie from 'cookie'
 
 export default async function handler(req, res) {
   // Handle CORS preflight
   if (handleCorsOptions(req, res)) return
 
   if (req.method === 'GET') {
-    // Admin: récupérer toutes les demandes
+    // Admin only: récupérer toutes les demandes
+    const cookies = cookie.parse(req.headers.cookie || '')
+    const sessionId = cookies.admin_session
+    const admin = await verifySession(sessionId)
+
+    if (!admin) {
+      return res.status(401).json(apiResponse(false, null, 'Non autorise'))
+    }
+
     return getCustomOrders(req, res)
   }
 
@@ -46,6 +56,7 @@ async function createCustomOrder(req, res) {
       selectedPhotoUrl,
       uploadedPhotoBase64,
       materiau,
+      taille,
       papier,
       cadre,
       description
@@ -64,6 +75,10 @@ async function createCustomOrder(req, res) {
 
     if (!materiau) {
       errors.push('Veuillez choisir un matériau')
+    }
+
+    if (!taille) {
+      errors.push('Veuillez choisir une taille')
     }
 
     if (!papier) {
@@ -114,6 +129,7 @@ async function createCustomOrder(req, res) {
       selectedPhotoUrl: photoOption === 'gallery' ? selectedPhotoUrl : null,
       uploadedPhoto: uploadedPhotoUrl || (photoOption === 'upload' ? uploadedPhotoBase64 : null),
       materiau,
+      taille: taille || null,
       papier,
       cadre: Boolean(cadre),
       description: sanitizeString(description),

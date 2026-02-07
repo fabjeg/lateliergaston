@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { getAllProducts } from '../services/productApi'
+import { getSurmesureConfig } from '../services/surmesureApi'
 import { createCustomOrder, fileToBase64 } from '../services/customOrderApi'
 import SEO from '../components/SEO'
 import AnimalHairModal from '../components/AnimalHairModal'
@@ -13,18 +14,50 @@ const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
 const EMAILJS_TEMPLATE_CLIENT_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_CLIENT_ID
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
+function getIconSvg(key) {
+  const props = { width: 32, height: 32, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
+  switch (key) {
+    case 'hair':
+      return <svg {...props}><path d="M12 2C8 2 6 5 6 8c0 2 1 4 2 5.5C9 15 10 17 10 19v3h4v-3c0-2 1-4 2-5.5 1-1.5 2-3.5 2-5.5 0-3-2-6-6-6z"/><path d="M10 22h4"/><path d="M12 2v4"/></svg>
+    case 'animal':
+      return <svg {...props}><circle cx="12" cy="10" r="7"/><path d="M8.5 7.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5"/><path d="M12.5 7.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5"/><path d="M9 12h6"/><path d="M10 14c.6.6 1.3 1 2 1s1.4-.4 2-1"/><path d="M7 3l-2-1"/><path d="M17 3l2-1"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
+    case 'baby':
+      return <svg {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M12 3c-1 0-2 .5-2.5 1"/><path d="M12 3c1 0 2 .5 2.5 1"/></svg>
+    case 'diamond':
+      return <svg {...props}><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/><path d="M10 3l-2 6 4 13 4-13-2-6"/></svg>
+    case 'brush':
+      return <svg {...props}><path d="M18.37 2.63a2.12 2.12 0 0 1 3 3L14 13l-4 1 1-4z"/><path d="M11 15H6a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v0a2 2 0 0 0 2 2h4"/></svg>
+    case 'scissors':
+      return <svg {...props}><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+    case 'photo':
+      return <svg {...props}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    case 'art':
+      return <svg {...props}><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+    default:
+      return <svg {...props}><circle cx="12" cy="12" r="10"/></svg>
+  }
+}
+
 function SurMesure() {
   const [galleryPhotos, setGalleryPhotos] = useState([])
+  const [materiauOptions, setMateriauOptions] = useState([])
+  const [tailleOptions, setTailleOptions] = useState([])
+  const [papierOptions, setPapierOptions] = useState([])
+  const [cadreConfig, setCadreConfig] = useState({ enabled: true, note: '' })
+  const [descriptionPlaceholder, setDescriptionPlaceholder] = useState('Décrivez votre vision, vos souhaits particuliers, les dimensions souhaitées, les couleurs préférées...')
+  const [expandedMateriau, setExpandedMateriau] = useState(null)
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
+    contactPreference: 'email', // 'email' ou 'phone'
     photoOption: 'gallery', // 'gallery' ou 'upload'
     selectedPhoto: null,
     selectedPhotoUrl: null,
     uploadedPhoto: null,
     uploadedPhotoPreview: null,
     materiau: '',
+    taille: '',
     papier: '',
     cadre: false,
     description: ''
@@ -43,12 +76,12 @@ function SurMesure() {
     return () => clearTimeout(timer)
   }, [error])
 
-  // Charger les photos depuis l'API
+  // Charger les photos et la config matériaux
   useEffect(() => {
     const loadGalleryPhotos = async () => {
       const result = await getAllProducts()
       if (result.success) {
-        const photos = result.products.slice(0, 8).map((product, index) => ({
+        const photos = result.products.map((product, index) => ({
           id: product.id,
           src: product.image,
           alt: product.name || `Exemple ${index + 1}`
@@ -56,7 +89,22 @@ function SurMesure() {
         setGalleryPhotos(photos)
       }
     }
+
+    const loadMateriaux = async () => {
+      const result = await getSurmesureConfig()
+      if (result.success && result.config) {
+        setMateriauOptions(result.config.materiaux || [])
+        setTailleOptions(result.config.tailles || [])
+        setPapierOptions(result.config.papiers || [])
+        setCadreConfig(result.config.cadreConfig || { enabled: true, note: '' })
+        if (result.config.descriptionPlaceholder) {
+          setDescriptionPlaceholder(result.config.descriptionPlaceholder)
+        }
+      }
+    }
+
     loadGalleryPhotos()
+    loadMateriaux()
   }, [])
 
   const visiblePhotos = galleryExpanded ? galleryPhotos : galleryPhotos.slice(0, 4)
@@ -100,6 +148,12 @@ function SurMesure() {
     setFormData({ ...formData, materiau: value })
   }
 
+  const toggleExplanation = (e, matId) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setExpandedMateriau(prev => prev === matId ? null : matId)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -114,6 +168,10 @@ function SurMesure() {
       setError('Veuillez entrer une adresse email valide')
       return
     }
+    if (formData.contactPreference === 'phone' && !formData.customerPhone.trim()) {
+      setError('Veuillez entrer votre numéro de téléphone')
+      return
+    }
 
     // Validation photo
     if (formData.photoOption === 'gallery' && !formData.selectedPhoto) {
@@ -126,6 +184,10 @@ function SurMesure() {
     }
     if (!formData.materiau) {
       setError('Veuillez choisir un matériau')
+      return
+    }
+    if (!formData.taille) {
+      setError('Veuillez choisir une taille')
       return
     }
     if (!formData.papier) {
@@ -146,16 +208,24 @@ function SurMesure() {
         uploadedPhotoBase64 = await fileToBase64(formData.uploadedPhoto)
       }
 
+      // Build materiau labels from dynamic options
+      const materiauLabels = {}
+      materiauOptions.forEach(opt => {
+        materiauLabels[opt.id] = opt.title
+      })
+
       // Préparer les données pour l'API
       const orderData = {
         customerName: formData.customerName.trim(),
         customerEmail: formData.customerEmail.trim(),
         customerPhone: formData.customerPhone.trim() || null,
+        contactPreference: formData.contactPreference,
         photoOption: formData.photoOption,
         selectedPhotoId: formData.selectedPhoto,
         selectedPhotoUrl: formData.selectedPhotoUrl,
         uploadedPhotoBase64,
         materiau: formData.materiau,
+        taille: formData.taille,
         papier: formData.papier,
         cadre: formData.cadre,
         description: formData.description.trim()
@@ -167,16 +237,11 @@ function SurMesure() {
         throw new Error(apiResult.error || 'Erreur lors de l\'enregistrement')
       }
 
-      // Envoyer l'email via EmailJS
-      const materiauLabels = {
-        'cheveux-artificiels': 'Cheveux Artificiels',
-        'poils-animaux': 'Poils d\'Animaux',
-        'cheveux-bebe': 'Cheveux de Bébé'
-      }
-      const papierLabels = {
-        'papier-photo': 'Papier Photo',
-        'papier-art': 'Papier d\'Art'
-      }
+      // Build papier labels from dynamic options
+      const papierLabels = {}
+      papierOptions.forEach(opt => {
+        papierLabels[opt.id] = opt.title
+      })
 
       // Determine photo URL for email
       let photoUrl = ''
@@ -190,8 +255,10 @@ function SurMesure() {
         customer_name: formData.customerName,
         customer_email: formData.customerEmail,
         customer_phone: formData.customerPhone || 'Non renseigné',
+        contact_preference: formData.contactPreference === 'phone' ? 'Téléphone' : 'Email',
         photo_option: formData.photoOption === 'gallery' ? 'Photo de la galerie' : 'Photo personnelle',
         materiau: materiauLabels[formData.materiau] || formData.materiau,
+        taille: formData.taille,
         papier: papierLabels[formData.papier] || formData.papier,
         cadre: formData.cadre ? 'Oui' : 'Non',
         description: formData.description,
@@ -249,12 +316,14 @@ function SurMesure() {
                 customerName: '',
                 customerEmail: '',
                 customerPhone: '',
+                contactPreference: 'email',
                 photoOption: 'gallery',
                 selectedPhoto: null,
                 selectedPhotoUrl: null,
                 uploadedPhoto: null,
                 uploadedPhotoPreview: null,
                 materiau: '',
+                taille: '',
                 papier: '',
                 cadre: false,
                 description: ''
@@ -322,14 +391,51 @@ function SurMesure() {
               />
             </div>
             <div className="form-field">
-              <label htmlFor="customerPhone">Téléphone (optionnel)</label>
+              <label htmlFor="customerPhone">Téléphone {formData.contactPreference === 'phone' ? '*' : '(optionnel)'}</label>
               <input
                 type="tel"
                 id="customerPhone"
                 value={formData.customerPhone}
                 onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
                 placeholder="06 12 34 56 78"
+                required={formData.contactPreference === 'phone'}
               />
+            </div>
+          </div>
+
+          <div className="contact-preference">
+            <label className="contact-preference-label">Comment souhaitez-vous être contacté(e) ?</label>
+            <div className="contact-preference-options">
+              <label className={`contact-option ${formData.contactPreference === 'email' ? 'active' : ''}`}>
+                <input
+                  type="radio"
+                  name="contactPreference"
+                  value="email"
+                  checked={formData.contactPreference === 'email'}
+                  onChange={(e) => setFormData({ ...formData, contactPreference: e.target.value })}
+                />
+                <span className="contact-option-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/>
+                  </svg>
+                </span>
+                <span className="contact-option-text">Par email</span>
+              </label>
+              <label className={`contact-option ${formData.contactPreference === 'phone' ? 'active' : ''}`}>
+                <input
+                  type="radio"
+                  name="contactPreference"
+                  value="phone"
+                  checked={formData.contactPreference === 'phone'}
+                  onChange={(e) => setFormData({ ...formData, contactPreference: e.target.value })}
+                />
+                <span className="contact-option-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                </span>
+                <span className="contact-option-text">Par téléphone</span>
+              </label>
             </div>
           </div>
         </section>
@@ -432,148 +538,150 @@ function SurMesure() {
           )}
         </section>
 
-        {/* Section Matériau */}
+        {/* Section Taille */}
+        {tailleOptions.length > 0 && (
+          <section className="form-section">
+            <h2>3. Taille</h2>
+            <div className="taille-selector-grid">
+              {tailleOptions.map(taille => (
+                <label key={taille} className={`taille-option ${formData.taille === taille ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="taille"
+                    value={taille}
+                    checked={formData.taille === taille}
+                    onChange={(e) => setFormData({ ...formData, taille: e.target.value })}
+                  />
+                  <span className="taille-option-label">{taille}</span>
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Section Matériau - dynamique */}
         <section className="form-section">
-          <h2>3. Matériau</h2>
-          <div className="options-grid">
-            <label className={`option-card ${formData.materiau === 'cheveux-artificiels' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="materiau"
-                value="cheveux-artificiels"
-                checked={formData.materiau === 'cheveux-artificiels'}
-                onChange={(e) => handleMateriauChange(e.target.value)}
-              />
-              <span className="option-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2C8 2 6 5 6 8c0 2 1 4 2 5.5C9 15 10 17 10 19v3h4v-3c0-2 1-4 2-5.5 1-1.5 2-3.5 2-5.5 0-3-2-6-6-6z"/>
-                  <path d="M10 22h4"/>
-                  <path d="M12 2v4"/>
-                </svg>
-              </span>
-              <span className="option-title">Cheveux Artificiels</span>
-              <span className="option-desc">Fibres synthétiques de haute qualité</span>
-            </label>
-
-            <label className={`option-card ${formData.materiau === 'poils-animaux' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="materiau"
-                value="poils-animaux"
-                checked={formData.materiau === 'poils-animaux'}
-                onChange={(e) => handleMateriauChange(e.target.value)}
-              />
-              <span className="option-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="10" r="7"/>
-                  <path d="M8.5 7.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5"/>
-                  <path d="M12.5 7.5c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5"/>
-                  <path d="M9 12h6"/>
-                  <path d="M10 14c.6.6 1.3 1 2 1s1.4-.4 2-1"/>
-                  <path d="M7 3l-2-1"/>
-                  <path d="M17 3l2-1"/>
-                  <path d="M12 17v4"/>
-                  <path d="M8 21h8"/>
-                </svg>
-              </span>
-              <span className="option-title">Poils d'Animaux</span>
-              <span className="option-desc">Immortalisez votre compagnon</span>
-            </label>
-
-            <label className={`option-card ${formData.materiau === 'cheveux-bebe' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="materiau"
-                value="cheveux-bebe"
-                checked={formData.materiau === 'cheveux-bebe'}
-                onChange={(e) => handleMateriauChange(e.target.value)}
-              />
-              <span className="option-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                  <path d="M12 3c-1 0-2 .5-2.5 1"/>
-                  <path d="M12 3c1 0 2 .5 2.5 1"/>
-                </svg>
-              </span>
-              <span className="option-title">Cheveux de Bébé</span>
-              <span className="option-desc">Un souvenir précieux et unique</span>
-            </label>
+          <h2>4. Matériau</h2>
+          <div className="options-grid" style={materiauOptions.length === 2 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : undefined}>
+            {materiauOptions.map(mat => (
+              <div key={mat.id} className="option-card-wrapper">
+                <label className={`option-card ${formData.materiau === mat.id ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="materiau"
+                    value={mat.id}
+                    checked={formData.materiau === mat.id}
+                    onChange={(e) => handleMateriauChange(e.target.value)}
+                  />
+                  <span className="option-icon">
+                    {getIconSvg(mat.icon)}
+                  </span>
+                  <span className="option-title">{mat.title}</span>
+                  <span className="option-desc">{mat.description}</span>
+                  {mat.id === 'poils-animaux' && (
+                    <span className="option-hint-shipping">Marche à suivre au clic</span>
+                  )}
+                  {mat.explanation && (
+                    <button
+                      type="button"
+                      className={`option-info-btn ${expandedMateriau === mat.id ? 'active' : ''}`}
+                      onClick={(e) => toggleExplanation(e, mat.id)}
+                      title="Plus d'informations"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                      </svg>
+                    </button>
+                  )}
+                </label>
+                {mat.explanation && expandedMateriau === mat.id && (
+                  <div className="option-explanation">
+                    {mat.explanation}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        </section>
 
-        {/* Section Papier */}
-        <section className="form-section">
-          <h2>4. Type de Papier</h2>
-          <div className="options-grid options-grid-2">
-            <label className={`option-card ${formData.papier === 'papier-photo' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="papier"
-                value="papier-photo"
-                checked={formData.papier === 'papier-photo'}
-                onChange={(e) => setFormData({ ...formData, papier: e.target.value })}
-              />
-              <span className="option-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
+          {/* Rappel persistant après confirmation poils d'animaux */}
+          {formData.materiau === 'poils-animaux' && animalHairConfirmed && (
+            <div className="animal-hair-reminder">
+              <div className="animal-hair-reminder-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10H3M16 2v4M8 2v4M4 4h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
                 </svg>
-              </span>
-              <span className="option-title">Papier Photo</span>
-              <span className="option-desc">Finition brillante et détails nets</span>
-            </label>
-
-            <label className={`option-card ${formData.papier === 'papier-art' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="papier"
-                value="papier-art"
-                checked={formData.papier === 'papier-art'}
-                onChange={(e) => setFormData({ ...formData, papier: e.target.value })}
-              />
-              <span className="option-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 19l7-7 3 3-7 7-3-3z"/>
-                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
-                  <path d="M2 2l7.586 7.586"/>
-                  <circle cx="11" cy="11" r="2"/>
-                </svg>
-              </span>
-              <span className="option-title">Papier d'Art</span>
-              <span className="option-desc">Texture noble et rendu artistique</span>
-            </label>
-          </div>
-        </section>
-
-        {/* Section Cadre */}
-        <section className="form-section">
-          <h2>5. Cadre</h2>
-          <label className="cadre-toggle">
-            <input
-              type="checkbox"
-              checked={formData.cadre}
-              onChange={(e) => setFormData({ ...formData, cadre: e.target.checked })}
-            />
-            <span className="toggle-switch"></span>
-            <span className="toggle-label">
-              {formData.cadre ? 'Avec cadre' : 'Sans cadre'}
-            </span>
-          </label>
-          {formData.cadre && (
-            <p className="cadre-note">
-              Un cadre élégant sera sélectionné pour mettre en valeur votre œuvre.
-            </p>
+                <strong>Rappel : envoi des poils par courrier</strong>
+              </div>
+              <ol className="animal-hair-reminder-steps">
+                <li>Poils <strong>propres et secs</strong> dans un sachet hermétique</li>
+                <li>Enveloppe rigide avec votre <strong>nom</strong> et <strong>n° de commande</strong></li>
+                <li>Envoyer à : <strong>L'Atelier Gaston — Crach 56950</strong></li>
+              </ol>
+              <button
+                type="button"
+                className="animal-hair-reminder-reopen"
+                onClick={() => setShowAnimalHairModal(true)}
+              >
+                Revoir les instructions complètes
+              </button>
+            </div>
           )}
         </section>
 
+        {/* Section Papier - dynamique */}
+        <section className="form-section">
+          <h2>5. Type de Papier</h2>
+          <div className="options-grid" style={papierOptions.length === 2 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : undefined}>
+            {papierOptions.map(pap => (
+              <label key={pap.id} className={`option-card ${formData.papier === pap.id ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="papier"
+                  value={pap.id}
+                  checked={formData.papier === pap.id}
+                  onChange={(e) => setFormData({ ...formData, papier: e.target.value })}
+                />
+                <span className="option-icon">
+                  {getIconSvg(pap.icon)}
+                </span>
+                <span className="option-title">{pap.title}</span>
+                <span className="option-desc">{pap.description}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* Section Cadre - configurable */}
+        {cadreConfig.enabled && (
+          <section className="form-section">
+            <h2>6. Cadre</h2>
+            <label className="cadre-toggle">
+              <input
+                type="checkbox"
+                checked={formData.cadre}
+                onChange={(e) => setFormData({ ...formData, cadre: e.target.checked })}
+              />
+              <span className="toggle-switch"></span>
+              <span className="toggle-label">
+                {formData.cadre ? 'Avec cadre' : 'Sans cadre'}
+              </span>
+            </label>
+            {formData.cadre && cadreConfig.note && (
+              <p className="cadre-note">
+                {cadreConfig.note}
+              </p>
+            )}
+          </section>
+        )}
+
         {/* Section Description */}
         <section className="form-section">
-          <h2 id="description-label">6. Décrivez votre projet</h2>
+          <h2 id="description-label">7. Décrivez votre projet</h2>
           <textarea
             className="description-textarea"
-            placeholder="Décrivez votre vision, vos souhaits particuliers, les dimensions souhaitées, les couleurs préférées..."
+            placeholder={descriptionPlaceholder}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={6}

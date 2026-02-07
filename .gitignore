@@ -35,3 +35,4 @@ dist-ssr
 
 # Claude Code
 .claude/
+nul

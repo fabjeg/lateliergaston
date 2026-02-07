@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAboutContent, updateAboutContent } from '../../services/aboutApi'
+import { uploadImage } from '../../services/productApi'
 import BackButton from '../../components/BackButton'
 import Loader from '../../components/Loader'
 import './AdminAbout.css'
@@ -10,10 +11,12 @@ function AdminAbout() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false)
   const [content, setContent] = useState({
     heroTitle: '',
     heroText1: '',
     heroText2: '',
+    heroImage: '',
     section1Title: '',
     section1Text: '',
     section2Title: '',
@@ -34,6 +37,7 @@ function AdminAbout() {
         heroTitle: result.content.heroTitle || '',
         heroText1: result.content.heroText1 || '',
         heroText2: result.content.heroText2 || '',
+        heroImage: result.content.heroImage || '',
         section1Title: result.content.section1Title || '',
         section1Text: result.content.section1Text || '',
         section2Title: result.content.section2Title || '',
@@ -47,6 +51,41 @@ function AdminAbout() {
 
   const handleChange = (field, value) => {
     setContent(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleHeroImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Veuillez sélectionner une image valide' })
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage({ type: 'error', text: "L'image doit faire moins de 5MB" })
+      return
+    }
+
+    setUploadingHeroImage(true)
+
+    const reader = new FileReader()
+    reader.onloadend = async () => {
+      const result = await uploadImage(reader.result, file.name)
+      setUploadingHeroImage(false)
+
+      if (result.success) {
+        handleChange('heroImage', result.url)
+      } else {
+        setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
+      }
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleRemoveHeroImage = () => {
+    handleChange('heroImage', '')
   }
 
   const handleValueChange = (index, value) => {
@@ -114,6 +153,44 @@ function AdminAbout() {
         {/* Section Hero */}
         <div className="form-section">
           <h2>Section principale (à côté de la photo)</h2>
+
+          <div className="form-group">
+            <label>Photo</label>
+            <p className="help-text">
+              Photo affichée à côté du texte de présentation
+            </p>
+
+            {content.heroImage ? (
+              <div className="about-hero-image-preview">
+                <img src={content.heroImage} alt="Photo À propos" />
+                <button
+                  type="button"
+                  className="btn-remove-image"
+                  onClick={handleRemoveHeroImage}
+                  title="Supprimer"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <label className="about-image-upload">
+                <input
+                  type="file"
+                  accept="image/webp,image/jpeg,image/jpg,image/png"
+                  onChange={handleHeroImageUpload}
+                  disabled={uploadingHeroImage}
+                />
+                {uploadingHeroImage ? (
+                  <span className="uploading-text">Upload...</span>
+                ) : (
+                  <>
+                    <span className="add-icon">+</span>
+                    <span>Ajouter une photo</span>
+                  </>
+                )}
+              </label>
+            )}
+          </div>
 
           <div className="form-group">
             <label>Titre</label>

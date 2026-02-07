@@ -34,6 +34,7 @@ const AdminAnnouncements = lazy(() => import('./pages/admin/AdminAnnouncements')
 const AdminReorder = lazy(() => import('./pages/admin/AdminReorder'))
 const AdminColors = lazy(() => import('./pages/admin/AdminColors'))
 const ProductForm = lazy(() => import('./pages/admin/ProductForm'))
+const AdminSurMesure = lazy(() => import('./pages/admin/AdminSurMesure'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -140,6 +141,14 @@ function Layout() {
             element={
               <ProtectedRoute>
                 <AdminColors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/sur-mesure"
+            element={
+              <ProtectedRoute>
+                <AdminSurMesure />
               </ProtectedRoute>
             }
           />

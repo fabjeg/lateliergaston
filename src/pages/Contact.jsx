@@ -43,7 +43,7 @@ function Contact() {
         <div className="contact-info">
           <h2>Informations de contact</h2>
           <p><span className="contact-label">Email:</span> contact@lateliergaston.fr</p>
-          <p><span className="contact-label">Téléphone:</span> +33 6 18 01 42 57</p>
+          {/* <p><span className="contact-label">Téléphone:</span> +33 6 18 01 42 57</p> */}
           <p><span className="contact-label">Adresse:</span> Crach 56950</p>
         </div>
       </div>

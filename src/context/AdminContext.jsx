@@ -12,21 +12,6 @@ export function AdminProvider({ children }) {
     verifySession()
   }, [])
 
-  // Auto-logout when closing browser/tab
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (admin) {
-        // Use sendBeacon for reliable logout on page unload
-        navigator.sendBeacon('/api/auth/logout')
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [admin])
 
   /**
    * Verify if there's an active session

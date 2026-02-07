@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { getAllProducts } from '../services/productApi'
 
 const InventoryContext = createContext()
 
@@ -11,25 +12,46 @@ export function useInventory() {
 }
 
 export function InventoryProvider({ children }) {
-  // L'inventaire est géré via le statut des produits en base de données
-  // Le statut "sold" indique qu'un produit est vendu
-  const [soldProducts] = useState(new Set())
-  const loading = false
-  const error = null
+  const [soldProducts, setSoldProducts] = useState(new Set())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Check if a product is sold
+  const loadInventory = useCallback(async () => {
+    try {
+      const result = await getAllProducts()
+      if (result.success) {
+        const soldIds = new Set(
+          result.products
+            .filter(p => p.status === 'sold')
+            .map(p => Number(p.id))
+        )
+        setSoldProducts(soldIds)
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadInventory()
+  }, [loadInventory])
+
   const isSold = (productId) => {
     return soldProducts.has(Number(productId))
   }
 
-  // Get count of available products (tous disponibles pour l'instant)
   const getAvailableCount = () => {
-    return 10
+    return 0
   }
 
-  // Get count of sold products
   const getSoldCount = () => {
     return soldProducts.size
+  }
+
+  const refresh = () => {
+    loadInventory()
   }
 
   const value = {
@@ -39,6 +61,7 @@ export function InventoryProvider({ children }) {
     error,
     getAvailableCount,
     getSoldCount,
+    refresh,
   }
 
   return (

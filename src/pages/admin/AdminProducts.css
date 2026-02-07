@@ -36,7 +36,7 @@
 }
 
 .ap-stat-label {
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   color: var(--text-medium, #666);
   font-weight: 500;
 }
@@ -62,7 +62,7 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1rem;
+  font-size: 1.3rem;
   pointer-events: none;
   opacity: 0.5;
 }
@@ -72,7 +72,7 @@
   padding: 0.75rem 2.5rem 0.75rem 2.8rem;
   border: 2px solid #e0d5c7;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 1.3rem;
   font-family: inherit;
   background: white;
   color: var(--text-dark, #2c2c2c);
@@ -98,7 +98,7 @@
   background: none;
   border: none;
   color: #999;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 50%;
@@ -121,7 +121,7 @@
   padding: 0.75rem 1.4rem;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.3rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -172,7 +172,7 @@
   background: white;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   font-weight: 500;
   transition: all 0.2s ease;
   color: var(--text-medium, #555);
@@ -196,7 +196,7 @@
   background: rgba(0, 0, 0, 0.08);
   padding: 1px 7px;
   border-radius: 10px;
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -207,7 +207,7 @@
 /* ── Result count ──────────────────── */
 
 .ap-result-count {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: var(--text-medium, #666);
   margin: 0 0 0.75rem 0.25rem;
 }
@@ -235,7 +235,7 @@
 
 .ap-loading p {
   color: var(--text-medium, #666);
-  font-size: 1rem;
+  font-size: 1.3rem;
 }
 
 /* ── Empty state ───────────────────── */
@@ -254,7 +254,7 @@
 }
 
 .ap-empty p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--text-medium, #666);
   margin-bottom: 1.5rem;
 }
@@ -282,7 +282,7 @@
   padding: 0.9rem 1.25rem;
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -325,13 +325,13 @@
 .ap-product-name {
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
-  font-size: 1rem;
+  font-size: 1.3rem;
 }
 
 .ap-price {
   font-weight: 700;
   color: var(--primary-color, #8b4049);
-  font-size: 1rem;
+  font-size: 1.3rem;
   white-space: nowrap;
 }
 
@@ -343,7 +343,7 @@
   gap: 0.35rem;
   padding: 0.3rem 0.85rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -387,7 +387,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 1.1rem;
   font-weight: 500;
   transition: all 0.15s ease;
   text-decoration: none;
@@ -476,7 +476,7 @@
   transform: translateX(-50%);
   padding: 0.85rem 2rem;
   border-radius: 12px;
-  font-size: 0.95rem;
+  font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
   z-index: 1000;
@@ -558,7 +558,7 @@
     position: absolute;
     bottom: 4px;
     left: 4px;
-    font-size: 0.65rem;
+    font-size: 0.9rem;
     padding: 2px 6px;
   }
 
@@ -574,7 +574,7 @@
 
   .ap-card-info h3 {
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     color: var(--text-dark, #2c2c2c);
     margin: 0 0 0.3rem 0;
     font-weight: 600;
@@ -585,7 +585,7 @@
 
   .ap-card-price {
     font-weight: 700;
-    font-size: 1.15rem;
+    font-size: 1.4rem;
     color: var(--primary-color, #8b4049);
     margin: 0;
   }
@@ -605,7 +605,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.82rem;
+    font-size: 1.1rem;
     font-weight: 500;
     transition: all 0.15s;
     text-decoration: none;
@@ -647,7 +647,7 @@
   }
 
   .ap-stat-label {
-    font-size: 0.78rem;
+    font-size: 1.1rem;
   }
 
   .ap-toolbar {
@@ -670,7 +670,7 @@
     flex: 1;
     justify-content: center;
     padding: 0.7rem 1rem;
-    font-size: 0.88rem;
+    font-size: 1.2rem;
   }
 
   .ap-filters {
@@ -679,14 +679,14 @@
 
   .ap-filter-btn {
     padding: 0.45rem 0.8rem;
-    font-size: 0.82rem;
+    font-size: 1.1rem;
     flex: 1;
     justify-content: center;
     min-width: 0;
   }
 
   .ap-filter-count {
-    font-size: 0.72rem;
+    font-size: 1rem;
     padding: 1px 5px;
   }
 
@@ -701,11 +701,11 @@
   }
 
   .ap-card-info h3 {
-    font-size: 1rem;
+    font-size: 1.3rem;
   }
 
   .ap-card-price {
-    font-size: 1.05rem;
+    font-size: 1.3rem;
   }
 
   .ap-card-actions {
@@ -715,7 +715,7 @@
 
   .ap-card-act {
     padding: 0.45rem 0.6rem;
-    font-size: 0.78rem;
+    font-size: 1rem;
   }
 }
 
@@ -738,7 +738,7 @@
   }
 
   .ap-stat-label {
-    font-size: 0.72rem;
+    font-size: 1rem;
   }
 
   .ap-card-actions {
@@ -752,6 +752,6 @@
   .ap-filter-btn {
     flex: 0 0 calc(50% - 0.2rem);
     padding: 0.4rem 0.5rem;
-    font-size: 0.78rem;
+    font-size: 1rem;
   }
 }

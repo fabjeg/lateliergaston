@@ -59,7 +59,7 @@ function About() {
       <div className="about-hero">
         <div className="about-hero-image-wrapper">
           <img
-            src={aboutImage}
+            src={content.heroImage || aboutImage}
             alt="L'Atelier Gaston - Broderie artisanale"
             className="about-hero-image"
           />

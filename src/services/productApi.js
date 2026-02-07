@@ -142,7 +142,7 @@ export async function getProduct(id) {
  */
 export async function createProduct(productData) {
   try {
-    const response = await fetch(`${API_BASE}/create`, {
+    const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -197,8 +197,8 @@ export async function updateProduct(id, productData) {
  */
 export async function reorderProducts(orderedIds) {
   try {
-    const response = await fetch(`${API_BASE}/reorder`, {
-      method: 'PUT',
+    const response = await fetch(API_BASE, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },

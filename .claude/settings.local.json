@@ -43,7 +43,10 @@
       "Bash(powershell -Command:*)",
       "Bash(npm run migrate-images:*)",
       "Bash(npm i:*)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(npx vite build:*)",
+      "Bash(vercel env:*)",
+      "Bash(if exist nul del /f nul)"
     ],
     "deny": [],
     "ask": []

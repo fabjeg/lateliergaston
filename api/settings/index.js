@@ -10,7 +10,8 @@ const DEFAULTS = {
   buttonBg: '#7a3540',
   buttonText: '#ffffff',
   announcementBg: '#f8f4f0',
-  ctaBg: '#2c3e50'
+  ctaBg: '#2c3e50',
+  shopEnabled: true
 }
 
 const HEX_REGEX = /^#[0-9a-fA-F]{6}$/
@@ -56,7 +57,7 @@ async function getSettings(req, res) {
 
 async function updateSettings(req, res) {
   try {
-    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg } = req.body
+    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled } = req.body
 
     const colors = { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg }
     for (const [key, value] of Object.entries(colors)) {
@@ -67,15 +68,19 @@ async function updateSettings(req, res) {
 
     const collection = await getCollection('settings')
 
+    // Read existing settings so partial updates don't erase other fields
+    const existing = await collection.findOne({ _id: 'main' }) || {}
+
     const settings = {
       _id: 'main',
-      headingColor: headingColor || DEFAULTS.headingColor,
-      subtitleColor: subtitleColor || DEFAULTS.subtitleColor,
-      textColor: textColor || DEFAULTS.textColor,
-      buttonBg: buttonBg || DEFAULTS.buttonBg,
-      buttonText: buttonText || DEFAULTS.buttonText,
-      announcementBg: announcementBg || DEFAULTS.announcementBg,
-      ctaBg: ctaBg || DEFAULTS.ctaBg,
+      headingColor: headingColor || existing.headingColor || DEFAULTS.headingColor,
+      subtitleColor: subtitleColor || existing.subtitleColor || DEFAULTS.subtitleColor,
+      textColor: textColor || existing.textColor || DEFAULTS.textColor,
+      buttonBg: buttonBg || existing.buttonBg || DEFAULTS.buttonBg,
+      buttonText: buttonText || existing.buttonText || DEFAULTS.buttonText,
+      announcementBg: announcementBg || existing.announcementBg || DEFAULTS.announcementBg,
+      ctaBg: ctaBg || existing.ctaBg || DEFAULTS.ctaBg,
+      shopEnabled: typeof shopEnabled === 'boolean' ? shopEnabled : (existing.shopEnabled !== undefined ? existing.shopEnabled : DEFAULTS.shopEnabled),
       updatedAt: new Date(),
       updatedBy: req.admin?.username || 'admin'
     }
@@ -86,7 +91,7 @@ async function updateSettings(req, res) {
       { upsert: true }
     )
 
-    return res.status(200).json(apiResponse(true, { settings }, 'Couleurs mises a jour'))
+    return res.status(200).json(apiResponse(true, { settings }, 'Parametres mis a jour'))
   } catch (error) {
     console.error('Error updating settings:', error)
     return res.status(500).json(apiResponse(false, null, 'Erreur serveur'))

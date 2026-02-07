@@ -4,7 +4,7 @@
  */
 export function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*')
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'https://lateliergaston.vercel.app')
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
   res.setHeader(
     'Access-Control-Allow-Headers',

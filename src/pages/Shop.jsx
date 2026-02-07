@@ -144,8 +144,7 @@ function Shop() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1>Collection Complète</h1>
-        <p className="shop-subtitle">Œuvres disponibles à l'achat</p>
+        <h1>Œuvres disponibles à l'achat</h1>
       </motion.div>
 
       {/* Barre de filtres */}

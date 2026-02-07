@@ -55,6 +55,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -117,6 +118,73 @@
 
 .form-field input::placeholder {
   color: var(--text-medium, #999);
+}
+
+/* Contact Preference */
+.contact-preference {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(139, 64, 73, 0.1);
+}
+
+.contact-preference-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--text-dark, #2c2c2c);
+  font-size: 1.7rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.contact-preference-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.contact-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--background-light, #faf8f5);
+}
+
+.contact-option input {
+  display: none;
+}
+
+.contact-option:hover {
+  border-color: var(--primary-color, #8b4049);
+}
+
+.contact-option.active {
+  border-color: var(--primary-color, #8b4049);
+  background: rgba(139, 64, 73, 0.05);
+}
+
+.contact-option-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary-color, #8b4049);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.contact-option.active .contact-option-icon {
+  opacity: 1;
+}
+
+.contact-option-text {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: var(--text-dark, #2c2c2c);
 }
 
 /* Photo Options */
@@ -319,6 +387,48 @@
   background: #c0392b;
 }
 
+/* Taille Selector */
+.taille-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.taille-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--border-color, #e0d5c7);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--background-light, #faf8f5);
+  text-align: center;
+}
+
+.taille-option input {
+  display: none;
+}
+
+.taille-option:hover {
+  border-color: var(--primary-color, #8b4049);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139, 64, 73, 0.15);
+}
+
+.taille-option.selected {
+  border-color: var(--primary-color, #8b4049);
+  background: rgba(139, 64, 73, 0.05);
+}
+
+.taille-option-label {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark, #2c2c2c);
+}
+
 /* Options Grid */
 .options-grid {
   display: grid;
@@ -328,6 +438,11 @@
 
 .options-grid-2 {
   grid-template-columns: repeat(2, 1fr);
+}
+
+.option-card-wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 .option-card {
@@ -341,6 +456,7 @@
   transition: all 0.3s ease;
   background: var(--background-light, #faf8f5);
   text-align: center;
+  position: relative;
 }
 
 .option-card input {
@@ -386,6 +502,120 @@
   font-family: var(--font-body);
   font-size: 23px;
   color: var(--text-medium, #555);
+}
+
+/* Animal hair hint on option card */
+.option-hint-shipping {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  color: #d4912a;
+  font-style: italic;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+/* Animal hair reminder banner */
+.animal-hair-reminder {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(232, 168, 73, 0.08), rgba(212, 145, 42, 0.12));
+  border: 1px solid rgba(212, 145, 42, 0.3);
+  border-left: 4px solid #d4912a;
+  border-radius: 0 10px 10px 0;
+}
+
+.animal-hair-reminder-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b8860b;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.animal-hair-reminder-steps {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--text-dark, #2c2c2c);
+  line-height: 1.7;
+  padding-left: 1.2rem;
+  margin: 0 0 0.8rem 0;
+}
+
+.animal-hair-reminder-steps li {
+  margin-bottom: 0.3rem;
+}
+
+.animal-hair-reminder-reopen {
+  background: none;
+  border: none;
+  color: #d4912a;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.animal-hair-reminder-reopen:hover {
+  color: #b8860b;
+}
+
+/* Info button on option card */
+.option-info-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(139, 64, 73, 0.1);
+  color: var(--primary-color, #8b4049);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.option-info-btn:hover,
+.option-info-btn.active {
+  background: var(--primary-color, #8b4049);
+  color: white;
+}
+
+/* Explanation panel */
+.option-explanation {
+  background: rgba(139, 64, 73, 0.05);
+  border: 1px solid rgba(139, 64, 73, 0.15);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 1rem 1.2rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-dark, #2c2c2c);
+  line-height: 1.6;
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  to {
+    opacity: 1;
+    max-height: 300px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }
 
 /* Cadre Toggle */

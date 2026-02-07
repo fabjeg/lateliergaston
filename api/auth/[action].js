@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid'
 import cookie from 'cookie'
 import { getCollection } from '../_lib/mongodb.js'
+import { verifySession } from '../_lib/auth.js'
 import { handleCorsOptions, apiResponse } from '../_lib/utils.js'
 import {
   getClientIP,
@@ -14,10 +15,25 @@ import {
 } from '../_lib/security.js'
 
 export default async function handler(req, res) {
-  // Handle CORS preflight
   if (handleCorsOptions(req, res)) return
 
-  // Only allow POST
+  const { action } = req.query
+
+  switch (action) {
+    case 'login':
+      return handleLogin(req, res)
+    case 'logout':
+      return handleLogout(req, res)
+    case 'verify':
+      return handleVerify(req, res)
+    default:
+      return res.status(404).json(apiResponse(false, null, 'Route non trouvee'))
+  }
+}
+
+// ── Login ────────────────────────────────────────────
+
+async function handleLogin(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json(apiResponse(false, null, 'Méthode non autorisée'))
   }
@@ -28,17 +44,14 @@ export default async function handler(req, res) {
   try {
     const { username, password } = req.body
 
-    // Validate input
     if (!username || !password) {
       return res.status(400).json(
         apiResponse(false, null, 'Nom d\'utilisateur et mot de passe requis')
       )
     }
 
-    // Sanitize username (lowercase, trim)
     const sanitizedUsername = username.toLowerCase().trim()
 
-    // Check if IP is blocked
     if (await isIPBlocked(ip)) {
       const remainingTime = await getRemainingLockoutTime(ip, sanitizedUsername)
       await logLoginAttempt(sanitizedUsername, ip, false, userAgent)
@@ -47,7 +60,6 @@ export default async function handler(req, res) {
       )
     }
 
-    // Check if username is blocked
     if (await isUsernameBlocked(sanitizedUsername)) {
       const remainingTime = await getRemainingLockoutTime(ip, sanitizedUsername)
       await logLoginAttempt(sanitizedUsername, ip, false, userAgent)
@@ -56,51 +68,41 @@ export default async function handler(req, res) {
       )
     }
 
-    // Find admin by username
     const adminsCollection = await getCollection('admins')
     const admin = await adminsCollection.findOne({
       username: sanitizedUsername
     })
 
     if (!admin) {
-      // Record failed attempt even if user doesn't exist (prevent user enumeration)
       await recordFailedAttempt(sanitizedUsername, ip)
       await logLoginAttempt(sanitizedUsername, ip, false, userAgent)
-
-      // Use same error message to prevent user enumeration
       return res.status(401).json(
         apiResponse(false, null, 'Identifiants invalides')
       )
     }
 
-    // Verify password
     const passwordMatch = await bcrypt.compare(password, admin.passwordHash)
 
     if (!passwordMatch) {
       await recordFailedAttempt(sanitizedUsername, ip)
       await logLoginAttempt(sanitizedUsername, ip, false, userAgent)
-
       return res.status(401).json(
         apiResponse(false, null, 'Identifiants invalides')
       )
     }
 
-    // Successful login - clear any failed attempts
     await clearFailedAttempts(sanitizedUsername, ip)
     await logLoginAttempt(sanitizedUsername, ip, true, userAgent)
 
-    // Create session with shorter duration (24 hours)
     const sessionId = uuidv4()
     const sessionsCollection = await getCollection('sessions')
 
-    // Keep only the most recent session (allow max 2 sessions)
     const existingSessions = await sessionsCollection
       .find({ adminId: admin._id })
       .sort({ createdAt: -1 })
       .toArray()
 
     if (existingSessions.length >= 2) {
-      // Delete oldest sessions, keep only the most recent one
       const sessionsToDelete = existingSessions.slice(1).map(s => s._id)
       await sessionsCollection.deleteMany({ _id: { $in: sessionsToDelete } })
     }
@@ -108,26 +110,24 @@ export default async function handler(req, res) {
     const session = {
       sessionId,
       adminId: admin._id,
-      ip, // Store IP for additional validation
+      ip,
       userAgent,
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
     }
 
     await sessionsCollection.insertOne(session)
 
-    // Set session cookie with secure options
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60, // 24 hours in seconds
+      maxAge: 24 * 60 * 60,
       path: '/'
     }
 
     res.setHeader('Set-Cookie', cookie.serialize('admin_session', sessionId, cookieOptions))
 
-    // Return success
     return res.status(200).json(
       apiResponse(true, {
         admin: {
@@ -139,6 +139,79 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Login error:', error)
     await logLoginAttempt('unknown', ip, false, userAgent)
+    return res.status(500).json(
+      apiResponse(false, null, 'Erreur serveur')
+    )
+  }
+}
+
+// ── Logout ───────────────────────────────────────────
+
+async function handleLogout(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json(apiResponse(false, null, 'Méthode non autorisée'))
+  }
+
+  try {
+    const cookies = cookie.parse(req.headers.cookie || '')
+    const sessionId = cookies.admin_session
+
+    if (sessionId) {
+      const sessionsCollection = await getCollection('sessions')
+      await sessionsCollection.deleteOne({ sessionId })
+    }
+
+    res.setHeader(
+      'Set-Cookie',
+      cookie.serialize('admin_session', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 0,
+        path: '/'
+      })
+    )
+
+    return res.status(200).json(
+      apiResponse(true, { message: 'Déconnexion réussie' })
+    )
+  } catch (error) {
+    console.error('Logout error:', error)
+    return res.status(500).json(
+      apiResponse(false, null, 'Erreur serveur')
+    )
+  }
+}
+
+// ── Verify ───────────────────────────────────────────
+
+async function handleVerify(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).json(apiResponse(false, null, 'Méthode non autorisée'))
+  }
+
+  try {
+    const cookies = cookie.parse(req.headers.cookie || '')
+    const sessionId = cookies.admin_session
+
+    const admin = await verifySession(sessionId)
+
+    if (!admin) {
+      return res.status(401).json(
+        apiResponse(false, null, 'Session invalide ou expirée')
+      )
+    }
+
+    return res.status(200).json(
+      apiResponse(true, {
+        admin: {
+          username: admin.username,
+          role: admin.role
+        }
+      })
+    )
+  } catch (error) {
+    console.error('Verify session error:', error)
     return res.status(500).json(
       apiResponse(false, null, 'Erreur serveur')
     )

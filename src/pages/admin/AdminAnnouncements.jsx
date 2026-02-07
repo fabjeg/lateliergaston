@@ -55,6 +55,7 @@ function AdminAnnouncements() {
   }
 
   const [uploadingArtImage, setUploadingArtImage] = useState(false)
+  const [uploadingArtMainImage, setUploadingArtMainImage] = useState(false)
   const [showAddBlock, setShowAddBlock] = useState(false)
   const [draggedSection, setDraggedSection] = useState(null)
   const [dragOverSection, setDragOverSection] = useState(null)
@@ -196,6 +197,41 @@ function AdminAnnouncements() {
         }
       }
     })
+  }
+
+  const handleArtMainImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Veuillez sélectionner une image valide' })
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage({ type: 'error', text: "L'image doit faire moins de 5MB" })
+      return
+    }
+
+    setUploadingArtMainImage(true)
+
+    const reader = new FileReader()
+    reader.onloadend = async () => {
+      const result = await uploadImage(reader.result, file.name)
+      setUploadingArtMainImage(false)
+
+      if (result.success) {
+        handleArtSectionChange('mainImage', result.url)
+      } else {
+        setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
+      }
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleRemoveArtMainImage = () => {
+    handleArtSectionChange('mainImage', '')
   }
 
   const handleAddBlock = (type) => {
@@ -510,6 +546,44 @@ function AdminAnnouncements() {
                   rows={5}
                   placeholder="Je tisse des cheveux vrais ou synthétiques ainsi que des poils d'animaux sur des toiles ou photos..."
                 />
+              </div>
+
+              <div className="form-group">
+                <label>Photo à côté du texte</label>
+                <p className="help-text">
+                  Cette photo s'affichera à droite du texte de description
+                </p>
+
+                {content.artSection?.mainImage ? (
+                  <div className="art-main-image-preview">
+                    <img src={content.artSection.mainImage} alt="Photo principale" />
+                    <button
+                      type="button"
+                      className="art-image-remove"
+                      onClick={handleRemoveArtMainImage}
+                      title="Supprimer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <label className="art-image-add" style={{ width: '200px', height: '200px' }}>
+                    <input
+                      type="file"
+                      accept="image/webp,image/jpeg,image/jpg,image/png"
+                      onChange={handleArtMainImageUpload}
+                      disabled={uploadingArtMainImage}
+                    />
+                    {uploadingArtMainImage ? (
+                      <span className="uploading-text">Upload...</span>
+                    ) : (
+                      <>
+                        <span className="add-icon">+</span>
+                        <span>Ajouter</span>
+                      </>
+                    )}
+                  </label>
+                )}
               </div>
 
               <div className="form-group">

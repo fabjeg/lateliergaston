@@ -393,6 +393,28 @@
   font-weight: bold;
 }
 
+.art-main-image-preview {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.art-main-image-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.art-main-image-preview .art-image-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
 .art-image-add {
   aspect-ratio: 1;
   border: 2px dashed var(--border-color, #e0d5c7);

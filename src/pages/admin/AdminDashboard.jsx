@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { useNavigate, Link } from 'react-router-dom'
 import { getAllProducts } from '../../services/productApi'
+import { getSettings, updateSettings } from '../../services/settingsApi'
 import './AdminDashboard.css'
 
 const DEFAULT_SHORTCUTS = [
@@ -54,6 +55,13 @@ const DEFAULT_SHORTCUTS = [
     description: "R\u00e9ordonner l'affichage",
     to: '/admin/reorder',
   },
+  {
+    id: 'sur-mesure',
+    icon: '\u2702\uFE0F',
+    title: 'Page Sur-mesure',
+    description: 'Options mat\u00e9riaux',
+    to: '/admin/sur-mesure',
+  },
 ]
 
 const STORAGE_KEY = 'admin_shortcuts_order'
@@ -86,11 +94,14 @@ function AdminDashboard() {
     hidden: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [shopEnabled, setShopEnabled] = useState(true)
+  const [shopToggleLoading, setShopToggleLoading] = useState(false)
   const [shortcuts, setShortcuts] = useState(getSavedShortcuts)
   const [reordering, setReordering] = useState(false)
 
   useEffect(() => {
     loadStats()
+    loadShopStatus()
   }, [])
 
   const loadStats = async () => {
@@ -107,6 +118,23 @@ function AdminDashboard() {
     }
 
     setLoading(false)
+  }
+
+  const loadShopStatus = async () => {
+    const result = await getSettings()
+    if (result.success) {
+      setShopEnabled(result.settings.shopEnabled !== false)
+    }
+  }
+
+  const toggleShop = async () => {
+    setShopToggleLoading(true)
+    const newValue = !shopEnabled
+    const result = await updateSettings({ shopEnabled: newValue })
+    if (result.success) {
+      setShopEnabled(newValue)
+    }
+    setShopToggleLoading(false)
   }
 
   const handleLogout = async () => {
@@ -149,6 +177,17 @@ function AdminDashboard() {
       </div>
 
       <div className="admin-content">
+        <div className="shop-toggle">
+          <span className="shop-toggle-label">Ventes en ligne :</span>
+          <button
+            className={`shop-toggle-btn ${shopEnabled ? 'shop-toggle-active' : 'shop-toggle-inactive'}`}
+            onClick={toggleShop}
+            disabled={shopToggleLoading}
+          >
+            {shopToggleLoading ? '...' : shopEnabled ? 'Activees' : 'Desactivees'}
+          </button>
+        </div>
+
         <div className="dashboard-stats">
           <div className="stat-card">
             <span className="stat-icon">{'\uD83D\uDDBC\uFE0F'}</span>

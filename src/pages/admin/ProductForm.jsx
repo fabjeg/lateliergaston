@@ -31,6 +31,9 @@ function ProductForm() {
   const [error, setError] = useState('')
   const [loadingProduct, setLoadingProduct] = useState(isEditMode)
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [customTechnique, setCustomTechnique] = useState('')
+
+  const predefinedTechniques = ['broderie-photo', 'broderie-toile', 'broderie-papier']
 
   // Load collections
   useEffect(() => {
@@ -53,19 +56,24 @@ function ProductForm() {
 
     if (result.success) {
       const product = result.product
+      const technique = product.technique || 'broderie-photo'
+      const isCustom = !predefinedTechniques.includes(technique)
       setFormData({
         name: product.name,
         price: product.price.toString(),
         description: product.description,
         height: product.height?.toString() || '',
         width: product.width?.toString() || '',
-        technique: product.technique || 'broderie-photo',
+        technique: isCustom ? 'autre' : technique,
         year: product.year?.toString() || new Date().getFullYear().toString(),
         framed: product.framed || 'non',
         stripePriceId: product.stripePriceId || '',
         status: product.status,
         collectionId: product.collectionId || ''
       })
+      if (isCustom) {
+        setCustomTechnique(technique)
+      }
       // Support both Cloudinary URLs and legacy base64
       setImage({
         url: product.imageUrl || null,
@@ -86,6 +94,9 @@ function ProductForm() {
       ...prev,
       [name]: value
     }))
+    if (name === 'technique' && value !== 'autre') {
+      setCustomTechnique('')
+    }
   }
 
   const handleImageSelect = (imageData) => {
@@ -111,9 +122,17 @@ function ProductForm() {
       return
     }
 
+    // Validate custom technique
+    if (formData.technique === 'autre' && !customTechnique.trim()) {
+      setError('Veuillez préciser la technique')
+      setLoading(false)
+      return
+    }
+
     // Prepare data
     const productData = {
       ...formData,
+      technique: formData.technique === 'autre' ? customTechnique.trim() : formData.technique,
       price: parseFloat(formData.price),
       height: formData.height ? parseFloat(formData.height) : null,
       width: formData.width ? parseFloat(formData.width) : null,
@@ -274,6 +293,16 @@ function ProductForm() {
                     <option value="broderie-papier">Broderie sur papier</option>
                     <option value="autre">Autre technique</option>
                   </select>
+                  {formData.technique === 'autre' && (
+                    <input
+                      type="text"
+                      value={customTechnique}
+                      onChange={(e) => setCustomTechnique(e.target.value)}
+                      disabled={loading}
+                      placeholder="Précisez la technique..."
+                      className="custom-technique-input"
+                    />
+                  )}
                 </div>
 
                 <div className="form-group">
