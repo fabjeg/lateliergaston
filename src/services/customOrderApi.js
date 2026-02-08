@@ -69,3 +69,51 @@ export function fileToBase64(file) {
     reader.onerror = error => reject(error)
   })
 }
+
+/**
+ * Upload a file directly to Cloudinary (bypasses Vercel body size limit)
+ * 1. Gets a signed upload config from our API
+ * 2. Uploads the file directly to Cloudinary from the browser
+ * @param {File} file - The image file to upload
+ * @returns {Promise<{success: boolean, url?: string, error?: string}>}
+ */
+export async function uploadDirectToCloudinary(file) {
+  try {
+    // Step 1: Get signature from our API
+    const sigResponse = await fetch('/api/cloudinary-signature', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    const sigData = await sigResponse.json()
+
+    if (!sigData.success) {
+      return { success: false, error: 'Impossible de préparer l\'upload' }
+    }
+
+    const { signature, timestamp, folder, apiKey, cloudName } = sigData.data
+
+    // Step 2: Upload directly to Cloudinary
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('signature', signature)
+    formData.append('timestamp', timestamp)
+    formData.append('folder', folder)
+    formData.append('api_key', apiKey)
+
+    const uploadResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      { method: 'POST', body: formData }
+    )
+
+    const uploadResult = await uploadResponse.json()
+
+    if (uploadResult.secure_url) {
+      return { success: true, url: uploadResult.secure_url }
+    }
+
+    return { success: false, error: uploadResult.error?.message || 'Erreur lors de l\'upload' }
+  } catch (error) {
+    console.error('Direct Cloudinary upload error:', error)
+    return { success: false, error: 'Erreur lors de l\'upload de la photo' }
+  }
+}

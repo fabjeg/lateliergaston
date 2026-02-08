@@ -55,6 +55,7 @@ async function createCustomOrder(req, res) {
       selectedPhotoId,
       selectedPhotoUrl,
       uploadedPhotoBase64,
+      uploadedPhotoUrl: directPhotoUrl,
       materiau,
       taille,
       papier,
@@ -93,7 +94,7 @@ async function createCustomOrder(req, res) {
       errors.push('Veuillez sélectionner une photo de la galerie')
     }
 
-    if (photoOption === 'upload' && !uploadedPhotoBase64) {
+    if (photoOption === 'upload' && !uploadedPhotoBase64 && !directPhotoUrl) {
       errors.push('Veuillez télécharger votre photo')
     }
 
@@ -101,9 +102,9 @@ async function createCustomOrder(req, res) {
       return res.status(400).json(apiResponse(false, null, errors.join(', ')))
     }
 
-    // Upload photo to Cloudinary if provided
-    let uploadedPhotoUrl = null
-    if (photoOption === 'upload' && uploadedPhotoBase64) {
+    // Photo URL: use direct URL from frontend Cloudinary upload, or fallback to base64 upload
+    let uploadedPhotoUrl = directPhotoUrl || null
+    if (!uploadedPhotoUrl && photoOption === 'upload' && uploadedPhotoBase64) {
       try {
         const cloudinaryResult = await uploadImage(uploadedPhotoBase64, {
           folder: 'lateliergaston/custom-orders'
@@ -127,7 +128,7 @@ async function createCustomOrder(req, res) {
       photoOption,
       selectedPhotoId: photoOption === 'gallery' ? selectedPhotoId : null,
       selectedPhotoUrl: photoOption === 'gallery' ? selectedPhotoUrl : null,
-      uploadedPhoto: uploadedPhotoUrl || (photoOption === 'upload' ? uploadedPhotoBase64 : null),
+      uploadedPhoto: uploadedPhotoUrl || null,
       materiau,
       taille: taille || null,
       papier,

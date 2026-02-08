@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { getAllProducts } from '../services/productApi'
 import { getSurmesureConfig } from '../services/surmesureApi'
-import { createCustomOrder, fileToBase64 } from '../services/customOrderApi'
+import { createCustomOrder, uploadDirectToCloudinary } from '../services/customOrderApi'
 import SEO from '../components/SEO'
 import AnimalHairModal from '../components/AnimalHairModal'
 import './SurMesure.css'
@@ -113,8 +113,8 @@ function SurMesure() {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
-      if (file.size > 4 * 1024 * 1024) {
-        setError('La photo ne doit pas dépasser 4 Mo')
+      if (file.size > 20 * 1024 * 1024) {
+        setError('La photo ne doit pas dépasser 20 Mo')
         return
       }
       setFormData({
@@ -202,10 +202,14 @@ function SurMesure() {
     setSending(true)
 
     try {
-      // Convertir la photo uploadée en base64 si nécessaire
-      let uploadedPhotoBase64 = null
+      // Upload direct vers Cloudinary si photo personnelle
+      let uploadedPhotoUrl = null
       if (formData.photoOption === 'upload' && formData.uploadedPhoto) {
-        uploadedPhotoBase64 = await fileToBase64(formData.uploadedPhoto)
+        const uploadResult = await uploadDirectToCloudinary(formData.uploadedPhoto)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Erreur lors de l\'upload de la photo')
+        }
+        uploadedPhotoUrl = uploadResult.url
       }
 
       // Build materiau labels from dynamic options
@@ -214,7 +218,7 @@ function SurMesure() {
         materiauLabels[opt.id] = opt.title
       })
 
-      // Préparer les données pour l'API
+      // Préparer les données pour l'API (URL au lieu de base64)
       const orderData = {
         customerName: formData.customerName.trim(),
         customerEmail: formData.customerEmail.trim(),
@@ -223,7 +227,7 @@ function SurMesure() {
         photoOption: formData.photoOption,
         selectedPhotoId: formData.selectedPhoto,
         selectedPhotoUrl: formData.selectedPhotoUrl,
-        uploadedPhotoBase64,
+        uploadedPhotoUrl,
         materiau: formData.materiau,
         taille: formData.taille,
         papier: formData.papier,
@@ -245,8 +249,8 @@ function SurMesure() {
 
       // Determine photo URL for email
       let photoUrl = ''
-      if (apiResult.uploadedPhotoUrl) {
-        photoUrl = apiResult.uploadedPhotoUrl
+      if (uploadedPhotoUrl) {
+        photoUrl = uploadedPhotoUrl
       } else if (formData.photoOption === 'gallery' && formData.selectedPhotoUrl) {
         photoUrl = formData.selectedPhotoUrl
       }
@@ -530,7 +534,7 @@ function SurMesure() {
                       </svg>
                     </span>
                     <span className="upload-text">Cliquez pour télécharger votre photo</span>
-                    <span className="upload-hint">JPG, PNG - Max 4 Mo</span>
+                    <span className="upload-hint">JPG, PNG - Max 20 Mo - Haute qualité recommandée</span>
                   </div>
                 </label>
               )}

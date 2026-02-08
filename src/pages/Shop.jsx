@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import './Shop.css'
 import { getAllProducts } from '../services/productApi'
 import { getAllCollections } from '../services/collectionApi'
+import { getSettings } from '../services/settingsApi'
 import { useInventory } from '../context/InventoryContext'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
@@ -22,6 +23,7 @@ function Shop() {
   const [priceRange, setPriceRange] = useState('all')
   const [sizeFilter, setSizeFilter] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+  const [shopFilters, setShopFilters] = useState(null)
 
   // Restaurer la position de scroll au retour
   useLayoutEffect(() => {
@@ -63,6 +65,12 @@ function Shop() {
       setCollections(collectionsResult.collections)
     }
 
+    // Charger les filtres depuis les settings
+    const settingsResult = await getSettings()
+    if (settingsResult.success && settingsResult.settings.shopFilters) {
+      setShopFilters(settingsResult.settings.shopFilters)
+    }
+
     setLoading(false)
   }
 
@@ -86,28 +94,30 @@ function Shop() {
       })
     }
 
-    // Filtre par taille
+    // Filtre par taille (dynamique via shopFilters)
     if (sizeFilter !== 'all') {
+      const sizeRange = shopFilters?.sizeRanges?.find(r => r.value === sizeFilter)
       result = result.filter(p => {
         const maxDim = Math.max(p.height || 0, p.width || 0)
-        switch (sizeFilter) {
-          case 'small':
-            return maxDim > 0 && maxDim <= 30
-          case 'medium':
-            return maxDim > 30 && maxDim <= 60
-          case 'large':
-            return maxDim > 60
-          default:
-            return true
+        if (!maxDim) return false
+        if (sizeRange) {
+          const aboveMin = sizeRange.min != null ? maxDim > sizeRange.min : true
+          const belowMax = sizeRange.max != null ? maxDim <= sizeRange.max : true
+          return aboveMin && belowMax
         }
+        return true
       })
     }
 
     return result
-  }, [products, categoryFilter, priceRange, sizeFilter])
+  }, [products, categoryFilter, priceRange, sizeFilter, shopFilters])
 
-  // Compter les filtres actifs
-  const activeFiltersCount = [categoryFilter, priceRange, sizeFilter].filter(f => f !== 'all').length
+  // Compter les filtres actifs (uniquement ceux qui sont activés)
+  const activeFiltersCount = [
+    shopFilters?.enableCategoryFilter !== false && categoryFilter,
+    shopFilters?.enablePriceFilter !== false && priceRange,
+    shopFilters?.enableSizeFilter !== false && sizeFilter
+  ].filter(f => f && f !== 'all').length
 
   // Réinitialiser les filtres
   const resetFilters = () => {
@@ -189,38 +199,52 @@ function Shop() {
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="filter-group">
-            <label>Catégorie</label>
-            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-              <option value="all">Toutes les catégories</option>
-              {collections.map(collection => (
-                <option key={collection.id} value={collection.id}>
-                  {collection.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {(shopFilters?.enableCategoryFilter !== false) && (
+            <div className="filter-group">
+              <label>Catégorie</label>
+              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+                <option value="all">Toutes les catégories</option>
+                {collections.map(collection => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <div className="filter-group">
-            <label>Prix</label>
-            <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
-              <option value="all">Tous les prix</option>
-              <option value="0-50">Moins de 50 €</option>
-              <option value="50-100">50 € - 100 €</option>
-              <option value="100-200">100 € - 200 €</option>
-              <option value="200-">Plus de 200 €</option>
-            </select>
-          </div>
+          {(shopFilters?.enablePriceFilter !== false) && (
+            <div className="filter-group">
+              <label>Prix</label>
+              <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                <option value="all">Tous les prix</option>
+                {(shopFilters?.priceRanges || [
+                  { label: 'Moins de 50 €', value: '0-50' },
+                  { label: '50 € - 100 €', value: '50-100' },
+                  { label: '100 € - 200 €', value: '100-200' },
+                  { label: 'Plus de 200 €', value: '200-' }
+                ]).map((range, i) => (
+                  <option key={i} value={range.value}>{range.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <div className="filter-group">
-            <label>Taille</label>
-            <select value={sizeFilter} onChange={(e) => setSizeFilter(e.target.value)}>
-              <option value="all">Toutes les tailles</option>
-              <option value="small">Petit (≤ 30 cm)</option>
-              <option value="medium">Moyen (30-60 cm)</option>
-              <option value="large">Grand (&gt; 60 cm)</option>
-            </select>
-          </div>
+          {(shopFilters?.enableSizeFilter !== false) && (
+            <div className="filter-group">
+              <label>Taille</label>
+              <select value={sizeFilter} onChange={(e) => setSizeFilter(e.target.value)}>
+                <option value="all">Toutes les tailles</option>
+                {(shopFilters?.sizeRanges || [
+                  { label: 'Petit (≤ 30 cm)', value: 'small' },
+                  { label: 'Moyen (30-60 cm)', value: 'medium' },
+                  { label: 'Grand (> 60 cm)', value: 'large' }
+                ]).map((range, i) => (
+                  <option key={i} value={range.value}>{range.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {activeFiltersCount > 0 && (
             <button className="reset-filters" onClick={resetFilters}>

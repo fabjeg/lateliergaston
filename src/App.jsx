@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import Loader from './components/Loader'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import AdminHelpBot from './components/admin/AdminHelpBot'
+import AdminSiteNav from './components/admin/AdminSiteNav'
 import { CartProvider } from './context/CartContext'
 import { InventoryProvider } from './context/InventoryContext'
 import { AdminProvider } from './context/AdminContext'
@@ -35,6 +36,7 @@ const AdminReorder = lazy(() => import('./pages/admin/AdminReorder'))
 const AdminColors = lazy(() => import('./pages/admin/AdminColors'))
 const ProductForm = lazy(() => import('./pages/admin/ProductForm'))
 const AdminSurMesure = lazy(() => import('./pages/admin/AdminSurMesure'))
+const AdminShopFilters = lazy(() => import('./pages/admin/AdminShopFilters'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -48,11 +50,13 @@ function Layout() {
   const location = useLocation()
   const isHeroPage = location.pathname === '/'
   const isAdmin = location.pathname.startsWith('/admin')
+  const isAdminLogin = location.pathname === '/admin/login'
 
   return (
     <div className="app">
       <ScrollToTop />
       {!isHeroPage && !isAdmin && <Header />}
+      {isAdmin && !isAdminLogin && <AdminSiteNav />}
       <main className={isAdmin ? 'no-header' : ''}>
         <Suspense fallback={<Loader />}>
         <Routes>
@@ -149,6 +153,14 @@ function Layout() {
             element={
               <ProtectedRoute>
                 <AdminSurMesure />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/shop-filters"
+            element={
+              <ProtectedRoute>
+                <AdminShopFilters />
               </ProtectedRoute>
             }
           />

@@ -11,7 +11,23 @@ const DEFAULTS = {
   buttonText: '#ffffff',
   announcementBg: '#f8f4f0',
   ctaBg: '#2c3e50',
-  shopEnabled: true
+  shopEnabled: true,
+  shopFilters: {
+    enableCategoryFilter: true,
+    enablePriceFilter: true,
+    enableSizeFilter: true,
+    priceRanges: [
+      { label: 'Moins de 50 €', value: '0-50' },
+      { label: '50 € - 100 €', value: '50-100' },
+      { label: '100 € - 200 €', value: '100-200' },
+      { label: 'Plus de 200 €', value: '200-' }
+    ],
+    sizeRanges: [
+      { label: 'Petit (≤ 30 cm)', value: 'small', max: 30 },
+      { label: 'Moyen (30-60 cm)', value: 'medium', min: 30, max: 60 },
+      { label: 'Grand (> 60 cm)', value: 'large', min: 60 }
+    ]
+  }
 }
 
 const HEX_REGEX = /^#[0-9a-fA-F]{6}$/
@@ -57,7 +73,7 @@ async function getSettings(req, res) {
 
 async function updateSettings(req, res) {
   try {
-    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled } = req.body
+    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled, shopFilters } = req.body
 
     const colors = { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg }
     for (const [key, value] of Object.entries(colors)) {
@@ -81,6 +97,7 @@ async function updateSettings(req, res) {
       announcementBg: announcementBg || existing.announcementBg || DEFAULTS.announcementBg,
       ctaBg: ctaBg || existing.ctaBg || DEFAULTS.ctaBg,
       shopEnabled: typeof shopEnabled === 'boolean' ? shopEnabled : (existing.shopEnabled !== undefined ? existing.shopEnabled : DEFAULTS.shopEnabled),
+      shopFilters: shopFilters || existing.shopFilters || DEFAULTS.shopFilters,
       updatedAt: new Date(),
       updatedBy: req.admin?.username || 'admin'
     }

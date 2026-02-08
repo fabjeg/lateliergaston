@@ -62,6 +62,13 @@ const DEFAULT_SHORTCUTS = [
     description: 'Options mat\u00e9riaux',
     to: '/admin/sur-mesure',
   },
+  {
+    id: 'shop-filters',
+    icon: '\uD83D\uDD0D',
+    title: 'Filtres Boutique',
+    description: 'G\u00e9rer les filtres',
+    to: '/admin/shop-filters',
+  },
 ]
 
 const STORAGE_KEY = 'admin_shortcuts_order'
@@ -166,13 +173,6 @@ function AdminDashboard() {
               Déconnexion
             </button>
           </div>
-        </div>
-        <div className="admin-site-links">
-          <Link to="/">Accueil</Link>
-          <Link to="/shop">Boutique</Link>
-          <Link to="/gallery">Galerie</Link>
-          <Link to="/about">{'\u00c0 propos'}</Link>
-          <Link to="/contact">Contact</Link>
         </div>
       </div>
 
