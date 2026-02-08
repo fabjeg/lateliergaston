@@ -5,7 +5,6 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import Loader from './components/Loader'
 import ProtectedRoute from './components/admin/ProtectedRoute'
-import AdminHelpBot from './components/admin/AdminHelpBot'
 import AdminSiteNav from './components/admin/AdminSiteNav'
 import { CartProvider } from './context/CartContext'
 import { InventoryProvider } from './context/InventoryContext'
@@ -167,7 +166,6 @@ function Layout() {
         </Routes>
         </Suspense>
       </main>
-      {isAdmin && <AdminHelpBot />}
       {!isHeroPage && <Footer />}
     </div>
   )
