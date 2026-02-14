@@ -63,7 +63,7 @@
 }
 
 .about-hero-text p {
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   line-height: 1.8;
   color: var(--body-text-color, #333);
   margin-bottom: 1.5rem;
@@ -76,6 +76,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 3rem;
+  align-items: start;
 }
 
 .about-content section {
@@ -85,6 +86,9 @@
   box-shadow: 0 4px 15px rgba(139, 64, 73, 0.08);
   border-left: 4px solid #8b4049;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .about-content section:hover {
@@ -103,7 +107,7 @@
 
 .about-content p {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   line-height: 1.8;
   color: var(--body-text-color, #444);
@@ -116,7 +120,7 @@
 }
 
 .about-content ul li {
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   line-height: 2;
   color: var(--body-text-color, #444);
@@ -126,10 +130,10 @@
 
 .about-content ul li::before {
   content: '✦';
-  position: absolute;
-  left: 0;
+  padding-right: 10px;
   color: #8b4049;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  line-height: 2;
 }
 
 /* Responsive Design */
@@ -168,7 +172,7 @@
   }
 
   .about-hero-text p {
-    font-size: 1.7rem;
+    font-size: var(--body-font-size, 1.6rem);
   }
 
   .about-content {
@@ -186,7 +190,7 @@
 
   .about-content p,
   .about-content ul li {
-    font-size: 1.7rem;
+    font-size: var(--body-font-size, 1.6rem);
   }
 }
 

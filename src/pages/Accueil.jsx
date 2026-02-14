@@ -331,7 +331,7 @@ function Accueil() {
       <SEO
         title="Accueil"
         description="Bienvenue à L'Atelier Gaston - Artisan brodeur spécialisé dans l'implantation de cheveux sur photo. Découvrez nos nouvelles collections et créations uniques."
-        url="/accueil"
+        url=""
       />
 
       {sectionsOrder.map((sectionKey, index) => renderSection(sectionKey, index))}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 
 const CartContext = createContext()
 
@@ -30,14 +30,11 @@ export function CartProvider({ children }) {
     localStorage.setItem('lateliergaston_cart', JSON.stringify(cartItems))
   }, [cartItems])
 
-  // Add product to cart
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prevItems => {
-      // Check if product already in cart
       const existingItem = prevItems.find(item => item.id === product.id)
 
       if (existingItem) {
-        // Product already in cart - increment quantity
         return prevItems.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
@@ -45,7 +42,6 @@ export function CartProvider({ children }) {
         )
       }
 
-      // Add new item to cart
       return [...prevItems, {
         id: product.id,
         name: product.name,
@@ -54,10 +50,13 @@ export function CartProvider({ children }) {
         quantity: quantity
       }]
     })
-  }
+  }, [])
 
-  // Update quantity of a specific product
-  const updateQuantity = (productId, newQuantity) => {
+  const removeFromCart = useCallback((productId) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId))
+  }, [])
+
+  const updateQuantity = useCallback((productId, newQuantity) => {
     if (newQuantity <= 0) {
       removeFromCart(productId)
       return
@@ -70,40 +69,30 @@ export function CartProvider({ children }) {
           : item
       )
     )
-  }
+  }, [removeFromCart])
 
-  // Remove product from cart
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId))
-  }
-
-  // Check if product is in cart
-  const isInCart = (productId) => {
+  const isInCart = useCallback((productId) => {
     return cartItems.some(item => item.id === productId)
-  }
+  }, [cartItems])
 
-  // Clear entire cart
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([])
     localStorage.removeItem('lateliergaston_cart')
-  }
+  }, [])
 
-  // Get cart subtotal (products only, without shipping)
-  const getSubtotal = () => {
+  const getSubtotal = useCallback(() => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
-  }
+  }, [cartItems])
 
-  // Get cart total with shipping
-  const getTotal = (shippingCost = 0) => {
+  const getTotal = useCallback((shippingCost = 0) => {
     return getSubtotal() + shippingCost
-  }
+  }, [getSubtotal])
 
-  // Get total item count
-  const getItemCount = () => {
+  const getItemCount = useCallback(() => {
     return cartItems.reduce((count, item) => count + item.quantity, 0)
-  }
+  }, [cartItems])
 
-  const value = {
+  const value = useMemo(() => ({
     cartItems,
     addToCart,
     updateQuantity,
@@ -113,7 +102,7 @@ export function CartProvider({ children }) {
     getSubtotal,
     getTotal,
     getItemCount,
-  }
+  }), [cartItems, addToCart, updateQuantity, removeFromCart, isInCart, clearCart, getSubtotal, getTotal, getItemCount])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

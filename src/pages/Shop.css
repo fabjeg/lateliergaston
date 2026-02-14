@@ -86,9 +86,12 @@
   object-position: center;
   display: block;
   border: 1px solid #e8e8e8;
-  will-change: transform;
   -webkit-tap-highlight-color: transparent;
   outline: none;
+}
+
+.product-card:hover .product-image-container img {
+  will-change: transform;
 }
 
 .product-image-container img:focus,
@@ -124,7 +127,7 @@
 
 .product-card .description {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   color: var(--body-text-color, #444);
   margin: 0;
@@ -138,7 +141,7 @@
 /* Prix et dimensions sur les cartes */
 .product-price {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 600;
   color: var(--primary-color, #8b4049);
   margin: 0.5rem 0;
@@ -146,7 +149,7 @@
 
 .product-dimensions {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   color: #444;
   margin: 0;
@@ -177,7 +180,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-dark, #2c2c2c);
   transition: all 0.3s ease;
 }
@@ -205,7 +208,7 @@
 
 .results-count {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   color: #444;
 }
@@ -235,7 +238,7 @@
 
 .filter-group label {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
   text-transform: uppercase;
@@ -245,7 +248,7 @@
 .filter-group select {
   padding: 0.7rem 2rem 0.7rem 1rem;
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 500;
   border: 2px solid var(--border-color, #e0d5c7);
   border-radius: 8px;
@@ -292,7 +295,7 @@
 
 .shop-empty p {
   font-family: var(--font-body);
-  font-size: 1.6rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-medium, #555);
   margin-bottom: 1.5rem;
 }

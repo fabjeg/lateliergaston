@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCart } from '../context/CartContext'
 import { createCheckoutSession, validateCartForCheckout } from '../services/checkoutService'
+import { getSettings } from '../services/settingsApi'
 import './Cart.css'
 
 function Cart() {
@@ -9,6 +10,15 @@ function Cart() {
   const [shippingZone, setShippingZone] = useState('FR')
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState(null)
+  const [shopEnabled, setShopEnabled] = useState(true)
+
+  useEffect(() => {
+    getSettings().then(result => {
+      if (result.success) {
+        setShopEnabled(result.settings.shopEnabled !== false)
+      }
+    })
+  }, [])
 
   // Shipping costs based on zone
   const shippingCosts = {
@@ -135,6 +145,13 @@ function Cart() {
             <span>{total.toFixed(2)} €</span>
           </div>
 
+          {!shopEnabled && (
+            <div className="checkout-disabled-notice">
+              <p>Les ventes en ligne sont actuellement suspendues</p>
+              <p className="checkout-disabled-message">Vous pouvez nous contacter directement pour toute commande.</p>
+            </div>
+          )}
+
           {error && (
             <div className="checkout-error">
               {error}
@@ -144,7 +161,7 @@ function Cart() {
           <button
             className="checkout-button"
             onClick={handleCheckout}
-            disabled={isProcessing}
+            disabled={isProcessing || !shopEnabled}
           >
             {isProcessing ? 'Redirection...' : 'Proceder au paiement'}
           </button>

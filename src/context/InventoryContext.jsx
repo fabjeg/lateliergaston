@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { getAllProducts } from '../services/productApi'
 
 const InventoryContext = createContext()
@@ -38,23 +38,23 @@ export function InventoryProvider({ children }) {
     loadInventory()
   }, [loadInventory])
 
-  const isSold = (productId) => {
+  const isSold = useCallback((productId) => {
     return soldProducts.has(Number(productId))
-  }
+  }, [soldProducts])
 
-  const getAvailableCount = () => {
+  const getAvailableCount = useCallback(() => {
     return 0
-  }
+  }, [])
 
-  const getSoldCount = () => {
+  const getSoldCount = useCallback(() => {
     return soldProducts.size
-  }
+  }, [soldProducts])
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     loadInventory()
-  }
+  }, [loadInventory])
 
-  const value = {
+  const value = useMemo(() => ({
     soldProducts,
     isSold,
     loading,
@@ -62,7 +62,7 @@ export function InventoryProvider({ children }) {
     getAvailableCount,
     getSoldCount,
     refresh,
-  }
+  }), [soldProducts, isSold, loading, error, getAvailableCount, getSoldCount, refresh])
 
   return (
     <InventoryContext.Provider value={value}>

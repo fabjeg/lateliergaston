@@ -42,8 +42,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Google Fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600&family=Zen+Loop:ital@0;1&display=swap" />
+  <!-- Preload critical font to prevent CLS -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/zenloop/v11/h0GtssK16UsnJwHsEJ9xkQ__4sGFN00.woff2" as="font" type="font/woff2" crossorigin />
+
+  <!-- Critical fonts (used on first render) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Zen+Loop:ital@0;1&display=optional" />
+
+  <!-- Optional fonts (admin theme choices) - loaded async -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Allura&family=IBM+Plex+Sans:wght@400;500;600&family=Lato:wght@400;700&family=Manrope:wght@400;500;600;700&family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600&family=Playwrite+AT&family=Raleway:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
 </head>
 
 <body>

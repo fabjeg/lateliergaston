@@ -20,7 +20,7 @@
 
   /* Polices artistiques avec fallbacks */
   --font-heading: Georgia, serif;
-  --font-body: 'Zen Loop', Arial, sans-serif;
+  --font-body: var(--body-font, 'Zen Loop'), Arial, sans-serif;
   --font-nav: 'Cormorant Garamond', Georgia, serif;
 }
 

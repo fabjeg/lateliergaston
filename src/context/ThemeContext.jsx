@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useCallback } from 'react'
-import { getSettings } from '../services/settingsApi'
+import { createContext, useContext, useEffect, useCallback, useMemo } from 'react'
+import { getSettings, invalidateSettingsCache } from '../services/settingsApi'
 
 const DEFAULTS = {
   headingColor: '#7a3540',
@@ -8,7 +8,10 @@ const DEFAULTS = {
   buttonBg: '#7a3540',
   buttonText: '#ffffff',
   announcementBg: '#f8f4f0',
-  ctaBg: '#2c3e50'
+  ctaBg: '#2c3e50',
+  fontFamily: 'Zen Loop',
+  fontSize: '1.6rem',
+  fontWeight: '500'
 }
 
 const CSS_VAR_MAP = {
@@ -18,7 +21,10 @@ const CSS_VAR_MAP = {
   buttonBg: '--button-bg',
   buttonText: '--button-text',
   announcementBg: '--announcement-bg',
-  ctaBg: '--cta-bg'
+  ctaBg: '--cta-bg',
+  fontFamily: '--body-font',
+  fontSize: '--body-font-size',
+  fontWeight: '--body-font-weight'
 }
 
 const ThemeContext = createContext()
@@ -26,7 +32,11 @@ const ThemeContext = createContext()
 function applyColors(colors) {
   const root = document.documentElement
   for (const [key, cssVar] of Object.entries(CSS_VAR_MAP)) {
-    root.style.setProperty(cssVar, colors[key] || DEFAULTS[key])
+    let value = colors[key] || DEFAULTS[key]
+    if (key === 'fontFamily') {
+      value = `'${value}'`
+    }
+    root.style.setProperty(cssVar, value)
   }
 }
 
@@ -45,11 +55,17 @@ export function ThemeProvider({ children }) {
   }, [loadAndApply])
 
   const refreshTheme = useCallback(() => {
+    invalidateSettingsCache()
     return loadAndApply()
   }, [loadAndApply])
 
+  const value = useMemo(() => ({
+    refreshTheme,
+    defaults: DEFAULTS
+  }), [refreshTheme])
+
   return (
-    <ThemeContext.Provider value={{ refreshTheme, defaults: DEFAULTS }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )

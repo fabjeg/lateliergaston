@@ -4,6 +4,7 @@
   padding: 3rem 0 0 0;
   margin-top: 0;
   border-top: 3px solid var(--primary-color, #8b4049);
+  min-height: 280px;
 }
 
 .footer-container {
@@ -44,7 +45,7 @@
 
 .footer-tagline {
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: rgba(255, 255, 255, 0.7);
   font-style: italic;
   margin: 0;
@@ -76,7 +77,7 @@
 .footer-nav a,
 .footer-contact a {
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   transition: color 0.3s ease;
@@ -132,7 +133,7 @@
 
 .footer-bottom p {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
   letter-spacing: 0.5px;

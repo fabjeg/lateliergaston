@@ -18,7 +18,7 @@
 .sur-mesure-subtitle {
   font-family: var(--font-body);
   text-align: center;
-  font-size: 1.35rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-medium, #555);
   font-style: italic;
   margin-bottom: 3rem;
@@ -97,7 +97,7 @@
   font-family: var(--font-body);
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
-  font-size: 1.7rem;
+  font-size: var(--body-font-size, 1.6rem);
 }
 
 .form-field input {
@@ -105,7 +105,7 @@
   border: 2px solid var(--border-color, #e0d5c7);
   border-radius: 8px;
   font-family: var(--font-body);
-  font-size: 1.3rem;
+  font-size: var(--body-font-size, 1.6rem);
   background: var(--background-light, #faf8f5);
   transition: all 0.3s ease;
 }
@@ -131,7 +131,7 @@
   font-family: var(--font-body);
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
-  font-size: 1.7rem;
+  font-size: var(--body-font-size, 1.6rem);
   display: block;
   margin-bottom: 0.8rem;
 }
@@ -183,7 +183,7 @@
 .contact-option-text {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 1.3rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-dark, #2c2c2c);
 }
 
@@ -350,13 +350,13 @@
 
 .upload-text {
   font-family: var(--font-body);
-  font-size: 1.1rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-dark, #2c2c2c);
 }
 
 .upload-hint {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-medium, #555);
 }
 
@@ -500,14 +500,14 @@
 
 .option-desc {
   font-family: var(--font-body);
-  font-size: 23px;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-medium, #555);
 }
 
 /* Animal hair hint on option card */
 .option-hint-shipping {
   font-family: var(--font-body);
-  font-size: 1.5rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: #d4912a;
   font-style: italic;
   margin-top: 0.4rem;
@@ -535,7 +535,7 @@
 
 .animal-hair-reminder-steps {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-dark, #2c2c2c);
   line-height: 1.7;
   padding-left: 1.2rem;
@@ -551,7 +551,7 @@
   border: none;
   color: #d4912a;
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -676,14 +676,14 @@
 
 .toggle-label {
   font-family: var(--font-body);
-  font-size: 23px;
+  font-size: var(--body-font-size, 1.6rem);
   font-weight: 600;
   color: var(--text-dark, #2c2c2c);
 }
 
 .cadre-note {
   font-family: var(--font-body);
-  font-size: 23px;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--text-medium, #555);
   font-style: italic;
   margin-top: 1rem;
@@ -699,7 +699,7 @@
   border: 2px solid var(--border-color, #e0d5c7);
   border-radius: 8px;
   font-family: var(--font-body);
-  font-size: 23px;
+  font-size: var(--body-font-size, 1.6rem);
   resize: vertical;
   min-height: 150px;
   transition: border-color 0.3s ease;
@@ -777,7 +777,7 @@
 .success-message-container p {
   font-family: var(--font-body);
   color: var(--text-medium, #555);
-  font-size: 1.15rem;
+  font-size: var(--body-font-size, 1.6rem);
   margin-bottom: 0.5rem;
   line-height: 1.6;
 }

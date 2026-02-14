@@ -79,9 +79,9 @@
 .contact-info p {
   margin-bottom: 2rem;
   line-height: 1.6;
-  font-size: 1rem;
+  font-size: var(--body-font-size, 1.6rem);
   color: var(--body-text-color, #555);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .contact-label {
@@ -92,5 +92,9 @@
 @media (max-width: 768px) {
   .contact-content {
     grid-template-columns: 1fr;
+  }
+
+  .contact-info {
+    order: -1;
   }
 }
