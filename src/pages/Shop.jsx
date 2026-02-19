@@ -6,6 +6,7 @@ import { getAllProducts } from '../services/productApi'
 import { getAllCollections } from '../services/collectionApi'
 import { getSettings } from '../services/settingsApi'
 import { useInventory } from '../context/InventoryContext'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
 import SEO from '../components/SEO'
@@ -302,8 +303,10 @@ function Shop() {
                   viewport={{ once: true }}
                 >
                   <img
-                    src={product.image}
+                    src={getOptimizedImageUrl(product.image, 800)}
                     alt=""
+                    width="400"
+                    height="400"
                     loading="lazy"
                     decoding="async"
                   />

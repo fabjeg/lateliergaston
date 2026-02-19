@@ -10,6 +10,7 @@ import CardsBlock from '../components/blocks/CardsBlock'
 import CarouselBlock from '../components/blocks/CarouselBlock'
 import TextBlock from '../components/blocks/TextBlock'
 import '../components/blocks/Blocks.css'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 import './Accueil.css'
 
 // Contenu par défaut pour affichage immédiat (améliore LCP)
@@ -232,7 +233,15 @@ function Accueil() {
                       onClick={() => !justSwiped && setSelectedProduct(product)}
                     >
                       <div className="infinite-carousel-image">
-                        <img src={product.image} alt="" />
+                        <img
+                          src={getOptimizedImageUrl(product.image, 500)}
+                          alt=""
+                          width="250"
+                          height="333"
+                          loading={idx < 6 ? 'eager' : 'lazy'}
+                          fetchPriority={idx === 0 ? 'high' : undefined}
+                          decoding="async"
+                        />
                         {isSold(product.id) && <SoldBadge />}
                       </div>
                       <div className="infinite-carousel-info">
@@ -280,7 +289,14 @@ function Accueil() {
               </div>
               {content.artSection.mainImage && (
                 <div className="art-section-main-image">
-                  <img src={content.artSection.mainImage} alt={content.artSection.title || 'Mon Art'} />
+                  <img
+                    src={getOptimizedImageUrl(content.artSection.mainImage, 800)}
+                    alt={content.artSection.title || 'Mon Art'}
+                    width="416"
+                    height="554"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               )}
             </div>
@@ -288,7 +304,14 @@ function Accueil() {
               <div className="art-section-images">
                 {content.artSection.images.map((image, idx) => (
                   <div key={idx} className="art-section-image">
-                    <img src={image} alt={`Création ${idx + 1}`} />
+                    <img
+                      src={getOptimizedImageUrl(image, 400)}
+                      alt={`Création ${idx + 1}`}
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                 ))}
               </div>
@@ -370,8 +393,10 @@ function Accueil() {
               <div className="accueil-lightbox-image">
                 <motion.img
                   key={selectedProduct.id}
-                  src={selectedProduct.image}
+                  src={getOptimizedImageUrl(selectedProduct.image, 800)}
                   alt=""
+                  width="600"
+                  height="800"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}

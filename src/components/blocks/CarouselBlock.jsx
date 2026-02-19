@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getOptimizedImageUrl } from '../../utils/imageUrl'
 
 function getCardPosition(index, current, total) {
   if (total <= 1) return index === current ? 'active' : 'hidden'
@@ -66,7 +67,6 @@ function CarouselBlock({ block, delay = 0 }) {
   const sectionStyle = s.bgColor ? { background: s.bgColor, borderRadius: '16px', padding: '3rem 2rem' } : {}
   const titleStyle = {}
   if (s.titleColor) titleStyle.color = s.titleColor
-  if (s.titleFont) titleStyle.fontFamily = s.titleFont
   if (s.titleSize) titleStyle.fontSize = s.titleSize + 'rem'
 
   const handleCardClick = (index) => {
@@ -96,7 +96,7 @@ function CarouselBlock({ block, delay = 0 }) {
                 className={`carousel-card ${getCardPosition(index, current, images.length)}`}
                 onClick={() => handleCardClick(index)}
               >
-                <img src={image} alt={`Slide ${index + 1}`} />
+                <img src={getOptimizedImageUrl(image, 600)} alt={`Slide ${index + 1}`} width="400" height="533" loading="lazy" decoding="async" />
               </div>
             ))}
           </div>
@@ -159,8 +159,10 @@ function CarouselBlock({ block, delay = 0 }) {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={lightbox}
-                  src={images[lightbox]}
+                  src={getOptimizedImageUrl(images[lightbox], 1200)}
                   alt={`Photo ${lightbox + 1}`}
+                  width="600"
+                  height="800"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

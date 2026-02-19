@@ -5,6 +5,7 @@ import { getAllProducts } from '../services/productApi'
 import { getAllCollections } from '../services/collectionApi'
 import Loader from '../components/Loader'
 import SEO from '../components/SEO'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 import './Gallery.css'
 
 function Gallery() {
@@ -301,7 +302,7 @@ function Gallery() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               onClick={() => setSelectedProduct(product)}
             >
-              <img src={product.image} alt="" />
+              <img src={getOptimizedImageUrl(product.image, 560)} alt="" width="280" height="280" loading="lazy" decoding="async" />
               <div className="gallery-item-overlay">
                 <h3>{product.name}</h3>
               </div>
@@ -344,8 +345,10 @@ function Gallery() {
               <div className="lightbox-image">
                 <motion.img
                   key={selectedProduct.id}
-                  src={selectedProduct.image}
+                  src={getOptimizedImageUrl(selectedProduct.image, 800)}
                   alt=""
+                  width="600"
+                  height="800"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}

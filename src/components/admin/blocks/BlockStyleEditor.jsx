@@ -1,15 +1,3 @@
-const fontOptions = [
-  { value: '', label: 'Par defaut' },
-  { value: "'Petit Formal Script', cursive", label: 'Petit Formal Script' },
-  { value: "'Zen Loop', sans-serif", label: 'Zen Loop' },
-  { value: "'Georgia', serif", label: 'Georgia' },
-  { value: "'Arial', sans-serif", label: 'Arial' },
-  { value: "'Playfair Display', serif", label: 'Playfair Display' },
-  { value: "'Lora', serif", label: 'Lora' },
-  { value: "'Montserrat', sans-serif", label: 'Montserrat' },
-  { value: "'Open Sans', sans-serif", label: 'Open Sans' }
-]
-
 function BlockStyleEditor({ style = {}, onChange, showText = true }) {
   const update = (key, value) => {
     onChange({ ...style, [key]: value })
@@ -65,18 +53,6 @@ function BlockStyleEditor({ style = {}, onChange, showText = true }) {
         </div>
 
         <div className="form-group">
-          <label>Police du titre</label>
-          <select
-            value={style.titleFont || ''}
-            onChange={(e) => update('titleFont', e.target.value)}
-          >
-            {fontOptions.map(f => (
-              <option key={f.value} value={f.value}>{f.label}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
           <label>Taille du titre (rem)</label>
           <input
             type="number"
@@ -91,18 +67,6 @@ function BlockStyleEditor({ style = {}, onChange, showText = true }) {
 
         {showText && (
           <>
-            <div className="form-group">
-              <label>Police du texte</label>
-              <select
-                value={style.textFont || ''}
-                onChange={(e) => update('textFont', e.target.value)}
-              >
-                {fontOptions.map(f => (
-                  <option key={f.value} value={f.value}>{f.label}</option>
-                ))}
-              </select>
-            </div>
-
             <div className="form-group">
               <label>Taille du texte (rem)</label>
               <input

@@ -67,9 +67,11 @@
 .image-preview img {
   width: 100%;
   height: auto;
+  min-height: 250px;
   max-height: 400px;
   object-fit: contain;
   display: block;
+  background: #f0ebe6;
 }
 
 .image-preview-actions {

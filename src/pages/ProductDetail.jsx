@@ -4,6 +4,7 @@ import './ProductDetail.css'
 import { getProduct } from '../services/productApi'
 import { useCart } from '../context/CartContext'
 import { useInventory } from '../context/InventoryContext'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 import SoldBadge from '../components/SoldBadge'
 import Loader from '../components/Loader'
 import SEO from '../components/SEO'
@@ -92,7 +93,7 @@ function ProductDetail() {
       <div className="product-detail-grid">
         <div className="product-image">
           <div className="product-image-wrapper">
-            <img src={product.image} alt="" />
+            <img src={getOptimizedImageUrl(product.image, 800)} alt="" width="600" height="800" decoding="async" />
             {productIsSold && <SoldBadge />}
           </div>
         </div>

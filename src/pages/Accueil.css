@@ -285,6 +285,7 @@
 .art-section-main-image {
   width: 40%;
   flex-shrink: 0;
+  aspect-ratio: 3 / 4;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);

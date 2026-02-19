@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { getOptimizedImageUrl } from '../../utils/imageUrl'
 
 function CardsBlock({ block, delay = 0 }) {
   if (!block?.active) return null
@@ -10,11 +11,9 @@ function CardsBlock({ block, delay = 0 }) {
   const sectionStyle = s.bgColor ? { background: s.bgColor, borderRadius: '16px', padding: '3rem 2rem' } : {}
   const titleStyle = {}
   if (s.titleColor) titleStyle.color = s.titleColor
-  if (s.titleFont) titleStyle.fontFamily = s.titleFont
   if (s.titleSize) titleStyle.fontSize = s.titleSize + 'rem'
 
   const textStyle = {}
-  if (s.textFont) textStyle.fontFamily = s.textFont
   if (s.textSize) textStyle.fontSize = s.textSize + 'rem'
 
   const titleClass = s.titleBordered ? 'block-title-bordered' : ''
@@ -41,7 +40,7 @@ function CardsBlock({ block, delay = 0 }) {
           <div key={card.id} className="card-item">
             {card.image && (
               <div className="card-item-image">
-                <img src={card.image} alt={card.title || ''} />
+                <img src={getOptimizedImageUrl(card.image, 600)} alt={card.title || ''} width="300" height="300" loading="lazy" decoding="async" />
               </div>
             )}
             <div className="card-item-content">

@@ -49,7 +49,7 @@ function Header() {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo" onClick={handleLogoClick}>
-          <img src={logo} alt="L'Atelier Gaston" className="logo-img" />
+          <img src={logo} alt="L'Atelier Gaston" className="logo-img" width="223" height="100" />
         </Link>
 
         {/* Hamburger button */}

@@ -3,6 +3,7 @@ import { getAboutContent } from '../services/aboutApi'
 import Loader from '../components/Loader'
 import SEO from '../components/SEO'
 import './About.css'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 import aboutImage from '../assets/581228718_17863103313524609_4932862236785945648_n.webp'
 
 function About() {
@@ -59,9 +60,12 @@ function About() {
       <div className="about-hero">
         <div className="about-hero-image-wrapper">
           <img
-            src={content.heroImage || aboutImage}
+            src={getOptimizedImageUrl(content.heroImage || aboutImage, 800)}
             alt="L'Atelier Gaston - Broderie artisanale"
             className="about-hero-image"
+            width="500"
+            height="500"
+            decoding="async"
           />
         </div>
         <div className="about-hero-text">

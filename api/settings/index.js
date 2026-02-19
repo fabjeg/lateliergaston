@@ -11,9 +11,6 @@ const DEFAULTS = {
   buttonText: '#ffffff',
   announcementBg: '#f8f4f0',
   ctaBg: '#2c3e50',
-  fontFamily: 'Zen Loop',
-  fontSize: '1.6rem',
-  fontWeight: '500',
   shopEnabled: true,
   shopFilters: {
     enableCategoryFilter: true,
@@ -76,7 +73,7 @@ async function getSettings(req, res) {
 
 async function updateSettings(req, res) {
   try {
-    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, fontFamily, fontSize, fontWeight, shopEnabled, shopFilters } = req.body
+    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled, shopFilters } = req.body
 
     const colors = { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg }
     for (const [key, value] of Object.entries(colors)) {
@@ -99,9 +96,6 @@ async function updateSettings(req, res) {
       buttonText: buttonText || existing.buttonText || DEFAULTS.buttonText,
       announcementBg: announcementBg || existing.announcementBg || DEFAULTS.announcementBg,
       ctaBg: ctaBg || existing.ctaBg || DEFAULTS.ctaBg,
-      fontFamily: fontFamily || existing.fontFamily || DEFAULTS.fontFamily,
-      fontSize: fontSize || existing.fontSize || DEFAULTS.fontSize,
-      fontWeight: fontWeight || existing.fontWeight || DEFAULTS.fontWeight,
       shopEnabled: typeof shopEnabled === 'boolean' ? shopEnabled : (existing.shopEnabled !== undefined ? existing.shopEnabled : DEFAULTS.shopEnabled),
       shopFilters: shopFilters || existing.shopFilters || DEFAULTS.shopFilters,
       updatedAt: new Date(),

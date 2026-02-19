@@ -270,29 +270,33 @@ function SurMesure() {
         photo_url: photoUrl
       }
 
-      // Envoyer l'email à l'admin
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        emailParams,
-        EMAILJS_PUBLIC_KEY
-      )
-
-      // Envoyer l'email de confirmation au client
-      if (EMAILJS_TEMPLATE_CLIENT_ID) {
+      // Envoyer les emails (non bloquant : la commande est déjà sauvegardée)
+      try {
         await emailjs.send(
           EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_CLIENT_ID,
+          EMAILJS_TEMPLATE_ID,
           emailParams,
           EMAILJS_PUBLIC_KEY
         )
+
+        if (EMAILJS_TEMPLATE_CLIENT_ID) {
+          await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_CLIENT_ID,
+            emailParams,
+            EMAILJS_PUBLIC_KEY
+          )
+        }
+      } catch (emailErr) {
+        console.error('Erreur envoi email (commande sauvegardée):', emailErr)
       }
 
       setSent(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       console.error('Erreur lors de l\'envoi:', err)
-      setError(err.message || 'Une erreur est survenue. Veuillez réessayer.')
+      const errorMessage = err.message || err.text || 'Une erreur est survenue. Veuillez réessayer.'
+      setError(errorMessage)
     } finally {
       setSending(false)
     }
