@@ -12,9 +12,11 @@
   - {{customer_name}} : Nom du client
   - {{customer_email}} : Email du client
   - {{customer_phone}} : Téléphone du client
+  - {{contact_preference}} : Email / Téléphone
   - {{photo_option}} : "Photo de la galerie" ou "Photo personnelle"
   - {{photo_url}} : URL de la photo (Cloudinary ou galerie)
   - {{materiau}} : Cheveux Artificiels / Poils d'Animaux / Cheveux de Bébé
+  - {{taille}} : Taille choisie
   - {{papier}} : Papier Photo / Papier d'Art
   - {{cadre}} : Oui / Non
   - {{description}} : Description du projet
@@ -76,6 +78,10 @@
                   <td style="padding: 8px 0; color: #888; font-size: 14px;">Téléphone</td>
                   <td style="padding: 8px 0; color: #333; font-size: 15px;">{{customer_phone}}</td>
                 </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #888; font-size: 14px;">Contact préféré</td>
+                  <td style="padding: 8px 0; color: #8b4049; font-size: 15px; font-weight: 600;">{{contact_preference}}</td>
+                </tr>
               </table>
             </td>
           </tr>
@@ -99,6 +105,10 @@
                       <span style="font-size: 13px;">Voir la photo en taille reelle</span>
                     </a>
                   </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Taille</td>
+                  <td style="padding: 10px 0; color: #333; font-size: 15px; font-weight: 600;">{{taille}}</td>
                 </tr>
                 <tr>
                   <td style="padding: 10px 0; color: #888; font-size: 14px; vertical-align: top;">Matériau</td>
@@ -171,11 +181,13 @@ INFORMATIONS CLIENT
 Nom: {{customer_name}}
 Email: {{customer_email}}
 Téléphone: {{customer_phone}}
+Contact préféré: {{contact_preference}}
 
 DÉTAILS DE LA CRÉATION
 ----------------------
 Photo: {{photo_option}}
 Photo URL: {{photo_url}}
+Taille: {{taille}}
 Matériau: {{materiau}}
 Type de papier: {{papier}}
 Cadre: {{cadre}}

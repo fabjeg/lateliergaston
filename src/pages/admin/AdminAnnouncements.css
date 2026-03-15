@@ -639,6 +639,17 @@
   gap: 0.25rem;
 }
 
+.block-upload-error {
+  margin: 0 0 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: #fff5f5;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  color: #c0392b;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 .char-count {
   font-size: 0.75rem;
   color: #aaa;

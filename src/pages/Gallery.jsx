@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllProducts } from '../services/productApi'
 import { getAllCollections } from '../services/collectionApi'
@@ -10,6 +10,7 @@ import './Gallery.css'
 
 function Gallery() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [products, setProducts] = useState([])
   const [collections, setCollections] = useState([])
   const [loading, setLoading] = useState(true)
@@ -302,7 +303,7 @@ function Gallery() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
               onClick={() => setSelectedProduct(product)}
             >
-              <img src={getOptimizedImageUrl(product.image, 560)} alt="" width="280" height="280" loading="lazy" decoding="async" />
+              <img src={getOptimizedImageUrl(product.image, 560)} alt="" width="280" height="280" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.closest('.gallery-item').style.display = 'none' }} />
               <div className="gallery-item-overlay">
                 <h3>{product.name}</h3>
               </div>
@@ -382,6 +383,14 @@ function Gallery() {
                     </span>
                   )}
                 </div>
+                {selectedProduct.status === 'available' && (
+                  <button
+                    className="lightbox-buy-btn"
+                    onClick={() => navigate(`/product/${selectedProduct.id}`)}
+                  >
+                    Voir la fiche — {selectedProduct.price} €
+                  </button>
+                )}
               </div>
             </motion.div>
 

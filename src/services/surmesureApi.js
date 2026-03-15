@@ -1,3 +1,5 @@
+import { adminFetch } from '../utils/adminFetch'
+
 const API_URL = import.meta.env.VITE_API_URL || ''
 
 export async function getSurmesureConfig() {
@@ -17,7 +19,7 @@ export async function getSurmesureConfig() {
 
 export async function updateSurmesureConfig(config) {
   try {
-    const response = await fetch(`${API_URL}/api/surmesure`, {
+    const response = await adminFetch(`${API_URL}/api/surmesure`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

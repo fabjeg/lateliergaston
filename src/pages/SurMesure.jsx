@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { getAllProducts } from '../services/productApi'
 import { getSurmesureConfig } from '../services/surmesureApi'
 import { createCustomOrder, uploadDirectToCloudinary } from '../services/customOrderApi'
+import { validateImageFile } from '../utils/imageValidation'
 import SEO from '../components/SEO'
 import AnimalHairModal from '../components/AnimalHairModal'
 import './SurMesure.css'
@@ -46,6 +47,7 @@ function SurMesure() {
   const [cadreConfig, setCadreConfig] = useState({ enabled: true, note: '' })
   const [descriptionPlaceholder, setDescriptionPlaceholder] = useState('Décrivez votre vision, vos souhaits particuliers, les dimensions souhaitées, les couleurs préférées...')
   const [expandedMateriau, setExpandedMateriau] = useState(null)
+  const [expandedDesc, setExpandedDesc] = useState(null)
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -67,11 +69,34 @@ function SurMesure() {
   const [error, setError] = useState('')
   const [galleryExpanded, setGalleryExpanded] = useState(false)
   const [showAnimalHairModal, setShowAnimalHairModal] = useState(false)
+  const [showRecap, setShowRecap] = useState(false)
+  const sectionRefs = useRef([])
+  const errorRef = useRef(null)
+
+  const scrollToSection = useCallback((index) => {
+    const el = sectionRefs.current[index]
+    if (el) {
+      const offset = 160
+      const y = el.getBoundingClientRect().top + window.scrollY - offset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
+  }, [])
+
+  // Body scroll lock for recap
+  useEffect(() => {
+    if (showRecap) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [showRecap])
   const [animalHairConfirmed, setAnimalHairConfirmed] = useState(false)
 
-  // Auto-dismiss error after 5s
+  // Auto-dismiss error after 5s + scroll to error
   useEffect(() => {
     if (!error) return
+    errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     const timer = setTimeout(() => setError(''), 5000)
     return () => clearTimeout(timer)
   }, [error])
@@ -113,8 +138,10 @@ function SurMesure() {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        setError('La photo ne doit pas dépasser 20 Mo')
+      const validation = validateImageFile(file, 20)
+      if (!validation.valid) {
+        setError(validation.error)
+        e.target.value = ''
         return
       }
       setFormData({
@@ -154,51 +181,57 @@ function SurMesure() {
     setExpandedMateriau(prev => prev === matId ? null : matId)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const validateForm = () => {
     setError('')
-
-    // Validation des informations client
     if (!formData.customerName.trim() || formData.customerName.trim().length < 2) {
       setError('Veuillez entrer votre nom (minimum 2 caractères)')
-      return
+      return false
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!formData.customerEmail || !emailRegex.test(formData.customerEmail)) {
       setError('Veuillez entrer une adresse email valide')
-      return
+      return false
     }
     if (formData.contactPreference === 'phone' && !formData.customerPhone.trim()) {
       setError('Veuillez entrer votre numéro de téléphone')
-      return
+      return false
     }
-
-    // Validation photo
     if (formData.photoOption === 'gallery' && !formData.selectedPhoto) {
       setError('Veuillez sélectionner une photo de la galerie')
-      return
+      return false
     }
     if (formData.photoOption === 'upload' && !formData.uploadedPhoto) {
       setError('Veuillez télécharger votre photo')
-      return
+      return false
     }
     if (!formData.materiau) {
       setError('Veuillez choisir un matériau')
-      return
+      return false
     }
-    if (!formData.taille) {
+    if (tailleOptions.length > 0 && !formData.taille) {
       setError('Veuillez choisir une taille')
-      return
+      return false
     }
     if (!formData.papier) {
       setError('Veuillez choisir un type de papier')
-      return
+      return false
     }
     if (!formData.description.trim() || formData.description.trim().length < 10) {
       setError('Veuillez décrire votre projet (minimum 10 caractères)')
-      return
+      return false
     }
+    return true
+  }
 
+  const handlePreSubmit = (e) => {
+    e.preventDefault()
+    if (validateForm()) {
+      setShowRecap(true)
+    }
+  }
+
+  const handleSubmit = async () => {
+    setShowRecap(false)
     setSending(true)
 
     try {
@@ -315,6 +348,22 @@ function SurMesure() {
           <h2>Demande envoyée avec succès !</h2>
           <p>Nous avons bien reçu votre demande de création sur-mesure.</p>
           <p>Nous vous contacterons dans les plus brefs délais pour discuter de votre projet.</p>
+
+          {formData.materiau === 'poils-animaux' && (
+            <div className="success-shipping-info">
+              <h3>Envoi des poils par courrier</h3>
+              <p className="success-shipping-address">
+                <strong>L'Atelier Gaston</strong><br />
+                Crach 56950<br />
+                Bretagne, France
+              </p>
+              <ul className="success-shipping-steps">
+                <li>Poils <strong>propres et secs</strong> dans un sachet hermétique</li>
+                <li>Enveloppe rigide avec votre <strong>nom</strong> et <strong>n° de commande</strong></li>
+              </ul>
+            </div>
+          )}
+
           <button
             className="btn-new-request"
             onClick={() => {
@@ -365,15 +414,15 @@ function SurMesure() {
 
       <motion.form
         className="sur-mesure-form"
-        onSubmit={handleSubmit}
+        onSubmit={handlePreSubmit}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        {error && <div className="form-error">{error}</div>}
+        {error && <div className="form-error" ref={errorRef}>{error}</div>}
 
         {/* Section Informations Client */}
-        <section className="form-section">
+        <section className="form-section" ref={el => sectionRefs.current[0] = el}>
           <h2>1. Vos Coordonnées</h2>
           <div className="customer-fields">
             <div className="form-field">
@@ -449,7 +498,7 @@ function SurMesure() {
         </section>
 
         {/* Section Photo */}
-        <section className="form-section">
+        <section className="form-section" ref={el => sectionRefs.current[1] = el}>
           <h2>2. Votre Photo</h2>
 
           <div className="photo-options">
@@ -525,7 +574,7 @@ function SurMesure() {
                 <label className="upload-label">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={handlePhotoUpload}
                     className="upload-input"
                   />
@@ -538,7 +587,7 @@ function SurMesure() {
                       </svg>
                     </span>
                     <span className="upload-text">Cliquez pour télécharger votre photo</span>
-                    <span className="upload-hint">JPG, PNG - Max 20 Mo - Haute qualité recommandée</span>
+                    <span className="upload-hint">JPG, PNG ou WebP — Max 20 Mo</span>
                   </div>
                 </label>
               )}
@@ -548,7 +597,7 @@ function SurMesure() {
 
         {/* Section Taille */}
         {tailleOptions.length > 0 && (
-          <section className="form-section">
+          <section className="form-section" ref={el => sectionRefs.current[2] = el}>
             <h2>3. Taille</h2>
             <div className="taille-selector-grid">
               {tailleOptions.map(taille => (
@@ -568,9 +617,9 @@ function SurMesure() {
         )}
 
         {/* Section Matériau - dynamique */}
-        <section className="form-section">
+        <section className="form-section" ref={el => sectionRefs.current[3] = el}>
           <h2>4. Matériau</h2>
-          <div className="options-grid" style={materiauOptions.length === 2 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : undefined}>
+          <div className="options-grid" style={materiauOptions.length === 2 ? { maxWidth: '500px', margin: '0 auto' } : undefined}>
             {materiauOptions.map(mat => (
               <div key={mat.id} className="option-card-wrapper">
                 <label className={`option-card ${formData.materiau === mat.id ? 'selected' : ''}`}>
@@ -585,7 +634,18 @@ function SurMesure() {
                     {getIconSvg(mat.icon)}
                   </span>
                   <span className="option-title">{mat.title}</span>
-                  <span className="option-desc">{mat.description}</span>
+                  <span className={`option-desc ${expandedDesc === mat.id ? 'expanded' : ''}`}>{mat.description}</span>
+                  {mat.description && mat.description.length > 50 && (
+                    <button
+                      type="button"
+                      className={`option-expand-btn ${expandedDesc === mat.id ? 'expanded' : ''}`}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpandedDesc(expandedDesc === mat.id ? null : mat.id) }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </button>
+                  )}
                   {mat.id === 'poils-animaux' && (
                     <span className="option-hint-shipping">Marche à suivre au clic</span>
                   )}
@@ -625,7 +685,7 @@ function SurMesure() {
               <ol className="animal-hair-reminder-steps">
                 <li>Poils <strong>propres et secs</strong> dans un sachet hermétique</li>
                 <li>Enveloppe rigide avec votre <strong>nom</strong> et <strong>n° de commande</strong></li>
-                <li>Envoyer à : <strong>L'Atelier Gaston — Crach 56950</strong></li>
+                <li>L'adresse d'envoi vous sera communiquée <strong>après validation</strong></li>
               </ol>
               <button
                 type="button"
@@ -639,9 +699,9 @@ function SurMesure() {
         </section>
 
         {/* Section Papier - dynamique */}
-        <section className="form-section">
+        <section className="form-section" ref={el => sectionRefs.current[4] = el}>
           <h2>5. Type de Papier</h2>
-          <div className="options-grid" style={papierOptions.length === 2 ? { gridTemplateColumns: 'repeat(2, 1fr)' } : undefined}>
+          <div className="options-grid" style={papierOptions.length === 2 ? { maxWidth: '500px', margin: '0 auto' } : undefined}>
             {papierOptions.map(pap => (
               <label key={pap.id} className={`option-card ${formData.papier === pap.id ? 'selected' : ''}`}>
                 <input
@@ -655,7 +715,18 @@ function SurMesure() {
                   {getIconSvg(pap.icon)}
                 </span>
                 <span className="option-title">{pap.title}</span>
-                <span className="option-desc">{pap.description}</span>
+                <span className={`option-desc ${expandedDesc === pap.id ? 'expanded' : ''}`}>{pap.description}</span>
+                {pap.description && pap.description.length > 50 && (
+                  <button
+                    type="button"
+                    className={`option-expand-btn ${expandedDesc === pap.id ? 'expanded' : ''}`}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpandedDesc(expandedDesc === pap.id ? null : pap.id) }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                  </button>
+                )}
               </label>
             ))}
           </div>
@@ -663,7 +734,7 @@ function SurMesure() {
 
         {/* Section Cadre - configurable */}
         {cadreConfig.enabled && (
-          <section className="form-section">
+          <section className="form-section" ref={el => sectionRefs.current[5] = el}>
             <h2>6. Cadre</h2>
             <label className="cadre-toggle">
               <input
@@ -685,7 +756,7 @@ function SurMesure() {
         )}
 
         {/* Section Description */}
-        <section className="form-section">
+        <section className="form-section" ref={el => sectionRefs.current[6] = el}>
           <h2 id="description-label">7. Décrivez votre projet</h2>
           <textarea
             className="description-textarea"
@@ -703,9 +774,125 @@ function SurMesure() {
           className="btn-submit"
           disabled={sending}
         >
-          {sending ? 'Envoi en cours...' : 'Envoyer ma demande'}
+          {sending ? 'Envoi en cours...' : 'Voir le récapitulatif'}
         </button>
       </motion.form>
+
+      {/* Recap Modal */}
+      <AnimatePresence>
+        {showRecap && (
+          <motion.div
+            className="recap-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowRecap(false)}
+          >
+            <motion.div
+              className="recap-modal"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="recap-close" onClick={() => setShowRecap(false)}>&times;</button>
+              <h2 className="recap-title">Récapitulatif de votre demande</h2>
+
+              <div className="recap-sections">
+                <div className="recap-row">
+                  <div className="recap-row-header">
+                    <h3>Coordonnées</h3>
+                    <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(0), 100) }}>Modifier</button>
+                  </div>
+                  <div className="recap-row-content">
+                    <p><strong>{formData.customerName}</strong></p>
+                    <p>{formData.customerEmail}</p>
+                    {formData.customerPhone && <p>{formData.customerPhone}</p>}
+                    <p className="recap-contact-pref">
+                      Contact préféré : {formData.contactPreference === 'phone' ? 'Téléphone' : 'Email'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="recap-row">
+                  <div className="recap-row-header">
+                    <h3>Photo</h3>
+                    <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(1), 100) }}>Modifier</button>
+                  </div>
+                  <div className="recap-row-content">
+                    {formData.photoOption === 'gallery' && formData.selectedPhotoUrl && (
+                      <img src={formData.selectedPhotoUrl} alt="Photo" className="recap-photo" />
+                    )}
+                    {formData.photoOption === 'upload' && formData.uploadedPhotoPreview && (
+                      <img src={formData.uploadedPhotoPreview} alt="Photo" className="recap-photo" />
+                    )}
+                    <p>{formData.photoOption === 'gallery' ? 'Photo de la galerie' : 'Photo personnelle'}</p>
+                  </div>
+                </div>
+
+                {tailleOptions.length > 0 && formData.taille && (
+                  <div className="recap-row">
+                    <div className="recap-row-header">
+                      <h3>Taille</h3>
+                      <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(2), 100) }}>Modifier</button>
+                    </div>
+                    <div className="recap-row-content"><p>{formData.taille}</p></div>
+                  </div>
+                )}
+
+                <div className="recap-row">
+                  <div className="recap-row-header">
+                    <h3>Matériau</h3>
+                    <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(3), 100) }}>Modifier</button>
+                  </div>
+                  <div className="recap-row-content">
+                    <p>{materiauOptions.find(m => m.id === formData.materiau)?.title || formData.materiau}</p>
+                  </div>
+                </div>
+
+                <div className="recap-row">
+                  <div className="recap-row-header">
+                    <h3>Papier</h3>
+                    <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(4), 100) }}>Modifier</button>
+                  </div>
+                  <div className="recap-row-content">
+                    <p>{papierOptions.find(p => p.id === formData.papier)?.title || formData.papier}</p>
+                  </div>
+                </div>
+
+                {cadreConfig.enabled && (
+                  <div className="recap-row">
+                    <div className="recap-row-header">
+                      <h3>Cadre</h3>
+                      <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(5), 100) }}>Modifier</button>
+                    </div>
+                    <div className="recap-row-content"><p>{formData.cadre ? 'Avec cadre' : 'Sans cadre'}</p></div>
+                  </div>
+                )}
+
+                <div className="recap-row">
+                  <div className="recap-row-header">
+                    <h3>Description</h3>
+                    <button type="button" className="recap-edit-btn" onClick={() => { setShowRecap(false); setTimeout(() => scrollToSection(6), 100) }}>Modifier</button>
+                  </div>
+                  <div className="recap-row-content">
+                    <p className="recap-description">{formData.description}</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="btn-submit recap-confirm"
+                onClick={handleSubmit}
+                disabled={sending}
+              >
+                {sending ? 'Envoi en cours...' : 'Confirmer et envoyer'}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimalHairModal
         isOpen={showAnimalHairModal}

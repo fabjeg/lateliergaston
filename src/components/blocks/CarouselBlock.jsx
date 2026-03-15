@@ -87,7 +87,7 @@ function CarouselBlock({ block, delay = 0 }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay }}
       >
-        {block.title && <h2 style={titleStyle}>{block.title}</h2>}
+        {block.title && <h2 style={titleStyle}><span className="block-title-bordered">{block.title}</span></h2>}
         <div className="carousel-container">
           <div className="carousel-track">
             {images.map((image, index) => (

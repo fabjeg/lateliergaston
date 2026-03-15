@@ -2,6 +2,8 @@
  * API service for custom order management (sur-mesure)
  */
 
+import { adminFetch } from '../utils/adminFetch'
+
 const API_BASE = '/api/custom-orders'
 
 /**
@@ -39,7 +41,7 @@ export async function createCustomOrder(orderData) {
  */
 export async function getAllCustomOrders() {
   try {
-    const response = await fetch(API_BASE, {
+    const response = await adminFetch(API_BASE, {
       credentials: 'include'
     })
 

@@ -162,7 +162,7 @@ function Accueil() {
 
   // Rendu des sections selon l'ordre configuré
   const renderSection = (sectionKey, index) => {
-    const delay = 0.2 * index
+    const delay = index === 0 ? 0 : 0.05
 
     switch (sectionKey) {
       case 'hero':
@@ -170,9 +170,9 @@ function Accueil() {
           <motion.section
             key="hero"
             className="accueil-hero"
-            initial={{ opacity: 0, y: -30 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay }}
+            transition={{ duration: 0.35, delay: 0 }}
           >
             <h1>{content.heroTitle}</h1>
             <p className="accueil-subtitle">{content.heroSubtitle}</p>
@@ -185,9 +185,9 @@ function Accueil() {
           <motion.section
             key="announcement"
             className="accueil-announcement"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay }}
           >
             <div className="announcement-content">
               <span className="announcement-badge">Nouveauté</span>
@@ -207,9 +207,9 @@ function Accueil() {
           <motion.section
             key="featured"
             className="accueil-featured"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay }}
+            transition={{ duration: 0.35, delay }}
           >
             <h2>{content.featuredTitle || 'Nos créations à la une'}</h2>
 
@@ -241,6 +241,7 @@ function Accueil() {
                           loading={idx < 6 ? 'eager' : 'lazy'}
                           fetchPriority={idx === 0 ? 'high' : undefined}
                           decoding="async"
+                          onError={(e) => { e.currentTarget.closest('.infinite-carousel-item').style.display = 'none' }}
                         />
                         {isSold(product.id) && <SoldBadge />}
                       </div>
@@ -276,9 +277,9 @@ function Accueil() {
           <motion.section
             key="art"
             className="accueil-art-section"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay }}
+            transition={{ duration: 0.35, delay }}
           >
             <h2>{content.artSection.title || 'Mon Art'}</h2>
             <div className={`art-section-content${content.artSection.mainImage ? ' with-image' : ''}`}>
@@ -324,9 +325,9 @@ function Accueil() {
           <motion.section
             key="cta"
             className="accueil-cta"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay }}
           >
             <h2>Une création sur-mesure ?</h2>
             <p>Immortalisez vos souvenirs avec une œuvre unique et personnalisée</p>
@@ -353,6 +354,7 @@ function Accueil() {
     <div className="accueil">
       <SEO
         title="Accueil"
+        url="/accueil"
         description="Bienvenue à L'Atelier Gaston - Artisan brodeur spécialisé dans l'implantation de cheveux sur photo. Découvrez nos nouvelles collections et créations uniques."
         url=""
       />

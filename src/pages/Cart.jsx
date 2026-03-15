@@ -11,23 +11,36 @@ function Cart() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState(null)
   const [shopEnabled, setShopEnabled] = useState(true)
+  const [shippingCosts, setShippingCosts] = useState({
+    FR: { label: 'Livraison France', amount: 15, enabled: true },
+    EU: { label: 'Livraison Europe', amount: 25, enabled: true },
+    WORLD: { label: 'Livraison Internationale', amount: 40, enabled: true },
+  })
+  const [settingsLoaded, setSettingsLoaded] = useState(false)
 
   useEffect(() => {
-    getSettings().then(result => {
+    getSettings(true).then(result => {
       if (result.success) {
         setShopEnabled(result.settings.shopEnabled !== false)
+        if (result.settings.shippingCosts) {
+          const sc = result.settings.shippingCosts
+          const costs = {
+            FR: { label: sc.FR?.label || 'Livraison France', amount: (sc.FR?.amount || 1500) / 100, enabled: true },
+            EU: { label: sc.EU?.label || 'Livraison Europe', amount: (sc.EU?.amount || 2500) / 100, enabled: sc.EU?.enabled !== false },
+            WORLD: { label: sc.WORLD?.label || 'Livraison Internationale', amount: (sc.WORLD?.amount || 4000) / 100, enabled: sc.WORLD?.enabled !== false },
+          }
+          setShippingCosts(costs)
+          // Si la zone selectionnee est desactivee, basculer sur FR
+          if (!costs[shippingZone]?.enabled) {
+            setShippingZone('FR')
+          }
+        }
       }
+      setSettingsLoaded(true)
     })
   }, [])
 
-  // Shipping costs based on zone
-  const shippingCosts = {
-    FR: 15.00,
-    EU: 25.00,
-    WORLD: 40.00
-  }
-
-  const shippingCost = shippingCosts[shippingZone]
+  const shippingCost = shippingCosts[shippingZone]?.amount || 0
   const subtotal = getSubtotal()
   const total = subtotal + shippingCost
 
@@ -127,9 +140,15 @@ function Cart() {
               onChange={(e) => setShippingZone(e.target.value)}
               className="shipping-select"
             >
-              <option value="FR">France - {shippingCosts.FR.toFixed(2)} €</option>
-              <option value="EU">Europe - {shippingCosts.EU.toFixed(2)} €</option>
-              <option value="WORLD">Reste du monde - {shippingCosts.WORLD.toFixed(2)} €</option>
+              {shippingCosts.FR.enabled && (
+                <option value="FR">{shippingCosts.FR.label} - {shippingCosts.FR.amount.toFixed(2)} €</option>
+              )}
+              {shippingCosts.EU.enabled && (
+                <option value="EU">{shippingCosts.EU.label} - {shippingCosts.EU.amount.toFixed(2)} €</option>
+              )}
+              {shippingCosts.WORLD.enabled && (
+                <option value="WORLD">{shippingCosts.WORLD.label} - {shippingCosts.WORLD.amount.toFixed(2)} €</option>
+              )}
             </select>
           </div>
 
@@ -163,7 +182,7 @@ function Cart() {
             onClick={handleCheckout}
             disabled={isProcessing || !shopEnabled}
           >
-            {isProcessing ? 'Redirection...' : 'Proceder au paiement'}
+            {isProcessing ? 'Redirection...' : 'Procéder au paiement'}
           </button>
 
           <Link to="/shop" className="continue-shopping-link">

@@ -2,41 +2,58 @@
  * API service for product management
  */
 
+import { adminFetch } from '../utils/adminFetch'
+
 const API_BASE = '/api/products'
 
 /**
- * Upload image to Cloudinary via API (admin only)
- * @param {string} base64Image - Base64 encoded image with data URI prefix
+ * Upload image directly to Cloudinary (bypasses Vercel 4.5MB body limit)
+ * @param {File} file - File object from input
  * @param {string} filename - Original filename
  * @returns {Promise<{success: boolean, url?: string, publicId?: string, error?: string}>}
  */
-export async function uploadImage(base64Image, filename) {
+export async function uploadImage(file, filename) {
   try {
-    const response = await fetch('/api/upload', {
+    // Step 1: Get a signed upload URL from our backend
+    const signRes = await adminFetch('/api/cloudinary-signature', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({
-        image: base64Image,
-        filename,
-        folder: 'lateliergaston/products'
-      })
+      body: JSON.stringify({ filename: filename || file.name, folder: 'lateliergaston/products' })
     })
 
-    const data = await response.json()
+    const signData = await signRes.json()
+    if (!signData.success) {
+      return { success: false, error: signData.error || 'Erreur de signature' }
+    }
 
-    if (data.success) {
+    const { signature, timestamp, publicId, apiKey, cloudName } = signData.data
+
+    // Step 2: Upload directly to Cloudinary (no size limit from Vercel)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('api_key', apiKey)
+    formData.append('timestamp', timestamp)
+    formData.append('signature', signature)
+    formData.append('public_id', publicId)
+
+    const uploadRes = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      { method: 'POST', body: formData }
+    )
+
+    const result = await uploadRes.json()
+
+    if (result.secure_url) {
       return {
         success: true,
-        url: data.data.url,
-        publicId: data.data.publicId,
-        width: data.data.width,
-        height: data.data.height
+        url: result.secure_url,
+        publicId: result.public_id,
+        width: result.width,
+        height: result.height
       }
     } else {
-      return { success: false, error: data.error }
+      return { success: false, error: result.error?.message || 'Erreur lors de l\'upload' }
     }
   } catch (error) {
     console.error('Upload image error:', error)
@@ -71,7 +88,7 @@ export async function getAllProducts() {
  */
 export async function getAllProductsAdmin() {
   try {
-    const response = await fetch(`${API_BASE}?includeHidden=true`, {
+    const response = await adminFetch(`${API_BASE}?includeHidden=true`, {
       credentials: 'include'
     })
 
@@ -93,7 +110,7 @@ export async function getAllProductsAdmin() {
  */
 export async function updateProductStatus(id, status) {
   try {
-    const response = await fetch(`${API_BASE}/${id}`, {
+    const response = await adminFetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -142,7 +159,7 @@ export async function getProduct(id) {
  */
 export async function createProduct(productData) {
   try {
-    const response = await fetch(API_BASE, {
+    const response = await adminFetch(API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -169,7 +186,7 @@ export async function createProduct(productData) {
  */
 export async function updateProduct(id, productData) {
   try {
-    const response = await fetch(`${API_BASE}/${id}`, {
+    const response = await adminFetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -197,7 +214,7 @@ export async function updateProduct(id, productData) {
  */
 export async function reorderProducts(orderedIds) {
   try {
-    const response = await fetch(API_BASE, {
+    const response = await adminFetch(API_BASE, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -224,7 +241,7 @@ export async function reorderProducts(orderedIds) {
  */
 export async function deleteProduct(id) {
   try {
-    const response = await fetch(`${API_BASE}/${id}`, {
+    const response = await adminFetch(`${API_BASE}/${id}`, {
       method: 'DELETE',
       credentials: 'include'
     })

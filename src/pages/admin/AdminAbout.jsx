@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAboutContent, updateAboutContent } from '../../services/aboutApi'
 import { uploadImage } from '../../services/productApi'
+import { validateImageFile } from '../../utils/imageValidation'
 import BackButton from '../../components/BackButton'
 import Loader from '../../components/Loader'
 import './AdminAbout.css'
@@ -57,30 +58,21 @@ function AdminAbout() {
     const file = e.target.files[0]
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      setMessage({ type: 'error', text: 'Veuillez sélectionner une image valide' })
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage({ type: 'error', text: "L'image doit faire moins de 5MB" })
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setMessage({ type: 'error', text: validation.error })
       return
     }
 
     setUploadingHeroImage(true)
+    const result = await uploadImage(file, file.name)
+    setUploadingHeroImage(false)
 
-    const reader = new FileReader()
-    reader.onloadend = async () => {
-      const result = await uploadImage(reader.result, file.name)
-      setUploadingHeroImage(false)
-
-      if (result.success) {
-        handleChange('heroImage', result.url)
-      } else {
-        setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
-      }
+    if (result.success) {
+      handleChange('heroImage', result.url)
+    } else {
+      setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
     }
-    reader.readAsDataURL(file)
     e.target.value = ''
   }
 

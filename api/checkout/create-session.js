@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-const SHIPPING_COSTS = {
+const DEFAULT_SHIPPING_COSTS = {
   FR: { label: 'Livraison France', amount: 1500 },
   EU: { label: 'Livraison Europe', amount: 2500 },
   WORLD: { label: 'Livraison Internationale', amount: 4000 },
@@ -19,12 +19,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Check if shop is enabled
+    // Check if shop is enabled + load shipping costs from settings
     const settingsCol = await getCollection('settings')
     const settings = await settingsCol.findOne({ _id: 'main' })
     if (settings && settings.shopEnabled === false) {
       return res.status(403).json(apiResponse(false, null, 'Les ventes en ligne sont actuellement desactivees.'))
     }
+
+    const SHIPPING_COSTS = settings?.shippingCosts || DEFAULT_SHIPPING_COSTS
 
     const { items, shippingZone } = req.body
 
@@ -34,6 +36,10 @@ export default async function handler(req, res) {
 
     if (!shippingZone || !SHIPPING_COSTS[shippingZone]) {
       return res.status(400).json(apiResponse(false, null, 'Zone de livraison invalide'))
+    }
+
+    if (SHIPPING_COSTS[shippingZone].enabled === false) {
+      return res.status(400).json(apiResponse(false, null, 'Cette zone de livraison n\'est pas disponible actuellement'))
     }
 
     // Fetch products from MongoDB and verify availability + prices

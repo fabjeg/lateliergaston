@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import ImageUploader from '../../components/admin/ImageUploader'
-import { createProduct, updateProduct, getProduct } from '../../services/productApi'
+import { createProduct, updateProduct, getProduct, uploadImage } from '../../services/productApi'
 import { getAllCollections } from '../../services/collectionApi'
+import { validateImageFile } from '../../utils/imageValidation'
 import BackButton from '../../components/BackButton'
 import './ProductForm.css'
 
@@ -27,6 +28,8 @@ function ProductForm() {
   })
 
   const [image, setImage] = useState(null)
+  const [additionalImages, setAdditionalImages] = useState([])
+  const [uploadingAdditionalImage, setUploadingAdditionalImage] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [loadingProduct, setLoadingProduct] = useState(isEditMode)
@@ -38,9 +41,7 @@ function ProductForm() {
   // Load collections
   useEffect(() => {
     const result = getAllCollections()
-    if (result.success) {
-      setCollections(result.collections)
-    }
+    if (result.success) setCollections(result.collections)
   }, [])
 
   // Load product if in edit mode
@@ -81,6 +82,9 @@ function ProductForm() {
         filename: product.imageFilename,
         preview: product.image // URL or base64 for display
       })
+      if (product.images && product.images.length > 0) {
+        setAdditionalImages(product.images)
+      }
     } else {
       setError(result.error || 'Erreur lors du chargement du produit')
     }
@@ -101,6 +105,46 @@ function ProductForm() {
 
   const handleImageSelect = (imageData) => {
     setImage(imageData)
+  }
+
+  const handleAdditionalImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setError(validation.error)
+      return
+    }
+
+    setUploadingAdditionalImage(true)
+    const result = await uploadImage(file, file.name)
+    setUploadingAdditionalImage(false)
+
+    if (result.success) {
+      setAdditionalImages(prev => [...prev, {
+        url: result.url,
+        publicId: result.publicId,
+        filename: file.name
+      }])
+    } else {
+      setError(result.error || "Erreur lors de l'upload")
+    }
+    e.target.value = ''
+  }
+
+  const handleRemoveAdditionalImage = (indexToRemove) => {
+    setAdditionalImages(prev => prev.filter((_, index) => index !== indexToRemove))
+  }
+
+  const handleMoveAdditionalImage = (index, direction) => {
+    setAdditionalImages(prev => {
+      const imgs = [...prev]
+      const newIndex = direction === 'up' ? index - 1 : index + 1
+      if (newIndex < 0 || newIndex >= imgs.length) return prev
+      ;[imgs[index], imgs[newIndex]] = [imgs[newIndex], imgs[index]]
+      return imgs
+    })
   }
 
   const handleSubmit = async (e) => {
@@ -145,6 +189,9 @@ function ProductForm() {
       productData.imagePublicId = image.publicId
       productData.imageFilename = image.filename
     }
+
+    // Include additional images
+    productData.images = additionalImages
 
     // Create or update
     const result = isEditMode
@@ -205,6 +252,67 @@ function ProductForm() {
                 currentImage={image?.preview || image?.url}
                 disabled={loading}
               />
+            </div>
+
+            {/* Photos supplémentaires */}
+            <div className="form-section" style={{ marginTop: '1.5rem' }}>
+              <h3 className="section-title">Photos supplémentaires</h3>
+              <p className="field-hint" style={{ marginBottom: '0.75rem' }}>
+                Ajoutez d'autres vues de l'œuvre (max 5)
+              </p>
+
+              <div className="additional-images-grid">
+                {additionalImages.map((img, index) => (
+                  <div key={index} className="additional-image-item">
+                    <img src={img.url} alt={`Photo ${index + 2}`} />
+                    <div className="additional-image-actions">
+                      <button
+                        type="button"
+                        className="additional-image-move"
+                        onClick={() => handleMoveAdditionalImage(index, 'up')}
+                        disabled={index === 0}
+                      >
+                        &#8249;
+                      </button>
+                      <button
+                        type="button"
+                        className="additional-image-remove"
+                        onClick={() => handleRemoveAdditionalImage(index)}
+                      >
+                        &#10005;
+                      </button>
+                      <button
+                        type="button"
+                        className="additional-image-move"
+                        onClick={() => handleMoveAdditionalImage(index, 'down')}
+                        disabled={index === additionalImages.length - 1}
+                      >
+                        &#8250;
+                      </button>
+                    </div>
+                    <span className="additional-image-number">{index + 2}</span>
+                  </div>
+                ))}
+
+                {additionalImages.length < 5 && (
+                  <label className="additional-image-add">
+                    <input
+                      type="file"
+                      accept="image/webp,image/jpeg,image/jpg,image/png"
+                      onChange={handleAdditionalImageUpload}
+                      disabled={uploadingAdditionalImage || loading}
+                    />
+                    {uploadingAdditionalImage ? (
+                      <span className="uploading-text">Upload...</span>
+                    ) : (
+                      <>
+                        <span className="add-icon">+</span>
+                        <span>Ajouter</span>
+                      </>
+                    )}
+                  </label>
+                )}
+              </div>
             </div>
           </div>
 

@@ -1,3 +1,5 @@
+import { adminFetch } from '../utils/adminFetch'
+
 const API_URL = import.meta.env.VITE_API_URL || ''
 
 /**
@@ -23,7 +25,7 @@ export async function getAboutContent() {
  */
 export async function updateAboutContent(content) {
   try {
-    const response = await fetch(`${API_URL}/api/about`, {
+    const response = await adminFetch(`${API_URL}/api/about`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

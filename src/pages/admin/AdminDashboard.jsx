@@ -69,6 +69,13 @@ const DEFAULT_SHORTCUTS = [
     description: 'G\u00e9rer les filtres',
     to: '/admin/shop-filters',
   },
+  {
+    id: 'payment',
+    icon: '\uD83D\uDCB3',
+    title: 'Paiement',
+    description: 'Livraison et commandes',
+    to: '/admin/payment',
+  },
 ]
 
 const STORAGE_KEY = 'admin_shortcuts_order'

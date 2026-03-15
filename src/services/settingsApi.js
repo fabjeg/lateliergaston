@@ -1,3 +1,5 @@
+import { adminFetch } from '../utils/adminFetch'
+
 const API_URL = import.meta.env.VITE_API_URL || ''
 
 let settingsCache = null
@@ -37,7 +39,7 @@ export function invalidateSettingsCache() {
 
 export async function updateSettings(settings) {
   try {
-    const response = await fetch(`${API_URL}/api/settings`, {
+    const response = await adminFetch(`${API_URL}/api/settings`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

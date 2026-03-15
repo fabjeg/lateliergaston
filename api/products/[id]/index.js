@@ -53,7 +53,8 @@ async function handler(req, res) {
             collectionId: product.collectionId,
             technique: product.technique,
             year: product.year,
-            framed: product.framed
+            framed: product.framed,
+            images: product.images || []
           }
         })
       )
@@ -68,7 +69,7 @@ async function handler(req, res) {
   // PUT - Update product
   if (req.method === 'PUT') {
     try {
-      const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
+      const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, images, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
       // Check if product exists
       const existingProduct = await productsCollection.findOne({ id: productId })
@@ -100,17 +101,31 @@ async function handler(req, res) {
         updatedAt: new Date()
       }
 
-      // Only update image if new URL provided
-      if (imageUrl) {
-        // Delete old image from Cloudinary if it exists
-        if (existingProduct.imagePublicId) {
-          await deleteImage(existingProduct.imagePublicId)
+      // Handle additional images
+      if (images !== undefined) {
+        updateData.images = Array.isArray(images) ? images.map(img => ({
+          url: img.url,
+          publicId: img.publicId || null,
+          filename: sanitizeString(img.filename || '')
+        })) : []
+
+        // Delete removed images from Cloudinary
+        const newPublicIds = new Set((images || []).map(i => i.publicId).filter(Boolean))
+        const removedImages = (existingProduct.images || []).filter(i => i.publicId && !newPublicIds.has(i.publicId))
+        for (const img of removedImages) {
+          await deleteImage(img.publicId)
         }
+      }
+
+      // Only update image if new URL provided and it's different from the existing one
+      if (imageUrl && imageUrl !== existingProduct.imageUrl) {
         updateData.imageUrl = imageUrl
         updateData.imagePublicId = imagePublicId || null
         updateData.imageFilename = sanitizeString(imageFilename || existingProduct.imageFilename)
         // Remove old base64 if migrating to Cloudinary
         updateData.imageBase64 = null
+
+        // Delete old image from Cloudinary AFTER the DB update (see below)
       }
 
       // Update in MongoDB
@@ -118,6 +133,11 @@ async function handler(req, res) {
         { id: productId },
         { $set: updateData }
       )
+
+      // Delete old image from Cloudinary only after DB is saved successfully
+      if (imageUrl && imageUrl !== existingProduct.imageUrl && existingProduct.imagePublicId) {
+        await deleteImage(existingProduct.imagePublicId)
+      }
 
       // Fetch updated product for response
       const updatedProduct = await productsCollection.findOne({ id: productId })
@@ -140,7 +160,8 @@ async function handler(req, res) {
             collectionId: updatedProduct.collectionId,
             technique: updatedProduct.technique,
             year: updatedProduct.year,
-            framed: updatedProduct.framed
+            framed: updatedProduct.framed,
+            images: updatedProduct.images || []
           }
         }, 'Produit modifié avec succès')
       )
@@ -165,6 +186,15 @@ async function handler(req, res) {
       // Delete image from Cloudinary if it exists
       if (product.imagePublicId) {
         await deleteImage(product.imagePublicId)
+      }
+
+      // Delete additional images from Cloudinary
+      if (product.images && product.images.length > 0) {
+        for (const img of product.images) {
+          if (img.publicId) {
+            await deleteImage(img.publicId)
+          }
+        }
       }
 
       // Delete from MongoDB

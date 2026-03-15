@@ -553,13 +553,34 @@
   max-height: 90vh;
   background: linear-gradient(165deg, #fffdf9 0%, #faf6f0 40%, #f5ede4 100%);
   border-radius: 20px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(196, 164, 132, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(122, 53, 64, 0.25) transparent;
+}
+
+.lightbox-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lightbox-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 20px 0;
+}
+
+.lightbox-content::-webkit-scrollbar-thumb {
+  background: rgba(122, 53, 64, 0.25);
+  border-radius: 4px;
+}
+
+.lightbox-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(122, 53, 64, 0.45);
 }
 
 .lightbox-close {
@@ -653,7 +674,7 @@
 }
 
 .lightbox-image {
-  flex: 1;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -673,10 +694,10 @@
 }
 
 .lightbox-image img {
-  max-width: calc(100% - 8rem);
-  max-height: 58vh;
+  max-width: calc(100% - 4rem);
+  max-height: 65vh;
   object-fit: contain;
-  margin: 3rem 4rem;
+  margin: 2rem;
   border-radius: 1rem;
   filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.12));
 }
@@ -764,6 +785,26 @@
   letter-spacing: 0.5px;
 }
 
+.lightbox-buy-btn {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding: 0.75rem 2rem;
+  background: var(--primary-color, #7a3540);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.lightbox-buy-btn:hover {
+  background: #5e2730;
+  transform: translateY(-1px);
+}
+
 /* Lightbox Responsive */
 @media (max-width: 768px) {
   .lightbox-overlay {
@@ -776,9 +817,9 @@
   }
 
   .lightbox-image img {
-    max-height: 45vh;
-    max-width: calc(100% - 4rem);
-    margin: 2rem;
+    max-height: 55vh;
+    max-width: calc(100% - 2rem);
+    margin: 1.25rem;
   }
 
   .lightbox-info {

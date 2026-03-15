@@ -36,6 +36,7 @@ const AdminColors = lazy(() => import('./pages/admin/AdminColors'))
 const ProductForm = lazy(() => import('./pages/admin/ProductForm'))
 const AdminSurMesure = lazy(() => import('./pages/admin/AdminSurMesure'))
 const AdminShopFilters = lazy(() => import('./pages/admin/AdminShopFilters'))
+const AdminPayment = lazy(() => import('./pages/admin/AdminPayment'))
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -47,20 +48,19 @@ function ScrollToTop() {
 
 function Layout() {
   const location = useLocation()
-  const isHeroPage = location.pathname === '/'
   const isAdmin = location.pathname.startsWith('/admin')
   const isAdminLogin = location.pathname === '/admin/login'
 
   return (
     <div className="app">
       <ScrollToTop />
-      {!isHeroPage && !isAdmin && <Header />}
+      {!isAdmin && <Header />}
       {isAdmin && !isAdminLogin && <AdminSiteNav />}
       <main className={isAdmin ? 'no-header' : ''}>
         <Suspense fallback={<Loader />}>
         <Routes>
-          {/* Hero page without header/footer */}
-          <Route path="/" element={<HeroPage />} />
+          {/* Accueil direct */}
+          <Route path="/" element={<Accueil />} />
 
           {/* Public routes */}
           <Route path="/accueil" element={<Accueil />} />
@@ -163,10 +163,18 @@ function Layout() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/payment"
+            element={
+              <ProtectedRoute>
+                <AdminPayment />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         </Suspense>
       </main>
-      {!isHeroPage && <Footer />}
+      {!isAdmin && <Footer />}
     </div>
   )
 }

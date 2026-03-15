@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { uploadImage } from '../../../services/productApi'
 import { getAllCollections } from '../../../services/collectionApi'
+import { validateImageFile } from '../../../utils/imageValidation'
 import ConfirmModal from '../ConfirmModal'
 import ImagePickerModal from '../ImagePickerModal'
 import BlockStyleEditor from './BlockStyleEditor'
@@ -8,6 +9,7 @@ import BlockStyleEditor from './BlockStyleEditor'
 function BlockEditorText({ block, onChange, onDelete }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState(null)
   const [collections, setCollections] = useState([])
   const [showPicker, setShowPicker] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
@@ -24,18 +26,23 @@ function BlockEditorText({ block, onChange, onDelete }) {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-    if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) return
 
-    setUploading(true)
-    const reader = new FileReader()
-    reader.onloadend = async () => {
-      const result = await uploadImage(reader.result, file.name)
-      setUploading(false)
-      if (result.success) {
-        updateBlock({ image: result.url })
-      }
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setUploadError(validation.error)
+      e.target.value = ''
+      return
     }
-    reader.readAsDataURL(file)
+
+    setUploadError(null)
+    setUploading(true)
+    const result = await uploadImage(file, file.name)
+    setUploading(false)
+    if (result.success) {
+      updateBlock({ image: result.url })
+    } else {
+      setUploadError(result.error || "Erreur lors de l'upload")
+    }
     e.target.value = ''
   }
 
@@ -67,6 +74,9 @@ function BlockEditorText({ block, onChange, onDelete }) {
 
       {!collapsed && (
         <div className="block-editor-body">
+          {uploadError && (
+            <p className="block-upload-error">{uploadError}</p>
+          )}
           <div className="form-group">
             <label>Titre du bloc</label>
             <input

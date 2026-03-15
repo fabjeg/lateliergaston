@@ -36,6 +36,16 @@ export default async function handler(req, res) {
   if (handleCorsOptions(req, res)) return
 
   if (req.method === 'GET') {
+    // Route orders requests (admin only)
+    if (req.query?.type === 'orders') {
+      const cookies = cookie.parse(req.headers.cookie || '')
+      const sessionId = cookies.admin_session
+      const admin = await verifySession(sessionId)
+      if (!admin) {
+        return res.status(401).json(apiResponse(false, null, 'Non autorise'))
+      }
+      return getOrders(req, res)
+    }
     return getSettings(req, res)
   }
 
@@ -71,9 +81,24 @@ async function getSettings(req, res) {
   }
 }
 
+async function getOrders(req, res) {
+  try {
+    const collection = await getCollection('orders')
+    const orders = await collection
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray()
+
+    return res.status(200).json(apiResponse(true, { orders }))
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    return res.status(500).json(apiResponse(false, null, 'Erreur serveur'))
+  }
+}
+
 async function updateSettings(req, res) {
   try {
-    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled, shopFilters } = req.body
+    const { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg, shopEnabled, shopFilters, shippingCosts } = req.body
 
     const colors = { headingColor, subtitleColor, textColor, buttonBg, buttonText, announcementBg, ctaBg }
     for (const [key, value] of Object.entries(colors)) {
@@ -98,6 +123,7 @@ async function updateSettings(req, res) {
       ctaBg: ctaBg || existing.ctaBg || DEFAULTS.ctaBg,
       shopEnabled: typeof shopEnabled === 'boolean' ? shopEnabled : (existing.shopEnabled !== undefined ? existing.shopEnabled : DEFAULTS.shopEnabled),
       shopFilters: shopFilters || existing.shopFilters || DEFAULTS.shopFilters,
+      shippingCosts: shippingCosts || existing.shippingCosts || null,
       updatedAt: new Date(),
       updatedBy: req.admin?.username || 'admin'
     }

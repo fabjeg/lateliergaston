@@ -14,9 +14,11 @@
   Variables disponibles:
   - {{customer_name}} : Nom du client
   - {{customer_email}} : Email du client (utilisé comme destinataire)
+  - {{contact_preference}} : Email / Téléphone
   - {{photo_option}} : "Photo de la galerie" ou "Photo personnelle"
   - {{photo_url}} : URL de la photo (Cloudinary ou galerie)
   - {{materiau}} : Cheveux Artificiels / Poils d'Animaux / Cheveux de Bébé
+  - {{taille}} : Taille choisie
   - {{papier}} : Papier Photo / Papier d'Art
   - {{cadre}} : Oui / Non
   - {{description}} : Description du projet
@@ -103,6 +105,16 @@
                   <td style="padding: 15px 20px; border-bottom: 1px solid #f0e6dc;">
                     <table width="100%">
                       <tr>
+                        <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Taille</td>
+                        <td style="color: #333; font-size: 15px; text-align: right; font-weight: 500;">{{taille}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 15px 20px; border-bottom: 1px solid #f0e6dc;">
+                    <table width="100%">
+                      <tr>
                         <td style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Matériau</td>
                         <td style="color: #8b4049; font-size: 15px; text-align: right; font-weight: 600;">{{materiau}}</td>
                       </tr>
@@ -150,8 +162,8 @@
                 <h4 style="color: #8b4049; font-size: 16px; margin: 0 0 15px 0;">Et maintenant ?</h4>
                 <p style="color: #555; font-size: 14px; line-height: 1.7; margin: 0;">
                   Nous étudions votre demande avec attention.<br>
-                  Nous vous contacterons dans les <strong>48 heures</strong> pour discuter<br>
-                  des détails et vous proposer un devis personnalisé.
+                  Nous vous contacterons par <strong>{{contact_preference}}</strong> dans les <strong>48 heures</strong><br>
+                  pour discuter des détails et vous proposer un devis personnalisé.
                 </p>
               </div>
             </td>
@@ -216,6 +228,7 @@ Votre référence : #{{order_id}}
 RÉCAPITULATIF DE VOTRE DEMANDE
 ------------------------------
 Photo: {{photo_option}}
+Taille: {{taille}}
 Matériau: {{materiau}}
 Type de papier: {{papier}}
 Cadre: {{cadre}}

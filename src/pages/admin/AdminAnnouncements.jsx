@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getAnnouncementsContent, updateAnnouncementsContent } from '../../services/announcementsApi'
 import { getAllProducts, uploadImage } from '../../services/productApi'
+import { validateImageFile } from '../../utils/imageValidation'
 import BackButton from '../../components/BackButton'
 import Loader from '../../components/Loader'
 import BlockEditorCards from '../../components/admin/blocks/BlockEditorCards'
@@ -136,36 +137,27 @@ function AdminAnnouncements() {
     const file = e.target.files[0]
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      setMessage({ type: 'error', text: 'Veuillez sélectionner une image valide' })
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage({ type: 'error', text: "L'image doit faire moins de 5MB" })
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setMessage({ type: 'error', text: validation.error })
       return
     }
 
     setUploadingArtImage(true)
+    const result = await uploadImage(file, file.name)
+    setUploadingArtImage(false)
 
-    const reader = new FileReader()
-    reader.onloadend = async () => {
-      const result = await uploadImage(reader.result, file.name)
-      setUploadingArtImage(false)
-
-      if (result.success) {
-        setContent(prev => ({
-          ...prev,
-          artSection: {
-            ...prev.artSection,
-            images: [...(prev.artSection.images || []), result.url]
-          }
-        }))
-      } else {
-        setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
-      }
+    if (result.success) {
+      setContent(prev => ({
+        ...prev,
+        artSection: {
+          ...prev.artSection,
+          images: [...(prev.artSection.images || []), result.url]
+        }
+      }))
+    } else {
+      setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
     }
-    reader.readAsDataURL(file)
     e.target.value = ''
   }
 
@@ -203,30 +195,21 @@ function AdminAnnouncements() {
     const file = e.target.files[0]
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      setMessage({ type: 'error', text: 'Veuillez sélectionner une image valide' })
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage({ type: 'error', text: "L'image doit faire moins de 5MB" })
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setMessage({ type: 'error', text: validation.error })
       return
     }
 
     setUploadingArtMainImage(true)
+    const result = await uploadImage(file, file.name)
+    setUploadingArtMainImage(false)
 
-    const reader = new FileReader()
-    reader.onloadend = async () => {
-      const result = await uploadImage(reader.result, file.name)
-      setUploadingArtMainImage(false)
-
-      if (result.success) {
-        handleArtSectionChange('mainImage', result.url)
-      } else {
-        setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
-      }
+    if (result.success) {
+      handleArtSectionChange('mainImage', result.url)
+    } else {
+      setMessage({ type: 'error', text: result.error || "Erreur lors de l'upload" })
     }
-    reader.readAsDataURL(file)
     e.target.value = ''
   }
 

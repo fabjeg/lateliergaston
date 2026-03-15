@@ -61,7 +61,7 @@ function Shop() {
     }
 
     // Charger les collections
-    const collectionsResult = getAllCollections()
+    const collectionsResult = await getAllCollections()
     if (collectionsResult.success) {
       setCollections(collectionsResult.collections)
     }
@@ -309,6 +309,7 @@ function Shop() {
                     height="400"
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => { e.currentTarget.closest('.product-card').style.display = 'none' }}
                   />
                   {isSold(product.id) && <SoldBadge />}
                 </motion.div>

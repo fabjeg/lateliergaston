@@ -73,9 +73,11 @@ async function getProducts(req, res) {
       year: product.year,
       framed: product.framed,
       collectionId: product.collectionId,
-      displayOrder: product.displayOrder ?? product.id
+      displayOrder: product.displayOrder ?? product.id,
+      images: product.images || []
     }))
 
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
     return res.status(200).json(
       apiResponse(true, { products: transformedProducts })
     )
@@ -91,7 +93,7 @@ async function getProducts(req, res) {
 
 async function createProduct(req, res) {
   try {
-    const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, stripePriceId, status, collectionId, technique, year, framed } = req.body
+    const { name, price, description, height, width, imageUrl, imagePublicId, imageFilename, images, stripePriceId, status, collectionId, technique, year, framed } = req.body
 
     const productValidation = validateProduct({ name, price, description, status })
     if (!productValidation.valid) {
@@ -104,8 +106,8 @@ async function createProduct(req, res) {
       return res.status(400).json(apiResponse(false, null, 'URL de l\'image requise (uploadez d\'abord via /api/upload)'))
     }
 
-    if (!imageUrl.startsWith('https://')) {
-      return res.status(400).json(apiResponse(false, null, 'URL de l\'image invalide'))
+    if (!imageUrl.startsWith('https://') || !imageUrl.includes('cloudinary.com')) {
+      return res.status(400).json(apiResponse(false, null, 'URL de l\'image invalide (Cloudinary uniquement)'))
     }
 
     const productsCollection = await getCollection('products')
@@ -134,6 +136,11 @@ async function createProduct(req, res) {
       technique: technique || 'broderie-photo',
       year: year ? parseInt(year) : null,
       framed: framed || 'non',
+      images: Array.isArray(images) ? images.map(img => ({
+        url: img.url,
+        publicId: img.publicId || null,
+        filename: sanitizeString(img.filename || '')
+      })) : [],
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -158,7 +165,8 @@ async function createProduct(req, res) {
           collectionId: product.collectionId,
           technique: product.technique,
           year: product.year,
-          framed: product.framed
+          framed: product.framed,
+          images: product.images || []
         }
       }, 'Produit créé avec succès')
     )

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useRef } from 'react'
 
 export const AdminContext = createContext()
 
@@ -11,6 +11,24 @@ export function AdminProvider({ children }) {
   useEffect(() => {
     verifySession()
   }, [])
+
+  // Redirection automatique si une requête admin reçoit un 401
+  useEffect(() => {
+    const handler = () => setAdmin(null)
+    window.addEventListener('admin-unauthorized', handler)
+    return () => window.removeEventListener('admin-unauthorized', handler)
+  }, [])
+
+  // Vérification périodique de la session (toutes les 3 minutes)
+  const intervalRef = useRef(null)
+  useEffect(() => {
+    if (!admin) {
+      clearInterval(intervalRef.current)
+      return
+    }
+    intervalRef.current = setInterval(verifySession, 3 * 60 * 1000)
+    return () => clearInterval(intervalRef.current)
+  }, [admin]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
   /**

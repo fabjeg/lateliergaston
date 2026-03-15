@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { uploadImage } from '../../services/productApi'
+import { validateImageFile } from '../../utils/imageValidation'
+import ImagePickerModal from './ImagePickerModal'
 import './ImageUploader.css'
 
 function ImageUploader({ onImageSelect, currentImage, disabled }) {
   const [preview, setPreview] = useState(currentImage || null)
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0]
@@ -13,49 +16,39 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
 
     if (!file) return
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Veuillez sélectionner une image valide')
+    const validation = validateImageFile(file, 5)
+    if (!validation.valid) {
+      setError(validation.error)
       return
     }
 
-    // Validate file size (max 5MB for Cloudinary)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('L\'image doit faire moins de 5MB')
-      return
+    // Show preview locally
+    const previewUrl = URL.createObjectURL(file)
+    setPreview(previewUrl)
+    setUploading(true)
+
+    // Upload File directly to Cloudinary (bypasses Vercel body size limit)
+    const result = await uploadImage(file, file.name)
+
+    setUploading(false)
+
+    if (result.success) {
+      onImageSelect({
+        url: result.url,
+        publicId: result.publicId,
+        filename: file.name
+      })
+    } else {
+      setError(result.error || 'Erreur lors de l\'upload')
+      setPreview(null)
+      onImageSelect(null)
     }
+  }
 
-    // Read file and convert to base64 for preview and upload
-    const reader = new FileReader()
-
-    reader.onloadend = async () => {
-      const base64 = reader.result
-      setPreview(base64)
-      setUploading(true)
-
-      // Upload to Cloudinary
-      const result = await uploadImage(base64, file.name)
-
-      setUploading(false)
-
-      if (result.success) {
-        onImageSelect({
-          url: result.url,
-          publicId: result.publicId,
-          filename: file.name
-        })
-      } else {
-        setError(result.error || 'Erreur lors de l\'upload')
-        setPreview(null)
-        onImageSelect(null)
-      }
-    }
-
-    reader.onerror = () => {
-      setError('Erreur lors de la lecture du fichier')
-    }
-
-    reader.readAsDataURL(file)
+  const handlePickerSelect = (url) => {
+    setPreview(url)
+    setError('')
+    onImageSelect({ url, publicId: null, filename: null })
   }
 
   const handleRemove = () => {
@@ -97,6 +90,13 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
                 id="image-upload-input-change"
                 className="image-upload-input"
               />
+              <button
+                type="button"
+                onClick={() => setShowPicker(true)}
+                className="image-library-btn"
+              >
+                Bibliothèque
+              </button>
             </div>
           )}
         </div>
@@ -115,6 +115,14 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
             <p>Cliquez pour sélectionner une image</p>
             <p className="upload-hint">WebP, JPEG ou PNG - Max 5MB</p>
           </label>
+          <button
+            type="button"
+            onClick={() => setShowPicker(true)}
+            disabled={disabled}
+            className="image-library-btn image-library-btn--standalone"
+          >
+            Ou choisir depuis la bibliothèque Cloudinary
+          </button>
         </div>
       )}
 
@@ -123,6 +131,12 @@ function ImageUploader({ onImageSelect, currentImage, disabled }) {
       <p className="image-uploader-note">
         Les images sont optimisées automatiquement pour le web.
       </p>
+
+      <ImagePickerModal
+        isOpen={showPicker}
+        onSelect={handlePickerSelect}
+        onClose={() => setShowPicker(false)}
+      />
     </div>
   )
 }

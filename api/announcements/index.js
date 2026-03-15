@@ -38,6 +38,7 @@ async function getAnnouncements(req, res) {
       content = getDefaultContent()
     }
 
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
     return res.status(200).json(apiResponse(true, { content }))
   } catch (error) {
     console.error('Error fetching announcements:', error)
